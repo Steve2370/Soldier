@@ -285,8 +285,10 @@
 
 @if(session('toast'))
     <script>
-        document.addEventListener('alpine:init', () => {
-            window.dispatchEvent(new CustomEvent('toast', { detail: @json(session('toast')) }));
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('toast', { detail: @json(session('toast')) }));
+            }, 300);
         });
     </script>
 @endif

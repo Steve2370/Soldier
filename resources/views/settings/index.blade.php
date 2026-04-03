@@ -99,7 +99,7 @@
                         </div>
                     </div>
                     @if(!$mfaTotp?->actif)
-                        <button @click="configurerTotp()" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0;">Configurer</button>
+                        <button @click="configurerTotp('{{ route('settings.totp.configurer') }}')" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0;">Configurer</button>
                     @else
                         <span style="font-size: 0.8rem; color: var(--accent-bright); padding: 8px;">✓ Configuré</span>
                     @endif

@@ -78,7 +78,6 @@ readonly class CoffreService
         array $donnees,
         string $dataKey
     ) : ElementCoffre {
-        // Lire l'ancien payload pour conserver les valeurs non modifiées
         $ancienPayload = json_decode($this->encryption->decrypt(
             $element->payload_encrypted,
             $dataKey,

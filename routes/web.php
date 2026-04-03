@@ -23,9 +23,16 @@ Route::middleware('guest')->group(function () {
 Route::get('/verification-mfa', [AuthController::class, 'showMfa'])->name('mfa.verify');
 Route::post('/verification-mfa', [AuthController::class, 'verifierMfa'])->name('mfa.verify.post');
 
-Route::middleware(['auth',/*, 'vault.unlocked'*/])->group(function () {
+Route::get('/auth/github/redirect', [AuthController::class, 'redirectGithub'])->name('auth.github.redirect');
+Route::get('/auth/github/callback', [AuthController::class, 'callbackGithub'])->name('auth.github.callback');
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectGoogle'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [AuthController::class, 'callbackGoogle'])->name('auth.google.callback');
+
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/', fn() => redirect()->route('dashboard'));
+    Route::get('/oauth/master-password', [AuthController::class, 'showOauthMasterPassword'])->name('oauth.master-password');
+    Route::post('/oauth/master-password', [AuthController::class, 'configurerOauthMasterPassword'])->name('oauth.master-password.post');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

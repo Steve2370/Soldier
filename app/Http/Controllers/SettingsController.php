@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
+use PragmaRX\Google2FA\Google2FA;
+use Random\RandomException;
 
 class SettingsController extends Controller
 {
@@ -31,6 +33,9 @@ class SettingsController extends Controller
         return view('settings.index', compact('user','mfaEmail', 'mfaTotp'));
     }
 
+    /**
+     * @throws RandomException
+     */
     public function activerMfaEmail(Request $request): RedirectResponse
     {
         $user = auth()->user();
@@ -74,7 +79,10 @@ class SettingsController extends Controller
             ]);
     }
 
-    public function configurerTopt(): JsonResponse
+    /**
+     * @throws RandomException
+     */
+    public function configurerTotp(): JsonResponse
     {
         $user = auth()->user();
         $donnees = $this->mfaService->genererSecretTotp($user);
@@ -89,9 +97,15 @@ class SettingsController extends Controller
 
     /**
      * @throws \SodiumException
+     * @throws RandomException
      */
-    public function validerTopt(Request $request): RedirectResponse
+    public function validerTotp(Request $request): RedirectResponse
     {
+        \Log::info('validerTotp appelé', [
+            'code' => $request->input('code'),
+            'secret_pending' => session('totp_secret_pending'),
+        ]);
+
         $request->validate(['code' => ['required', 'string', 'size:6']]);
 
         $user = auth()->user();
@@ -99,6 +113,24 @@ class SettingsController extends Controller
 
         if (!$secret) {
             return back()->withErrors(['code' => 'Session expirée. Recommencez.']);
+        }
+
+        $google2fa = new Google2FA();
+        try {
+            $valide = $google2fa->verifyKey($secret, $request->input('code'), 1);
+        } catch (\Exception $e) {
+            $valide = false;
+        }
+
+        \Log::info('totp result', [
+            'valide' => $valide,
+            'secret' => $secret,
+            'code' => $request->input('code'),
+            'timestamp' => now()->timestamp,
+        ]);
+
+        if (!$valide) {
+            return back()->withErrors(['code' => 'Code incorrect. Vérifiez votre application authenticator.']);
         }
 
         $kek = SessionHelper::obtenirKek();
@@ -112,8 +144,8 @@ class SettingsController extends Controller
                 'totp_secret_chiffre' => json_encode($secretChiffre),
                 'active_le' => now(),
             ]);
-        session()->forget('totp_secret_pending');
 
+        session()->forget('totp_secret_pending');
         $codes = $this->mfaService->genererCodesRecuperation($user);
         session(['codes_recuperation_afficher' => $codes]);
 

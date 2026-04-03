@@ -2,10 +2,16 @@
 
 namespace App\Services\Auth;
 
+use App\Helpers\SessionHelper;
 use App\Mail\CodeMfaMail;
 use App\Models\User;
+use App\Services\Crypto\Contracts\EncryptionServiceInterface;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use PragmaRX\Google2FA\Exceptions\IncompatibleWithGoogleAuthenticatorException;
+use PragmaRX\Google2FA\Exceptions\InvalidCharactersException;
+use PragmaRX\Google2FA\Exceptions\SecretKeyTooShortException;
+use PragmaRX\Google2FA\Google2FA;
 use Random\RandomException;
 
 class MfaService
@@ -36,6 +42,9 @@ class MfaService
 //        Mail::to($user->email)->send(new CodeMfaMail($user, $code));
     }
 
+    /**
+     * @throws \SodiumException
+     */
     public function verifierCode(User $user, string $codeSaisi): bool
     {
         $mfa = $user->mfa()->where('actif', true)->first();
@@ -88,6 +97,9 @@ class MfaService
         ];
     }
 
+    /**
+     * @throws \SodiumException
+     */
     public function verifierTotp(User $user, string $code): bool
     {
         $mfa = $user->mfa()->where('type', 'totp')->where('actif', true)->first();
@@ -96,7 +108,38 @@ class MfaService
             return false;
         }
 
-        return false;
+        $kek = SessionHelper::obtenirKek();
+        if (!$kek) {
+            $kekPending = session('mfa_pending_kek');
+            if (!$kekPending) return false;
+            $kek = base64_decode($kekPending);
+        }
+
+        $secretChiffre = json_decode($mfa->totp_secret_chiffre, true);
+        $secret = app(EncryptionServiceInterface::class)
+            ->decrypt(
+                $secretChiffre['ciphertext'],
+                $kek,
+                $secretChiffre['iv'],
+                $secretChiffre['tag'],
+            );
+        sodium_memzero($kek);
+
+        $google2fa = new Google2FA();
+        \Log::info('totp verify', [
+            'secret_len' => strlen($secret),
+            'secret' => $secret,
+            'code' => $code,
+        ]);
+        try {
+            return $google2fa->verifyKey($secret, $code, 1);
+        } catch (IncompatibleWithGoogleAuthenticatorException $e) {
+            return false;
+        } catch (InvalidCharactersException $e) {
+            return false;
+        } catch (SecretKeyTooShortException $e) {
+            return false;
+        }
     }
 
     /**
@@ -154,12 +197,7 @@ class MfaService
      */
     private function genererSecretBase32(): string
     {
-        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-        $bytes = random_bytes(20);
-        $secret = '';
-        foreach (str_split(bin2hex($bytes), 2) as $byte) {
-            $secret .= $chars[hexdec($byte) % 32];
-        }
-        return $secret;
+        $google2fa = new Google2FA();
+        return $google2fa->generateSecretKey(16);
     }
 }

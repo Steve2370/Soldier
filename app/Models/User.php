@@ -30,6 +30,12 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar',
+        'totp_secret_chiffre',
+        'actif',
+        'active_le',
+        'type',
+        'oauth_provider',
+        'oauth_id',
     ];
 
     protected $hidden = [

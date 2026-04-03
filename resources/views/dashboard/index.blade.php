@@ -334,9 +334,7 @@
             </div>
         </div>
     `;
-
                         document.body.appendChild(modal);
-
                         document.getElementById('modal-annuler').onclick = () => modal.remove();
                         modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
                         document.getElementById('modal-supprimer').onclick = () => {
@@ -352,3 +350,15 @@
         </script>
     @endpush
 @endsection
+
+@if(isset($toast))
+    <script>
+        import { showToast } from "../../js/toast.ts";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                showToast('{{ $toast['type'] }}', '{{ $toast['titre'] }}', '{{ $toast['message'] }}');
+            }, 400);
+        });
+    </script>
+@endif

@@ -30,7 +30,6 @@ class DashboardController extends Controller
         if ($kek === null) {
             return view('dashboard.index', ['services' => collect()]);
         }
-
         $coffres = $user->coffres()->withCount('elements')->get();
 
         $services = $coffres->map(function (Coffre $coffre) use ($kek) {
@@ -135,7 +134,6 @@ class DashboardController extends Controller
     public function mettreAJour(StoreElementRequest $request, ElementCoffre $element): RedirectResponse
     {
         $this->verifierAcces($element);
-        \Log::info('mettreAJour validated', $request->validated());
 
         $kek = SessionHelper::obtenirKek();
         $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
