@@ -346,6 +346,7 @@ class AuthController extends Controller
                 }
                 sodium_memzero($kek);
                 sodium_memzero($cles['kek']);
+                Mail::to($user->email)->send(new BienvenueMail($user));
                 return redirect()->route('dashboard')->with('toast', [
                     'type' => 'success',
                     'titre' => 'Coffre créé !',

@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('invitations_partage', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('coffre_id')
-                ->constrained('coffres')
-                ->cascadeonDelete();
+            $table->foreignId('coffre_id')->constrained('coffres')
+                ->cascadeOnDelete();
+            $table->foreignId('expediteur_id')->constrained('users')
+                ->cascadeOnDelete();
             $table->string('email_destinataire');
             $table->string('token_hash', 64)->unique();
-            $table->text('data_key_chiffree')->nullable();
+            $table->text('data_key_encrypted')->nullable();
             $table->enum('permission', ['lecture', 'ecriture'])->default('lecture');
             $table->enum('statut', ['en_attente', 'acceptee', 'refusee', 'expiree'])
                 ->default('en_attente');
