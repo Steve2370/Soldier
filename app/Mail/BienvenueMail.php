@@ -38,9 +38,7 @@ class BienvenueMail extends Mailable
      */
     public function content(): Content
     {
-        return new Content(
-            markdown: 'emails.bienvenue',
-        );
+        return new Content(view: 'emails.bienvenue');
     }
 
     /**

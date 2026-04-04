@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('shares_coffre', function (Blueprint $table) {
             $table->id();
             $table->foreignId('coffre_id')->constrained('coffres')->cascadeonDelete();
-            $table->foreignId('propietaire_id')->constrained('users')->cascadeonDelete();
+            $table->foreignId('proprietaire_id')->constrained('users')->cascadeonDelete();
             $table->foreignId('destinataire_id')->constrained('users')->cascadeonDelete();
-            $table->text('data_key_destinatire_encrypted');
+            $table->text('data_key_destinataire_encrypted');
             $table->enum('permission', ['lecture', 'ecriture'])->default('lecture');
             $table->timestamp('expire_le')->nullable();
             $table->enum('statut', ['en_entente', 'accepte', 'refuse', 'revoque'])->default('en_entente');

@@ -42,7 +42,7 @@ class CodeMfaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.code-mfa',
+            view: 'emails.code-mfa',
         );
     }
 

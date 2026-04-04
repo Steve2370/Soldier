@@ -43,7 +43,7 @@ class MotDePasseChangeMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.mot-de-passe-change',
+            view: 'emails.mot-de-passe-change',
         );
     }
 

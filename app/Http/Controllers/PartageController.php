@@ -13,6 +13,7 @@ use App\Services\Coffre\CleManagementService;
 use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Random\RandomException;
@@ -95,7 +96,7 @@ class PartageController extends Controller
         $dataKeyChiffree = null;
 
         if ($destinataire) {
-            $clePublique = $destinataire->clesUser?->cle_publique;
+            $clePublique = $destinataire->clesUser?->public_key;
 
             if ($clePublique) {
                 $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique(
@@ -152,6 +153,16 @@ class PartageController extends Controller
      */
     public function accepter(string $token): RedirectResponse
     {
+        if (!Auth::check()) {
+            session(['url.intended' => route('partage.accepter', $token)]);
+            return redirect()->route('connexion');
+        }
+
+        if (!SessionHelper::havecleKek()) {
+            session(['url.intended' => route('partage.accepter', $token)]);
+            return redirect()->route('connexion');
+        }
+
         $tokenHash = hash('sha256', $token);
         $invitation = InvitationPartage::where('token_hash', $tokenHash)
             ->where('statut', 'en_attente')
@@ -172,16 +183,23 @@ class PartageController extends Controller
         $dataKeyChiffree = $invitation->data_key_encrypted;
 
         if (!$dataKeyChiffree) {
-            $kek = SessionHelper::obtenirKek();
+            $clePublique = $user->clesUser?->cle_publique;
 
-            sodium_memzero($kek);
+            if (!$clePublique) {
+                return redirect()->route('dashboard')->with('toast', [
+                    'type' => 'error',
+                    'titre' => 'Erreur',
+                    'message' => 'Impossible de traiter l\'invitation.',
+                ]);
+            }
 
-            $invitation->update(['statut' => 'expiree']);
+            $proprietaire = $invitation->expediteur;
+            $kekProprietaire = null;
 
             return redirect()->route('dashboard')->with('toast', [
                 'type' => 'warning',
-                'titre' => 'Invitation expirée',
-                'message' => 'Demandez à l\'expéditeur de vous envoyer une nouvelle invitation.',
+                'titre' => 'Invitation en attente',
+                'message' => 'Votre compte vient d\'être créé. Demandez à ' . $invitation->expediteur->name . ' de vous renvoyer une invitation.',
             ]);
         }
 
@@ -200,11 +218,14 @@ class PartageController extends Controller
             'traitee_le' => now(),
         ]);
 
-        Mail::to($coffre->user->email)->send(new InvitationAccepteeMail(
-            $coffre->user,
-            auth()->user(),
-            $coffre->nom,
-        ));
+        $proprietaire = User::find($invitation->expediteur_id);
+        if ($proprietaire) {
+            Mail::to($proprietaire->email)->send(new InvitationAccepteeMail(
+                $proprietaire,
+                auth()->user(),
+                $coffre->nom,
+            ));
+        }
 
         return redirect()
             ->route('dashboard')
@@ -246,8 +267,8 @@ class PartageController extends Controller
         return redirect()
             ->route('partage.index')
             ->with('toast', [
-                'type'    => 'info',
-                'titre'   => 'Invitation annulée',
+                'type' => 'info',
+                'titre' => 'Invitation annulée',
                 'message' => 'L\'invitation a été annulée.',
             ]);
     }

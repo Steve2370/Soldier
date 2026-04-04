@@ -39,7 +39,7 @@ class TotpActiveMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.totp-active',
+            view: 'emails.totp-active',
         );
     }
 

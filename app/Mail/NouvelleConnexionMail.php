@@ -44,7 +44,7 @@ class NouvelleConnexionMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.nouvelle-connexion',
+            view: 'emails.nouvelle-connexion',
         );
     }
 

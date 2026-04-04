@@ -1,21 +1,29 @@
-@component('mail::message')
-    # {{ $destinataire->name }} a accepté votre invitation ✓
+<x-emails.layout sujet="{{ $destinataire->name }} a accepté votre invitation">
 
-    Bonjour **{{ $proprietaire->name }}**,
+    <div class="icon-wrap icon-success">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+    </div>
 
-    Bonne nouvelle ! **{{ $destinataire->name }}** a accepté votre invitation et a maintenant accès à votre coffre.
+    <h1>Invitation acceptée ✓</h1>
+    <p>Bonjour <strong>{{ $proprietaire->name }}</strong>,<br><strong>{{ $destinataire->name }}</strong> a accepté votre invitation.</p>
 
-    @component('mail::panel')
-        **Détails :**
-        - **Coffre partagé :** {{ $nomCoffre }}
-        - **Accès accordé à :** {{ $destinataire->name }} ({{ $destinataire->email }})
-    @endcomponent
+    <div class="panel">
+        <h2>Détails :</h2>
+        <ul>
+            <li><strong>Coffre partagé :</strong> {{ $nomCoffre }}</li>
+            <li><strong>Accès accordé à :</strong> {{ $destinataire->name }} ({{ $destinataire->email }})</li>
+        </ul>
+    </div>
 
-    Vous pouvez gérer ou révoquer cet accès à tout moment depuis votre page de partage.
+    <div class="btn-wrap">
+        <a href="{{ config('app.url') }}/partage" class="btn btn-primary">
+            Gérer mes partages
+        </a>
+    </div>
 
-    @component('mail::button', ['url' => config('app.url') . '/partage', 'color' => 'primary'])
-        Gérer mes partages
-    @endcomponent
+    <div class="divider"></div>
+    <p style="font-size:0.82rem;color:#505050;">Vous pouvez révoquer cet accès à tout moment.<br><strong style="color:#808080;">L'équipe Soldier</strong></p>
 
-    **L'équipe Soldier**
-@endcomponent
+</x-emails.layout>

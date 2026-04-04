@@ -64,6 +64,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
-});
+Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
+

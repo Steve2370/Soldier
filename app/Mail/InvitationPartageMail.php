@@ -45,7 +45,7 @@ class InvitationPartageMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.invitation-partage',
+            view: 'emails.invitation-partage',
         );
     }
 

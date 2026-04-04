@@ -39,7 +39,7 @@ class TotpDesactiveMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.totp-desactive',
+            view: 'emails.totp-desactive',
         );
     }
 

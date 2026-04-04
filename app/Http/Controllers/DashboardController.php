@@ -6,8 +6,10 @@ use App\Helpers\SessionHelper;
 use App\Http\Requests\StoreElementRequest;
 use App\Models\Coffre;
 use App\Models\ElementCoffre;
+use App\Models\ShareCoffre;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
+use App\Services\Crypto\RsaCryptoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -31,7 +33,6 @@ class DashboardController extends Controller
             return view('dashboard.index', ['services' => collect()]);
         }
         $coffres = $user->coffres()->withCount('elements')->get();
-
         $services = $coffres->map(function (Coffre $coffre) use ($kek) {
             $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
                 $coffre->data_key_encrypted,
@@ -43,8 +44,36 @@ class DashboardController extends Controller
             return [
                 'coffre' => $coffre,
                 'elements' => $elements,
+                'partage' => false,
             ];
         });
+
+        $partages = $user->sharesRecus()
+            ->where('statut', 'accepte')
+            ->with('coffre')
+            ->get();
+        $servicesPartages = $partages->map(function ($share) use ($kek) {
+            try {
+                $clePrivee = SessionHelper::obtenirClePrivee();
+                $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
+                    $share->data_key_destinataire_encrypted,
+                    $clePrivee
+                );
+                $elements = $this->coffreService->listerElements($share->coffre, $dataKey);
+                sodium_memzero($dataKey);
+
+                return [
+                    'coffre' => $share->coffre,
+                    'elements' => $elements,
+                    'partage' => true,
+                    'permission' => $share->permission,
+                    'proprietaire' => $share->proprietaire->name,
+                ];
+            } catch (\Exception $e) {
+                return null;
+            }
+        })->filter();
+        $services = $services->concat($servicesPartages);
 
         sodium_memzero($kek);
 
@@ -94,16 +123,30 @@ class DashboardController extends Controller
     public function afficher(ElementCoffre $element): View
     {
         $this->verifierAcces($element);
+        $user = auth()->user();
 
-        $kek = SessionHelper::obtenirKek();
-        $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-            $element->coffre->data_key_encrypted,
-            $kek
-        );
+        if ($element->coffre->user_id === $user->id) {
+            $kek = SessionHelper::obtenirKek();
+            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
+                $element->coffre->data_key_encrypted,
+                $kek
+            );
+            sodium_memzero($kek);
+        } else {
+            $share = ShareCoffre::where('coffre_id', $element->coffre->id)
+                ->where('destinataire_id', $user->id)
+                ->where('statut', 'accepte')
+                ->firstOrFail();
+
+            $clePrivee = SessionHelper::obtenirClePrivee();
+            $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
+                $share->data_key_destinataire_encrypted,
+                $clePrivee
+            );
+        }
+
         $donnees = $this->coffreService->lireElement($element, $dataKey);
-
         sodium_memzero($dataKey);
-        sodium_memzero($kek);
 
         return view('dashboard.afficher', compact('element', 'donnees'));
     }
@@ -183,7 +226,17 @@ class DashboardController extends Controller
 
     private function verifierAcces(ElementCoffre $element): void
     {
-        if ($element->coffre->user_id !== auth()->id()) {
+        $user = auth()->user();
+        if ($element->coffre->user_id === $user->id) {
+            return;
+        }
+
+        $shareExiste = ShareCoffre::where('coffre_id', $element->coffre->id)
+            ->where('destinataire_id', $user->id)
+            ->where('statut', 'accepte')
+            ->exists();
+
+        if (!$shareExiste) {
             abort(403, 'Accès non autorisé.');
         }
     }

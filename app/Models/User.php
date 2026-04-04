@@ -53,6 +53,11 @@ class User extends Authenticatable
 //        return $this->hasMany(Passkey::class);
 //    }
 
+    public function sharesRecus(): HasMany
+    {
+        return $this->hasMany(ShareCoffre::class, 'destinataire_id');
+    }
+
     protected function casts(): array
     {
         return [

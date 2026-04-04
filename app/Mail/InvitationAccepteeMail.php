@@ -43,7 +43,7 @@ class InvitationAccepteeMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.invitation-acceptee',
+            view: 'emails.invitation-acceptee',
         );
     }
 
