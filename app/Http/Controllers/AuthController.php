@@ -340,7 +340,7 @@ class AuthController extends Controller
                 $kek = SessionHelper::obtenirKek();
                 if (!$user->coffres()->exists()) {
                     $this->coffreService->creerCoffre($user, [
-                        'nom'     => 'Mon coffre',
+                        'nom' => 'Mon coffre',
                         'couleur' => '#217eaa',
                     ], $kek);
                 }
