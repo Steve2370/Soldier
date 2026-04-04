@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Exceptions\InvalidMasterPasswordException;
 use App\Helpers\SessionHelper;
 use App\Http\Requests\Settings\ChangerMotDePasseRequest;
+use App\Mail\MotDePasseChangeMail;
+use App\Mail\TotpActiveMail;
+use App\Mail\TotpDesactiveMail;
 use App\Services\Auth\MfaService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Crypto\Contracts\EncryptionServiceInterface;
@@ -12,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use PragmaRX\Google2FA\Google2FA;
 use Random\RandomException;
@@ -70,7 +74,7 @@ class SettingsController extends Controller
         }
 
         $user->mfa()->where('type', 'email')->update(['actif' => false]);
-
+        Mail::to($user->email)->send(new TotpDesactiveMail($user));
         return redirect()->route('settings')
             ->with('toast', [
                 'type' => 'warning',
@@ -101,11 +105,6 @@ class SettingsController extends Controller
      */
     public function validerTotp(Request $request): RedirectResponse
     {
-        \Log::info('validerTotp appelé', [
-            'code' => $request->input('code'),
-            'secret_pending' => session('totp_secret_pending'),
-        ]);
-
         $request->validate(['code' => ['required', 'string', 'size:6']]);
 
         $user = auth()->user();
@@ -122,13 +121,6 @@ class SettingsController extends Controller
             $valide = false;
         }
 
-        \Log::info('totp result', [
-            'valide' => $valide,
-            'secret' => $secret,
-            'code' => $request->input('code'),
-            'timestamp' => now()->timestamp,
-        ]);
-
         if (!$valide) {
             return back()->withErrors(['code' => 'Code incorrect. Vérifiez votre application authenticator.']);
         }
@@ -144,7 +136,7 @@ class SettingsController extends Controller
                 'totp_secret_chiffre' => json_encode($secretChiffre),
                 'active_le' => now(),
             ]);
-
+        Mail::to($user->email)->send(new TotpActiveMail($user));
         session()->forget('totp_secret_pending');
         $codes = $this->mfaService->genererCodesRecuperation($user);
         session(['codes_recuperation_afficher' => $codes]);
@@ -204,7 +196,11 @@ class SettingsController extends Controller
         }
 
         $user->update(['password' => Hash::make($request->nouveau_mot_de_passe)]);
-
+        Mail::to($user->email)->send(new MotDePasseChangeMail(
+            $user,
+            $request->ip(),
+            $request->userAgent()
+        ));
         return redirect()->route('settings')
             ->with('toast', [
                'type' => 'success',

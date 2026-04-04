@@ -39,7 +39,7 @@ class MfaService
             'actif' => true,
         ]);
 
-//        Mail::to($user->email)->send(new CodeMfaMail($user, $code));
+        Mail::to($user->email)->send(new CodeMfaMail($user, $code));
     }
 
     /**

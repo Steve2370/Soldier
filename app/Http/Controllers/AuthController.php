@@ -6,6 +6,8 @@ use App\Exceptions\InvalidMasterPasswordException;
 use App\Helpers\SessionHelper;
 use App\Http\Requests\Auth\ConnexionRequest;
 use App\Http\Requests\Auth\InscriptionRequest;
+use App\Mail\BienvenueMail;
+use App\Mail\NouvelleConnexionMail;
 use App\Models\User;
 use App\Services\Auth\MfaService;
 use App\Services\Coffre\CleManagementService;
@@ -14,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Laravel\Socialite\Socialite;
 use Random\RandomException;
@@ -40,12 +43,6 @@ class AuthController extends Controller
      */
     public function inscrire(InscriptionRequest $request): RedirectResponse
     {
-        # Dans AuthController::inscrire(), ajoute temporairement :
-        \Log::info('inscrire request', [
-            'all'       => $request->all(),
-            'validated' => $request->validated(),
-        ]);
-
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
@@ -54,7 +51,7 @@ class AuthController extends Controller
 
         $this->cleManagement->initialiserClesUser($user, $request->validated('master_password'));
         Auth::login($user);
-
+        Mail::to($user->email)->send(new BienvenueMail($user));
         $cles = $this->cleManagement->deverouillerCles($user, $request->validated('master_password'));
         $request->session()->regenerate();
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
@@ -170,9 +167,15 @@ class AuthController extends Controller
 
         session()->forget('login_email');
         $request->session()->regenerate();
-
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
         sodium_memzero($cles['kek']);
+
+        Mail::to($user->email)->send(new NouvelleConnexionMail(
+            $user,
+            $request->ip(),
+            $request->userAgent(),
+            now()->format('d/m/Y à H:i')
+        ));
 
         return redirect()->intended(route('dashboard'))
             ->with('toast', [

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\SessionHelper;
+use App\Mail\InvitationAccepteeMail;
+use App\Mail\InvitationPartageMail;
 use App\Models\Coffre;
 use App\Models\InvitationPartage;
 use App\Models\ShareCoffre;
@@ -128,9 +130,13 @@ class PartageController extends Controller
             'expire_le' => now()->addHours(72),
         ]);
 
-//        Mail::to($request->email)->send(
-//            new InvitationPartageMail($user, $coffre, $token, $request->permission)
-//        );
+        Mail::to($request->email)->send(new InvitationPartageMail(
+            $user,
+            $request->email,
+            $coffre->nom,
+            $request->permission,
+            route('partage.accepter', $token)
+        ));
 
         return redirect()
             ->route('partage.index')
@@ -193,6 +199,12 @@ class PartageController extends Controller
             'statut' => 'acceptee',
             'traitee_le' => now(),
         ]);
+
+        Mail::to($coffre->user->email)->send(new InvitationAccepteeMail(
+            $coffre->user,
+            auth()->user(),
+            $coffre->nom,
+        ));
 
         return redirect()
             ->route('dashboard')
