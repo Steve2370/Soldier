@@ -1,5 +1,5 @@
 @extends('layouts.public')
-@section('title', 'Soldier — Password Manager Sécurisé')
+@section('title', 'Soldier Le Gestionnaire Sécurisé')
 
 @section('content')
     <div style="overflow: hidden;">
