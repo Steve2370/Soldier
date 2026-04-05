@@ -222,7 +222,7 @@
         .mobile-menu-btn {
             background: none;
             border: none;
-            color: var(--text-primary);
+            color: #ffffff;
             cursor: pointer;
             padding: 8px;
             border-radius: 8px;
