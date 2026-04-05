@@ -89,8 +89,6 @@
                                 <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">Authenticator (TOTP)</span>
                                 @if($mfaTotp?->actif)
                                     <span class="badge badge-success">Actif</span>
-                                @else
-                                    <span class="badge badge-info">Optionnel</span>
                                 @endif
                             </div>
                             <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
