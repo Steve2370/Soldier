@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('credential_id')->unique();
             $table->text('cle_publique');
             $table->unsignedBigInteger('compteur')->default(0);
-            $table->string('type_authentificator', 20)->nullable();
+            $table->string('type_authenticator', 20)->nullable();
             $table->integer('algorithme_cose')->nullable();
             $table->timestamp('derniere_utilisation')->nullable();
             $table->timestamps();
