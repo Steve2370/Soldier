@@ -129,16 +129,18 @@ class PasskeyController extends Controller
             userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED,
             timeout: 60000,
         );
-        session(['passkey_challenge' => base64_encode($challenge)]);
+        session()->put('passkey_challenge_auth', base64_encode($challenge));
+        session()->save();
         return response()->json($options);
     }
 
     public function connecter(Request $request): JsonResponse
     {
+        session()->start();
+        $challenge = base64_decode(session('passkey_challenge_auth'));
         $request->validate([
             'credential' => ['required', 'array'],
         ]);
-        $challenge = base64_decode(session('passkey_challenge_auth'));
 
         if (!$challenge) {
             return response()->json(['error' => 'Challenge expiré.'], 422);

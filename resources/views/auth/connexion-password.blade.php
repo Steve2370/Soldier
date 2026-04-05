@@ -1,5 +1,5 @@
 @extends('layouts.public')
-@section('title', 'Connexion — Mot de passe')
+@section('title', 'Connexion Mot de passe')
 
 @section('content')
     <div style="min-height: calc(100vh - 88px); display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
