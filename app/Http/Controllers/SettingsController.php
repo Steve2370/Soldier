@@ -32,9 +32,9 @@ class SettingsController extends Controller
         $user = auth()->user();
         $mfaEmail = $user->mfa()->where('type', 'email')->first();
         $mfaTotp = $user->mfa()->where('type', 'totp')->first();
-//        $passKeys = $user->passKeys()->orderByDesc('created_at')->get();
+        $passkeys = auth()->user()->passkeys()->latest()->get();
 
-        return view('settings.index', compact('user','mfaEmail', 'mfaTotp'));
+        return view('settings.index', compact('user','mfaEmail', 'mfaTotp', 'passkeys'));
     }
 
     /**
@@ -211,12 +211,6 @@ class SettingsController extends Controller
 
     public function changerAvatar(Request $request): RedirectResponse
     {
-        \Log::info('changerAvatar appelé', [
-            'hasFile' => $request->hasFile('avatar'),
-            'allKeys' => array_keys($request->all()),
-            'files' => array_keys($request->allFiles()),
-        ]);
-
         $request->validate([
             'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
         ]);
@@ -232,6 +226,19 @@ class SettingsController extends Controller
             'type' => 'success',
             'titre' => 'Photo mise à jour',
             'message' => 'Votre photo de profil a été modifiée.',
+        ]);
+    }
+
+    public function desactiverTotp(): RedirectResponse
+    {
+        $user = auth()->user();
+        $user->mfa()->where('type', 'totp')->update(['actif' => false]);
+        Mail::to($user->email)->send(new TotpDesactiveMail($user));
+
+        return redirect()->route('settings')->with('toast', [
+           'type' => 'warning',
+           'titre' => 'TOTP désactivé',
+            'message' => 'L\'authentification par Authenticator a été désactivée.',
         ]);
     }
 

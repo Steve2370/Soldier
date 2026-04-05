@@ -6,7 +6,7 @@
         </svg>
     </div>
 
-    <h1>Invitation acceptée ✓</h1>
+    <h1>Invitation acceptée</h1>
     <p>Bonjour <strong>{{ $proprietaire->name }}</strong>,<br><strong>{{ $destinataire->name }}</strong> a accepté votre invitation.</p>
 
     <div class="panel">

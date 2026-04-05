@@ -157,16 +157,30 @@ class DashboardController extends Controller
     public function modifier(ElementCoffre $element): View
     {
         $this->verifierAcces($element);
+        $user = auth()->user();
 
-        $kek = SessionHelper::obtenirKek();
-        $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-            $element->coffre->data_key_encrypted,
-            $kek
-        );
+        if ($element->coffre->user_id === $user->id) {
+            $kek = SessionHelper::obtenirKek();
+            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
+                $element->coffre->data_key_encrypted,
+                $kek
+            );
+            sodium_memzero($kek);
+        } else {
+            $share = ShareCoffre::where('coffre_id', $element->coffre->id)
+                ->where('destinataire_id', $user->id)
+                ->where('statut', 'accepte')
+                ->firstOrFail();
+
+            $clePrivee = SessionHelper::obtenirClePrivee();
+            $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
+                $share->data_key_destinataire_encrypted,
+                $clePrivee
+            );
+        }
+
         $donnees = $this->coffreService->lireElement($element, $dataKey);
-
         sodium_memzero($dataKey);
-        sodium_memzero($kek);
 
         return view('dashboard.modifier', compact('element', 'donnees'));
     }
@@ -177,21 +191,34 @@ class DashboardController extends Controller
     public function mettreAJour(StoreElementRequest $request, ElementCoffre $element): RedirectResponse
     {
         $this->verifierAcces($element);
+        $user = auth()->user();
 
-        $kek = SessionHelper::obtenirKek();
-        $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-            $element->coffre->data_key_encrypted,
-            $kek
-        );
+        if ($element->coffre->user_id === $user->id) {
+            $kek = SessionHelper::obtenirKek();
+            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
+                $element->coffre->data_key_encrypted,
+                $kek
+            );
+            sodium_memzero($kek);
+        } else {
+            $share = ShareCoffre::where('coffre_id', $element->coffre->id)
+                ->where('destinataire_id', $user->id)
+                ->where('statut', 'accepte')
+                ->firstOrFail();
+
+            $clePrivee = SessionHelper::obtenirClePrivee();
+            $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
+                $share->data_key_destinataire_encrypted,
+                $clePrivee
+            );
+        }
+
         $faviconUrl = $this->coffreService->resoudreFavicon($request->validated('url') ?? '');
-
         $this->coffreService->mettreAJourElement($element, array_merge(
             $request->validated(),
             ['favicon_url' => $faviconUrl]
         ), $dataKey);
-
         sodium_memzero($dataKey);
-        sodium_memzero($kek);
 
         return redirect()->route('dashboard')
             ->with('toast', [

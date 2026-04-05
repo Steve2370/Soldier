@@ -15,7 +15,7 @@
         </div>
 
         <div class="card">
-            p<form method="POST" action="{{ route('services.mettreAJour', $element->id) }}">
+            <form method="POST" action="{{ route('services.mettreAJour', $element->id) }}">
                 @csrf @method('PUT')
                 <input type="hidden" name="type" value="{{ $donnees['type'] }}">
                 <div style="background: rgba(107,127,138,0.5); border: 1px solid rgba(33,126,170,0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;">

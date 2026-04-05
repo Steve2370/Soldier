@@ -48,10 +48,10 @@ class User extends Authenticatable
         return $this->hasMany(Mfa::class);
     }
 
-//    public function passKeys(): HasMany
-//    {
-//        return $this->hasMany(Passkey::class);
-//    }
+    public function passKeys(): HasMany
+    {
+        return $this->hasMany(Passkey::class);
+    }
 
     public function sharesRecus(): HasMany
     {

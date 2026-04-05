@@ -101,7 +101,12 @@
                     @if(!$mfaTotp?->actif)
                         <button @click="configurerTotp('{{ route('settings.totp.configurer') }}')" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0;">Configurer</button>
                     @else
-                        <span style="font-size: 0.8rem; color: var(--accent-bright); padding: 8px;">✓ Configuré</span>
+                        <form method="POST" action="{{ route('settings.totp.desactiver') }}">
+                            @csrf
+                            <button type="submit" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0; color: var(--danger); border-color: rgba(239,68,68,0.3);">
+                                Désactiver
+                            </button>
+                        </form>
                     @endif
                 </div>
 
@@ -143,24 +148,51 @@
                 </div>
             </div>
 
-            <div class="card" style="border-color: var(--border); margin-bottom: 14px; opacity: 0.7;">
+            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
                 <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
                     <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1;">
-                        <div style="width: 42px; height: 42px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                        <div style="width: 42px; height: 42px; background: var(--accent-dim); border: 1px solid var(--border-bright); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                         </div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
                                 <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">Passkeys (WebAuthn)</span>
-                                <span class="badge badge-warning">Bientôt disponible</span>
+                                @if($passkeys->isNotEmpty())
+                                    <span class="badge badge-success">{{ $passkeys->count() }} actif{{ $passkeys->count() > 1 ? "s" : "" }}</span>
+                                @else
+                                    <span class="badge badge-info">Optionnel</span>
+                                @endif
                             </div>
                             <p style="font-size: 0.8125rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
                                 Touch ID, Face ID, clé USB YubiKey. Connexion sans mot de passe, résistant au phishing.
                             </p>
                         </div>
                     </div>
-                    <button class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; opacity: 0.5; cursor: not-allowed;" disabled>Bientôt</button>
+                    <button onclick="inscrirePasskey()" class="btn-primary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Ajouter
+                    </button>
                 </div>
+
+                @if($passkeys->isNotEmpty())
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;">
+                        @foreach($passkeys as $passkey)
+                            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg-elevated); border-radius: 10px; border: 1px solid var(--border);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="var(--accent-bright)"/></svg>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">{{ $passkey->nom }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Dernière utilisation : {{ $passkey->derniere_utilisation?->diffForHumans() ?? "Jamais" }}</div>
+                                </div>
+                                <form method="POST" action="{{ route("passkeys.supprimer", $passkey->id) }}">
+                                    @csrf @method("DELETE")
+                                    <button type="submit" style="background: none; border: none; color: var(--danger); cursor: pointer; padding: 4px;">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             <div class="card" style="border-color: var(--border-bright); margin-top: 20px;">

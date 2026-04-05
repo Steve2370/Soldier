@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GenerateurController;
 use App\Http\Controllers\PartageController;
+use App\Http\Controllers\PasskeyController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/partage/{share}', [PartageController::class, 'revoquer'])->name('partage.revoquer');
     Route::patch('/partage/{invitation}/annuler', [PartageController::class, 'annulerInvitation'])->name('partage.annuler');
 
+    Route::post('/passkeys/options-inscription', [PasskeyController::class, 'optionsInscription'])->name('passkeys.options-inscription');
+    Route::post('/passkeys/inscrire', [PasskeyController::class, 'inscrire'])->name('passkeys.inscrire');
+    Route::delete('/passkeys/{passkey}', [PasskeyController::class, 'supprimer'])->name('passkeys.supprimer');
+
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
     Route::post('/settings/avatar', [SettingsController::class, 'changerAvatar'])->name('settings.avatar');
     Route::delete('/settings/avatar', [SettingsController::class, 'supprimerAvatar'])->name('settings.avatar.supprimer');
@@ -58,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/mfa/email/desactiver', [SettingsController::class, 'desactiverMfaEmail'])->name('settings.mfa.email.desactiver');
     Route::get('/settings/totp/configurer', [SettingsController::class, 'configurerTotp'])->name('settings.totp.configurer');
     Route::post('/settings/totp/valider', [SettingsController::class, 'validerTotp'])->name('settings.totp.valider');
+    Route::post('/settings/totp/desactiver', [SettingsController::class, 'desactiverTotp'])->name('settings.totp.desactiver');
     Route::post('/settings/mot-de-passe', [SettingsController::class, 'changerMotDePasse'])->name('settings.mot-de-passe');
     Route::post('/settings/mot-de-passe/compte', [SettingsController::class, 'changerMotDePasseCompte'])->name('settings.mot-de-passe.compte');
 
@@ -66,3 +72,5 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
 
+Route::post('/passkeys/options-connexion', [PasskeyController::class, 'optionsConnexion'])->name('passkeys.options-connexion');
+Route::post('/passkeys/connecter', [PasskeyController::class, 'connecter'])->name('passkeys.connecter');
