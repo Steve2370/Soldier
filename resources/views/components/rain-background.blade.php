@@ -21,7 +21,7 @@
                 vx: (Math.random() - 0.5) * 0.5,
                 vy: (Math.random() - 0.5) * 0.5,
                 radius: 2 + Math.random() * 2,
-                opacity: 0.6 + Math.random() * 0.4,
+                opacity: 0.3 + Math.random() * 0.4,
             };
         }
 
@@ -40,7 +40,7 @@
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
                     if (dist < MAX_DIST) {
-                        const alpha = (1 - dist / MAX_DIST) * 0.6;
+                        const alpha = (1 - dist / MAX_DIST) * 0.3;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
