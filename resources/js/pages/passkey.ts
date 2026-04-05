@@ -1,5 +1,5 @@
 // @ts-ignore
-import { showToast } from './toast'
+import { showToast } from '../toast'
 
 function base64urlToUint8Array(base64url: string): Uint8Array {
     const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/')
