@@ -24,38 +24,33 @@ class AuthApiController extends Controller
             'password' => ['nullable', 'string'],
             'master_password' => ['required', 'string'],
         ]);
+
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!$user) {
             return response()->json(['error' => 'Identifiants incorrects.'], 401);
         }
 
-        if ($user->oauth_provider && !$user->password) {
-            return response()->json([
-                'error' => 'Ce compte utilise ' . ucfirst($user->oauth_provider) . '. Connectez-vous via l\'extension avec votre Master Password uniquement.',
-                'oauth' => true,
-                'provider' => $user->oauth_provider,
-            ], 401);
-        }
-
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json(['error' => 'Identifiants incorrects.'], 401);
+        if (!$user->oauth_provider) {
+            if (!$request->password || !Hash::check($request->password, $user->password)) {
+                return response()->json(['error' => 'Identifiants incorrects.'], 401);
+            }
         }
 
         try {
             $this->cleManagement->deverouillerCles($user, $request->master_password);
-        } catch (InvalidMasterPasswordException) {
-            return response()->json([
-                'error' => 'Le master mot de passe est incorrect.'], 401);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Master password incorrect.'], 401);
         }
 
-        $cleUser = $user->clesUser();
+        $cleUser = $user->clesUser;
 
         if (!$cleUser) {
             return response()->json(['error' => 'Coffre non initialisé.'], 422);
         }
 
         $token = $user->createToken('extension-chrome', ['read:services'])->plainTextToken;
+
         return response()->json([
             'token' => $token,
             'user' => [
@@ -69,7 +64,7 @@ class AuthApiController extends Controller
                 'params' => $cleUser->kdf_params,
             ],
             'coffre' => [
-                'data_key_encrypted' => $cleUser->encrypted_key,
+                'data_key_encrypted' => $cleUser->encrypted_kek,
                 'verification' => $cleUser->verification_master_key,
             ],
         ]);
