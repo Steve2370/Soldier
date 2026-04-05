@@ -204,15 +204,87 @@
             background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.15s;
         }
         .eye-btn:hover { color: var(--accent-bright); }
+
+        /* Mobile */
+        .mobile-topbar {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 56px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid #303030;
+            z-index: 50;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-topbar { display: flex; }
+
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.25s ease;
+                z-index: 40;
+            }
+
+            .sidebar-open {
+                transform: translateX(0) !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 80px 16px 32px !important;
+            }
+        }
     </style>
 </head>
 
-<body x-data="toastManager()" @toast.window="addToast($event.detail)">
+<body x-data="{ ...toastManager(), mobileMenu: false }" @toast.window="addToast($event.detail)">
 
 <x-rain-background />
 
 @auth
-    <aside class="sidebar">
+    {{-- Navbar mobile --}}
+    <div class="mobile-topbar">
+        <button @click="mobileMenu = !mobileMenu" class="mobile-menu-btn" aria-label="Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <template x-if="!mobileMenu"><g><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></g></template>
+                <template x-if="mobileMenu"><g><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></g></template>
+            </svg>
+        </button>
+        <img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Soldier" style="height: 36px;">
+        <div style="width: 40px;"></div>
+    </div>
+
+    {{-- Overlay --}}
+    <div x-show="mobileMenu" @click="mobileMenu = false"
+         style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 39;"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+    </div>
+
+    <aside class="sidebar" :class="mobileMenu ? 'sidebar-open' : ''">
         <div style="display: flex; justify-content: flex-start; margin: 20px 0 10px 20px;">
             <img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Logo" style="width: 90px; height: auto;">
         </div>
@@ -220,7 +292,7 @@
         <nav style="padding: 10px 0; flex: 1; overflow-y: auto;">
             <div class="nav-section-label">Principal</div>
 
-            <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('dashboard') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                 Dashboard
             </a>
