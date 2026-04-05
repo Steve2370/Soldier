@@ -11,7 +11,7 @@
                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"
                 poster="{{ asset('videos/banner-poster.jpg') }}"
             >
-                <source src="{{ asset('assets/animation-soldier.mp4') }}" type="video/mp4">
+                <source src="{{ asset('assets/Soldier.mp4') }}" type="video/mp4">
             </video>
 
             <div style="position: absolute; inset: 0; background: rgba(10, 20, 30, 0.2); z-index: 1;"></div>

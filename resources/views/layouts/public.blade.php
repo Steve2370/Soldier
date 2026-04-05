@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Soldier') — Password Manager</title>
+    <title>@yield('title', 'Soldier') Password Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
@@ -226,6 +226,32 @@
             0%, 100% { opacity: 1; }
             50%       { opacity: 0.3; }
         }
+
+        @media (max-width: 640px) {
+            .navbar {
+                padding: 0 16px;
+                height: 56px;
+            }
+            .logo-img {
+                height: 38px;
+            }
+            .btn-nav-connexion {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            .btn-nav-inscription {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+            .card {
+                padding: 20px 16px;
+                border-radius: 14px;
+            }
+            .btn-primary, .btn-secondary {
+                padding: 10px 18px;
+                font-size: 0.8375rem;
+            }
+        }
     </style>
 </head>
 
@@ -247,7 +273,6 @@
     @yield('content')
 </div>
 
-{{-- Toasts --}}
 <div style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; pointer-events: none;">
     <template x-for="toast in toasts" :key="toast.id">
         <div
