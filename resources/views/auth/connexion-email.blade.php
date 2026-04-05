@@ -44,15 +44,12 @@
                     </button>
                 </form>
 
-                {{-- Ajoute ce bloc dans connexion-email.blade.php AVANT la div "Pas encore de compte ?" --}}
-
                 <div class="divider"></div>
 
                 <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Ou continuer avec</p>
 
                 <div style="display: flex; flex-direction: column; gap: 10px;">
 
-                    {{-- GitHub --}}
                     <a href="{{ route('auth.github.redirect') }}"
                        style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: all 0.15s; font-family: 'Audiowide', sans-serif;"
                        onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='var(--bg-hover)'"
@@ -63,7 +60,6 @@
                         Continuer avec GitHub
                     </a>
 
-                    {{-- Google --}}
                     <a href="{{ route('auth.google.redirect') }}"
                        style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: all 0.15s; font-family: 'Audiowide', sans-serif;"
                        onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='var(--bg-hover)'"
@@ -76,6 +72,14 @@
                         </svg>
                         Continuer avec Google
                     </a>
+
+                    <button onclick="connecterAvecPasskey()"
+                            style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 0.875rem; font-weight: 600; transition: all 0.15s; font-family: 'Audiowide', sans-serif; width: 100%; cursor: pointer;"
+                            onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='var(--bg-hover)'"
+                            onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--bg-elevated)'">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+                        Se connecter avec un Passkey
+                    </button>
 
                 </div>
 
