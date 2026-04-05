@@ -54,7 +54,7 @@ class PasskeyController extends Controller
             challenge: $challenge,
             pubKeyCredParams: [
                 PublicKeyCredentialParameters::create('public-key', -7),
-                PublicKeyCredentialParameters::create('public-key', -257), 
+                PublicKeyCredentialParameters::create('public-key', -257),
             ],
             authenticatorSelection: AuthenticatorSelectionCriteria::create(
                 userVerification: AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
