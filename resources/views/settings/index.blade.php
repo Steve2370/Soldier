@@ -12,7 +12,7 @@
         <div style="display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0;">
             @foreach(['securite' => 'Sécurité', 'compte' => 'Compte'] as $id => $label)
                 <button
-                    @click="onglet = '{{ $id }}'"
+                    @click="onglet = '{{ $id }}'
                     :class="onglet === '{{ $id }}' ? 'onglet-active' : 'onglet'"
                     style="font-family: 'Audiowide', sans-serif;"
                 >{{ $label }}</button>
@@ -156,7 +156,7 @@
                         </div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">Passkeys (WebAuthn)</span>
+                                <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">Passkeys</span>
                                 @if($passkeys->isNotEmpty())
                                     <span class="badge badge-success">{{ $passkeys->count() }} actif{{ $passkeys->count() > 1 ? "s" : "" }}</span>
                                 @else
