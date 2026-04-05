@@ -1,7 +1,7 @@
 <video
     autoplay muted loop playsinline
     id="rain-canvas"
-    style="position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none; opacity: 0.15;"
+    style="position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none; opacity: 0.05;"
 >
     <source src="{{ asset('assets/cyber.mp4') }}" type="video/mp4">
 </video>
