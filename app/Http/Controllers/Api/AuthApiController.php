@@ -38,8 +38,9 @@ class AuthApiController extends Controller
         }
 
         try {
-            $cleUser = $user->clesUser;
-            app(CleManagementService::class)->verifierMasterPassword($user, $request->master_password);
+            $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
+            sodium_memzero($cles['kek']);
+            sodium_memzero($cles['cle_privee']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Master password incorrect.'], 401);
         }
