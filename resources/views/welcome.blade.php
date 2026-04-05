@@ -11,7 +11,7 @@
                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"
                 poster="{{ asset('videos/banner-poster.jpg') }}"
             >
-                <source src="{{ asset('assets/Animation Soldier.mp4') }}" type="video/mp4">
+                <source src="{{ asset('assets/animation-soldier.mp4') }}" type="video/mp4">
             </video>
 
             <div style="position: absolute; inset: 0; background: rgba(10, 20, 30, 0.2); z-index: 1;"></div>
@@ -54,7 +54,7 @@
                     'icon' => '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
                 ],
                 [
-                    'video' => 'Zero Knowledge.mp4',
+                    'video' => 'zero-knowledge.mp4',
                     'titre' => 'Architecture Zero-Knowledge',
                     'badge' => 'Serveur aveugle',
                     'desc' => 'Tes informations restent privés. Tout se passe sur ton appareil, par sur nos serveur.',
@@ -78,7 +78,7 @@
                     'icon' => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
                 ],
                 [
-                    'video' => 'Double authen.mp4',
+                    'video' => 'double-authen.mp4',
                     'titre' => 'Double authentification (MFA)',
                     'badge' => 'Email + TOTP',
                     'desc' => 'Ajoutez une couche de sécurité avec un code email ou un authenticator. Pour rajouter une couche de blindage',
@@ -86,7 +86,7 @@
                     'icon' => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
                 ],
                 [
-                    'video' => 'Extension Google.mp4',
+                    'video' => 'extension-google.mp4',
                     'titre' => 'Extension Chrome',
                     'badge' => 'Autofill intelligent',
                     'desc' => 'Connecte-toi automatiquement sur tes sites préférés sans avoir à saisir tes mots de passe.',
