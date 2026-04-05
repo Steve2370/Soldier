@@ -5,45 +5,63 @@
         const canvas = document.getElementById('rain-canvas');
         const ctx = canvas.getContext('2d');
 
-        let W, H, drops = [];
-        const COUNT = 120;
+        let W, H, particles = [];
+        const COUNT = 80;
+        const MAX_DIST = 160;
 
         function resize() {
             W = canvas.width = window.innerWidth;
             H = canvas.height = window.innerHeight;
         }
 
-        function randomDrop() {
+        function randomParticle() {
             return {
                 x: Math.random() * W,
-                y: Math.random() * H * -1,
-                speed: 0.4 + Math.random() * 1.2,
-                radius: 0.8 + Math.random() * 1.4,
-                opacity: 0.08 + Math.random() * 0.35,
-                drift: (Math.random() - 0.5) * 0.15,
+                y: Math.random() * H,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: 2 + Math.random() * 2,
+                opacity: 0.6 + Math.random() * 0.4,
             };
         }
 
         function init() {
             resize();
-            drops = Array.from({ length: COUNT }, randomDrop);
+            particles = Array.from({ length: COUNT }, randomParticle);
         }
 
         function draw() {
             ctx.clearRect(0, 0, W, H);
 
-            for (const d of drops) {
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${d.opacity})`;
-                ctx.fill();
-                d.y += d.speed;
-                d.x += d.drift;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
 
-                if (d.y > H + 5) {
-                    d.y = -5;
-                    d.x = Math.random() * W;
+                    if (dist < MAX_DIST) {
+                        const alpha = (1 - dist / MAX_DIST) * 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(45, 159, 212, ${alpha})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
                 }
+            }
+
+            for (const p of particles) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+                ctx.fill();
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > W) p.vx *= -1;
+                if (p.y < 0 || p.y > H) p.vy *= -1;
             }
 
             requestAnimationFrame(draw);
