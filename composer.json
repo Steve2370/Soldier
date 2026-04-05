@@ -10,7 +10,7 @@
         "ext-openssl": "*",
         "ext-sodium": "*",
         "laravel/framework": "^13.0",
-        "laravel/sanctum": "^4.3",
+        "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.26",
         "laravel/tinker": "^3.0",
         "pragmarx/google2fa": "^9.0",
