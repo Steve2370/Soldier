@@ -9,12 +9,10 @@
             <video
                 autoplay muted loop playsinline
                 style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;"
-                poster="{{ asset('videos/banner-poster.jpg') }}"
             >
                 <source src="{{ asset('assets/Soldier.mp4') }}" type="video/mp4">
             </video>
-
-            <div style="position: absolute; inset: 0; background: rgba(10, 20, 30, 0.2); z-index: 1;"></div>
+            <div style="position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 1;"></div>
 
             <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 2; animation: bounce 2s ease-in-out infinite;">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
