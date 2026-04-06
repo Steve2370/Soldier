@@ -415,7 +415,7 @@
     </div>
 
     <div class="toc">
-        <div class="toc-title">// Table des matières</div>
+        <div class="toc-title">Sommaire</div>
         <ol>
             <li><a href="#s1">Qui sommes-nous</a></li>
             <li><a href="#s2">Architecture Zero-Knowledge</a></li>
