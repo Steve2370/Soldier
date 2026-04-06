@@ -354,8 +354,8 @@
         </script>
     @endpush
 
-    <div style="margin-top: 48px; padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; width: fit-content;">
-        <div style="display: flex; align-items: center; gap: 14px;">
+    <div style="margin-top: 48px; display: flex; justify-content: center;">
+        <div style="padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; width: fit-content;">
             <div style="width: 40px; height: 40px; background: rgba(33,126,170,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </div>
@@ -365,11 +365,10 @@
             </div>
         </div>
         <a href="https://paypal.me/BriceSteve" target="_blank"
-           style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; flex-shrink: 0;"
+           style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; transition: background 0.15s; flex-shrink: 0;"
            onmouseover="this.style.background='#005ea6'"
            onmouseout="this.style.background='#0070ba'">
-            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg"
-                 alt="PayPal" style="height: 18px; width: auto; border-radius: 2px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.59 3.025-2.566 6.643-8.993 6.643H9.38l-1.165 7.388h3.114l.777-4.927h2.19c5.146 0 8.132-2.87 9.05-7.132a5.918 5.918 0 0 0-.124-1.685z"/></svg>
             Offrez moi un café 😄
         </a>
     </div>
