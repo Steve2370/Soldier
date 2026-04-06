@@ -31,6 +31,7 @@
                                 class="input @error('coffre_id') input-error @enderror"
                                 style="cursor: pointer;"
                                 x-model="coffreSelectionne"
+                                @change="coffreSelectionne = $event.target.value"
                         >
                             <option value="">Sélectionner un coffre...</option>
                             @foreach($coffres as $coffre)
