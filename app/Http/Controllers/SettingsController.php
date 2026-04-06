@@ -242,6 +242,21 @@ class SettingsController extends Controller
         ]);
     }
 
+    public function changerNom(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'min:2', 'max:50'],
+        ]);
+
+        auth()->user()->update(['name' => $request->name]);
+
+        return redirect()->route('settings')->with('toast', [
+            'type' => 'success',
+            'titre' => 'Nom modifié',
+            'message' => 'Votre nom a été mis à jour.',
+        ]);
+    }
+
     public function supprimerAvatar(Request $request): RedirectResponse
     {
         $user = auth()->user();
@@ -257,5 +272,38 @@ class SettingsController extends Controller
             'titre' => 'Photo supprimée',
             'message' => 'Votre photo de profil a été supprimée.',
         ]);
+    }
+
+    public function supprimerCompte(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'password_confirmation' => ['required', 'string'],
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->password_confirmation, $user->password)) {
+            return back()->withErrors(['password_confirmation' => 'Mot de passe incorrect.']);
+        }
+
+        if ($user->avatar && \Storage::disk('public')->exists($user->avatar)) {
+            \Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->coffres()->each(function ($coffre) {
+            $coffre->elements()->forceDelete();
+            $coffre->delete();
+        });
+        $user->clesUser()->delete();
+        $user->mfa()->delete();
+        $user->passkeys()->delete();
+        $user->tokens()->delete();
+
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        $user->delete();
+
+        return redirect()->route('welcome');
     }
 }

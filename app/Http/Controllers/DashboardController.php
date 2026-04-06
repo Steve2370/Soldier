@@ -233,13 +233,13 @@ class DashboardController extends Controller
         $this->verifierAcces($element);
 
         $label = $element->label;
-        $this->coffreService->supprimerElement($element);
+        $this->coffreService->supprimerDefinitivement($element);
 
         return redirect()->route('dashboard')
             ->with('toast', [
                 'type' => 'warning',
                 'titre' => 'Service supprimé',
-                'message' => "« {$label} » a été déplacé dans la corbeille.",
+                'message' => "« {$label} » a été supprimé.",
             ]);
     }
 

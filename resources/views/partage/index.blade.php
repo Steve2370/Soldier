@@ -49,23 +49,32 @@
                                     Éléments inclus dans ce partage
                                 </div>
                                 @foreach($coffre->elements as $el)
-                                    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; background: var(--bg-card); border-radius: 7px; border: 1px solid rgba(33,126,170,0.15);">
-                                        <div style="width: 28px; height: 28px; border-radius: 7px; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                    <div x-data="{ checked: true }"
+                                         @click="checked = !checked"
+                                         :style="checked
+             ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition: all 0.15s;'
+             : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition: all 0.15s;'">
+                                        <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
-                                                <img src="{{ $el->favicon_url }}" style="width: 18px; height: 18px; object-fit: contain;"
+                                                <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;"
                                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                             @endif
                                             <div style="{{ $el->favicon_url ? 'display:none;' : '' }} width:100%; height:100%; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:var(--accent-bright);">
                                                 {{ strtoupper(substr($el->label, 0, 1)) }}
                                             </div>
                                         </div>
-                                        <div style="flex: 1; min-width: 0;">
-                                            <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-primary);">{{ $el->label }}</div>
-                                            <div style="font-size: 0.72rem; color: var(--text-muted);">{{ ucfirst($el->type) }}</div>
+                                        <div style="flex:1; min-width:0;">
+                                            <div style="font-size:0.8125rem; font-weight:600; color:var(--text-primary);">{{ $el->label }}</div>
+                                            <div style="font-size:0.72rem; color:var(--text-muted);">{{ ucfirst($el->type) }}</div>
                                         </div>
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
+                                        <div :style="checked
+                                            ? 'width:36px; height:20px; border-radius:10px; background:var(--accent); position:relative; flex-shrink:0; transition:background 0.2s;'
+                                            : 'width:36px; height:20px; border-radius:10px; background:rgba(255,255,255,0.1); position:relative; flex-shrink:0; transition:background 0.2s;'">
+                                            <div :style="checked
+                                                ? 'position:absolute; top:3px; left:18px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;'
+                                                : 'position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;'">
+                                            </div>
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>

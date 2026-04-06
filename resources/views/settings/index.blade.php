@@ -357,6 +357,66 @@
                     <button type="submit" class="btn-primary" style="font-size: 0.875rem;">Mettre à jour</button>
                 </form>
             </div>
+
+            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
+                <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 18px;">Modifier le nom</h3>
+                <form method="POST" action="{{ route('settings.nom') }}">
+                    @csrf
+                    <div style="margin-bottom: 14px;">
+                        <label>Nom affiché</label>
+                        <input type="text" name="name"
+                               class="input @error('name') input-error @enderror"
+                               value="{{ old('name', auth()->user()->name) }}"
+                               placeholder="Votre nom" minlength="2" maxlength="50">
+                        @error('name')<p class="error-msg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p>@enderror
+                    </div>
+                    <button type="submit" class="btn-primary" style="font-size: 0.875rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Enregistrer le nom
+                    </button>
+                </form>
+            </div>
+
+            <div class="card" style="border-color: rgba(239,68,68,0.3); margin-bottom: 14px;" x-data="{ confirmer: false }">
+                <h3 style="font-size: 0.9375rem; font-weight: 700; color: #ef4444; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                    Supprimer le compte
+                </h3>
+                <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6;">
+                    Cette action est <strong style="color: #ef4444;">irréversible</strong>. Votre compte, tous vos coffres et toutes vos données chiffrées seront supprimés immédiatement.
+                </p>
+
+                <div x-show="!confirmer">
+                    <button type="button" @click="confirmer = true"
+                            class="btn-secondary" style="color: #ef4444; border-color: rgba(239,68,68,0.3); font-size: 0.875rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                        Supprimer mon compte
+                    </button>
+                </div>
+
+                <div x-show="confirmer" x-transition>
+                    <form method="POST" action="{{ route('settings.compte.supprimer') }}">
+                        @csrf @method('DELETE')
+                        <div style="margin-bottom: 14px;">
+                            <label>Confirmez avec votre mot de passe</label>
+                            <div style="position: relative;">
+                                <input type="password" name="password_confirmation"
+                                       class="input @error('password_confirmation') input-error @enderror"
+                                       placeholder="••••••••" style="padding-right: 44px;">
+                            </div>
+                            @error('password_confirmation')<p class="error-msg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p>@enderror
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" @click="confirmer = false" class="btn-secondary" style="font-size: 0.875rem;">Annuler</button>
+                            <button type="submit" class="btn-danger" style="font-size: 0.875rem;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                Confirmer la suppression
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 

@@ -120,7 +120,7 @@ readonly class CoffreService
         $element->delete();
     }
 
-    private function supprimerDefinitvement(ElementCoffre $element): void
+    public function supprimerDefinitivement(ElementCoffre $element): void
     {
         $element->forceDelete();
     }

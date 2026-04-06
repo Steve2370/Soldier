@@ -7,7 +7,7 @@
         <div style="margin-bottom: 28px;">
             <h1 style="font-size: 1.625rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">Générateur</h1>
             <p style="color: var(--text-muted); font-size: 0.875rem;">
-                Générez des mots de passe cryptographiquement sûrs via <code style="background: var(--bg-elevated); padding: 1px 6px; border-radius: 4px; font-size: 0.8rem; color: var(--accent-bright);">crypto.getRandomValues()</code>
+                Générez des mots de passe cryptographiquement sûrs via <code style="background: var(--bg-elevated); padding: 1px 6px; border-radius: 4px; font-size: 0.8rem; color: var(--accent-bright);">Random</code>
             </p>
         </div>
 

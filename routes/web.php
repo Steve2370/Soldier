@@ -65,6 +65,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/totp/valider', [SettingsController::class, 'validerTotp'])->name('settings.totp.valider');
     Route::post('/settings/totp/desactiver', [SettingsController::class, 'desactiverTotp'])->name('settings.totp.desactiver');
     Route::post('/settings/mot-de-passe', [SettingsController::class, 'changerMotDePasse'])->name('settings.mot-de-passe');
+    Route::post('/settings/nom', [SettingsController::class, 'changerNom'])->name('settings.nom');
+    Route::delete('/settings/compte', [SettingsController::class, 'supprimerCompte'])->name('settings.compte.supprimer');
     Route::post('/settings/mot-de-passe/compte', [SettingsController::class, 'changerMotDePasseCompte'])->name('settings.mot-de-passe.compte');
 
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
