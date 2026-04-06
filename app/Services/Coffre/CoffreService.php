@@ -125,19 +125,21 @@ readonly class CoffreService
         $element->forceDelete();
     }
 
-    public function resoudreFavicon(string $url): string
+    public function resoudreFavicon(string $url, string $label = ''): string
     {
-        if (empty($url)) {
-            return '';
+        if (!empty($url)) {
+            $domain = parse_url($url, PHP_URL_HOST);
+            if ($domain) {
+                return "https://www.google.com/s2/favicons?domain={$domain}&sz=128";
+            }
         }
 
-        $domain = parse_url($url, PHP_URL_HOST);
-
-        if (!$domain) {
-            return '';
+        if (!empty($label)) {
+            $slug = strtolower(preg_replace('/\s+/', '', $label));
+            return "https://www.google.com/s2/favicons?domain={$slug}.com&sz=128";
         }
 
-        return "https://www.google.com/s2/favicons?domain={$domain}&sz=128";
+        return '';
     }
 
     public function dechiffrerElement(ElementCoffre $element, string $dataKey): array

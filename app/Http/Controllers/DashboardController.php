@@ -99,7 +99,7 @@ class DashboardController extends Controller
             ], $kek);
 
         $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
-        $faviconUrl = $this->coffreService->resoudreFavicon($request->validated('url') ?? '');
+        $faviconUrl = $this->coffreService->resoudreFavicon($request->validated('url') ?? '', $request->validated('label') ?? '');
 
         $this->coffreService->ajouterElement($coffre, array_merge(
             $request->validated(),
