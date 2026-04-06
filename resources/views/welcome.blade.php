@@ -1,6 +1,6 @@
 @extends('layouts.public')
 @section('title', 'Soldier Le Gestionnaire Sécurisé')
-
+<meta name="google-site-verification" content="lt3gvS7FOofvMaIMj0QKdhlRNYtoTRLmcUr7r1rHrVY" />
 @section('content')
     <div style="overflow: hidden;">
 
@@ -103,7 +103,6 @@
                         <video
                             autoplay muted loop playsinline
                             class="feature-video"
-                            poster="{{ asset('videos/' . str_replace('.mp4', '-poster.jpg', $feature['video'])) }}"
                         >
                             <source src="{{ asset('assets/' . $feature['video']) }}" type="video/mp4">
                             <div class="video-placeholder">
