@@ -284,6 +284,16 @@ class AuthController extends Controller
             ->where('oauth_id', $oauthUser->getId())
             ->first();
 
+        if (!$user) {
+            $user = User::where('email', $oauthUser->getEmail())->first();
+            if ($user) {
+                $user->update([
+                    'oauth_provider' => $provider,
+                    'oauth_id' => $oauthUser->getId(),
+                ]);
+            }
+        }
+
         if ($user) {
             Auth::login($user);
             $coffreExiste = $user->coffres()->exists();
