@@ -165,6 +165,7 @@
         <footer style="padding: 24px 40px; border-top: 1px solid rgba(33,126,170,0.1); text-align: center;">
             <p style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.04em;">
                 Soldier Password Manager · AES-256-GCM · Argon2id · RSA-4096 · Zero-Knowledge
+                <a href="{{ route('privacy') }}">Politique de confidentialité</a>
             </p>
         </footer>
 

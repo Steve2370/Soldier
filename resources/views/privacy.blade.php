@@ -29,7 +29,7 @@
         body {
             background: var(--bg);
             color: var(--dim);
-            font-family: var(--font-body);
+            font-family: 'Audiowide', sans-serif;
             font-size: 16px;
             line-height: 1.8;
             min-height: 100vh;
@@ -82,7 +82,7 @@
             background: rgba(0,200,255,0.15);
             border: 1.5px solid var(--cyan);
             display: flex; align-items: center; justify-content: center;
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-weight: 700;
             color: var(--white);
             font-size: 18px;
@@ -90,7 +90,7 @@
         }
 
         .logo-text {
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: 18px;
             letter-spacing: 0.15em;
             color: var(--white);
@@ -109,7 +109,7 @@
         nav a {
             color: var(--dim);
             text-decoration: none;
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: 13px;
             letter-spacing: 0.05em;
             transition: color .2s;
@@ -125,7 +125,7 @@
 
         .hero-tag {
             display: inline-block;
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: 11px;
             letter-spacing: 0.2em;
             text-transform: uppercase;
@@ -137,7 +137,7 @@
         }
 
         .hero h1 {
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 700;
             color: var(--white);
@@ -149,7 +149,7 @@
         .hero h1 span { color: var(--cyan); }
 
         .hero-meta {
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: 13px;
             color: rgba(160,200,224,0.6);
             letter-spacing: 0.05em;
@@ -173,7 +173,7 @@
         }
 
         .toc-title {
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: 12px;
             letter-spacing: 0.15em;
             text-transform: uppercase;
@@ -193,7 +193,7 @@
             color: var(--dim);
             text-decoration: none;
             font-size: 14px;
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             transition: color .2s;
         }
         .toc li a:hover { color: var(--cyan); }
@@ -218,7 +218,7 @@
         }
 
         .section-num {
-            font-family: var(--font-head), sans-serif;
+            font-family: 'Audiowide', sans-serif;
             font-size: 11px;
             color: var(--cyan);
             background: rgba(0,200,255,0.1);
@@ -254,7 +254,7 @@
         .highlight.gold .highlight-icon svg  { stroke: var(--gold); }
 
         .section h2 {
-            font-family: var(--font-head), sans-serif;
+            font-family: 'Audiowide', sans-serif;
             font-size: 1.15rem;
             font-weight: 700;
             color: var(--white);
@@ -307,7 +307,7 @@
         }
 
         .data-table th {
-            font-family: var(--font-head), sans-serif;
+            font-family: 'Audiowide', sans-serif;
             font-size: 11px;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -329,7 +329,7 @@
 
         .badge {
             display: inline-block;
-            font-family: var(--font-head), sans-serif;
+            font-family: 'Audiowide', sans-serif;
             font-size: 10px;
             letter-spacing: 0.08em;
             padding: 2px 8px;
@@ -365,7 +365,7 @@
         .contact-card a {
             color: var(--cyan);
             text-decoration: none;
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
         }
         .contact-card a:hover { text-decoration: underline; }
 
@@ -375,7 +375,7 @@
             border-top: 1px solid var(--border);
             padding: 2rem;
             text-align: center;
-            font-family: var(--font-head);
+            font-family: 'Audiowide', sans-serif;
             font-size: 12px;
             color: rgba(160,200,224,0.4);
             letter-spacing: 0.05em;
@@ -391,10 +391,9 @@
 
 <header>
     <div class="logo-badge">S</div>
-    <a href="/" class="logo-text">
-        SOLDIER
-        <span class="logo-sub">password manager</span>
-    </a>
+    <img src="{{ asset('assets/Soldier-Logo.png') }}"
+         alt="Logo"
+         style="width: 90px; height: auto;">
     <nav>
         <a href="/">Accueil</a>
         <a href="/login">Connexion</a>
@@ -628,7 +627,7 @@
                 </svg>
             </div>
             <div>
-                <div style="color:var(--white); font-family:var(--font-head); margin-bottom:.3rem;">Soldier — Responsable des données</div>
+                <div style="color:var(--white); font-family: 'Audiowide', sans-serif; margin-bottom:.3rem;">Soldier — Responsable des données</div>
                 <div>E-mail : <a href="mailto:privacy@soldierkey.com">privacy@soldierkey.com</a></div>
                 <div style="margin-top:.3rem; font-size:14px;">Site : <a href="https://soldierkey.com">soldierkey.com</a></div>
             </div>
