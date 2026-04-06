@@ -354,8 +354,8 @@
         </script>
     @endpush
 
-    <div style="margin-top: 48px; display: flex; justify-content: center;">
-        <div style="padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; width: fit-content;">
+    <div style="margin-top: 48px; padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 14px;">
             <div style="width: 40px; height: 40px; background: rgba(33,126,170,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </div>
