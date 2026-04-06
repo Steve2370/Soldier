@@ -390,14 +390,13 @@
 <body>
 
 <header>
-    <div class="logo-badge">S</div>
-    <img src="{{ asset('assets/Soldier-Logo.png') }}"
-         alt="Logo"
-         style="width: 90px; height: auto;">
     <nav>
-        <a href="/">Accueil</a>
-        <a href="/login">Connexion</a>
-        <a href="/register">S'inscrire</a>
+        <img src="{{ asset('assets/Soldier-Logo.png') }}"
+             alt="Logo"
+             style="width: 90px; height: auto;">
+        <a href="/{{ route('welcome') }}">Accueil</a>
+        <a href="/{{ route('connexion') }}">Connexion</a>
+        <a href="/{{ route('inscription') }}">S'inscrire</a>
     </nav>
 </header>
 
