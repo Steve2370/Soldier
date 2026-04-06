@@ -327,7 +327,7 @@
                     <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ auth()->user()->email }}</div>
                 </div>
             </div>
-            <div style="background: var(--bg-elevated); border-radius: 9px; padding: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <div style="padding: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                 <a href="https://paypal.me/BriceSteve" target="_blank"
                    style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; transition: background 0.15s; flex-shrink: 0;"
                    onmouseover="this.style.background='#005ea6'"
