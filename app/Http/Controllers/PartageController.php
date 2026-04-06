@@ -48,7 +48,7 @@ class PartageController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        $coffres = $user->coffres()->withCount('elements')->get();
+        $coffres = $user->coffres()->with('elements')->withCount('elements')->get();
 
         return view('partage.index', compact(
             'partagesEnvoyes',

@@ -58,9 +58,23 @@
                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                         >
                                     @endif
-                                    <div class="favicon-fallback" style="{{ $element['favicon_url'] ? 'display:none;' : '' }}">
-                                        {{ strtoupper(substr($element['label'], 0, 1)) }}
-                                    </div>
+                                        <div class="favicon-fallback" style="{{ $element['favicon_url'] ? 'display:none;' : '' }}; color: var(--accent-bright);">
+                                            @php
+                                                $typeIcons = [
+                                                    'login' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+                                                    'carte' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
+                                                    'note' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+                                                    'identite' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+                                                    'cles' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
+                                                    'autre' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4"/></svg>',
+                                                ];
+                                            @endphp
+                                            @if($element['type'] === 'login' && !$element['favicon_url'])
+                                                {{ strtoupper(substr($element['label'], 0, 1)) }}
+                                            @else
+                                                {!! $typeIcons[$element['type']] ?? $typeIcons['autre'] !!}
+                                            @endif
+                                        </div>
                                 </div>
 
                                 <div style="flex: 1; min-width: 0;">
