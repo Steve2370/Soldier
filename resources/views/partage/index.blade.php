@@ -34,7 +34,7 @@
                         >
                             <option value="">Sélectionner un coffre...</option>
                             @foreach($coffres as $coffre)
-                                <option value="{{ $coffre->id }}">
+                                <option value="{{ $coffre->id }}" {{ old('coffre_id') == $coffre->id ? 'selected' : '' }}>
                                     {{ $coffre->nom }} ({{ $coffre->elements_count }} entrée{{ $coffre->elements_count > 1 ? 's' : '' }})
                                 </option>
                             @endforeach
