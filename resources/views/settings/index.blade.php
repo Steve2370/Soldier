@@ -12,7 +12,7 @@
         <div style="display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0;">
             @foreach(['securite' => 'Sécurité', 'compte' => 'Compte'] as $id => $label)
                 <button
-                    @click="onglet = '{{ $id }}'
+                    @click="onglet = '{{ $id }}'"
                     :class="onglet === '{{ $id }}' ? 'onglet-active' : 'onglet'"
                     style="font-family: 'Audiowide', sans-serif;"
                 >{{ $label }}</button>
