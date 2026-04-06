@@ -147,6 +147,23 @@
             </div>
         </section>
 
+        <section style="padding: 0 24px 80px; text-align: center;">
+            <div style="max-width: 560px; margin: 0 auto; background: rgba(22,37,52,0.5); border: 1px solid rgba(33,126,170,0.15); border-radius: 20px; padding: 32px 40px; backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                <div style="text-align: left;">
+                    <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 4px;">Soldier est 100% gratuit</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">Si vous aimez le projet, vous pouvez m'encourager </div>
+                </div>
+                <a href="https://paypal.me/BriceSteve" target="_blank"
+                   style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; flex-shrink: 0; transition: background 0.15s;"
+                   onmouseover="this.style.background='#005ea6'"
+                   onmouseout="this.style.background='#0070ba'">
+                    <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg"
+                         alt="PayPal" style="height: 18px; width: auto; border-radius: 2px;">
+                    Offrez moi un café 😄
+                </a>
+            </div>
+        </section>
+
         <footer style="padding: 24px 40px; border-top: 1px solid rgba(33,126,170,0.1); text-align: center;">
             <p style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.04em;">
                 Soldier Password Manager · AES-256-GCM · Argon2id · RSA-4096 · Zero-Knowledge
