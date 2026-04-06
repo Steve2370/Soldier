@@ -12,6 +12,8 @@
 /.vscode
 /.zed
 /auth.json
+public/assets/*.mp4
+public/assets/*.mov
 /node_modules
 /public/build
 /public/hot
