@@ -383,7 +383,7 @@
                     Supprimer le compte
                 </h3>
                 <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6;">
-                    Cette action est <strong style="color: #ef4444;">irréversible</strong>. Votre compte, tous vos coffres et toutes vos données chiffrées seront supprimés immédiatement.
+                    Votre compte sera <strong style="color: #ef4444;">désactivé immédiatement</strong> et supprimé définitivement après <strong style="color: #ef4444;">30 jours</strong>. Pendant cette période, vos données sont conservées mais inaccessibles. Cette action ne peut pas être annulée.
                 </p>
 
                 <div x-show="!confirmer">
