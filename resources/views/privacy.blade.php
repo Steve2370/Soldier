@@ -390,14 +390,16 @@
 <body>
 
 <header>
-    <nav>
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
         <img src="{{ asset('assets/Soldier-Logo.png') }}"
              alt="Logo"
-             style="width: 40px; height: 40px; object-fit: contain; margin-right: auto;">
-        <a href="{{ route('welcome') }}">Accueil</a>
-        <a href="{{ route('connexion') }}">Connexion</a>
-        <a href="{{ route('inscription') }}">S'inscrire</a>
-    </nav>
+             style="width: 40px; height: 40px; object-fit: contain;">
+        <nav>
+            <a href="{{ route('welcome') }}">Accueil</a>
+            <a href="{{ route('connexion') }}">Connexion</a>
+            <a href="{{ route('inscription') }}">S'inscrire</a>
+        </nav>
+    </div>
 </header>
 
 <div class="hero">
