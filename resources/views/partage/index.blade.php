@@ -82,6 +82,26 @@
                     </div>
 
                     <div style="margin-bottom: 18px;">
+                        <label>Permission</label>
+                        <div style="display: flex; gap: 16px; margin-top: 8px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="permission" value="lecture"
+                                       {{ old('permission', 'lecture') === 'lecture' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Lecture</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="permission" value="ecriture"
+                                       {{ old('permission', 'lecture') === 'ecriture' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">Écriture</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 18px;">
                         <label for="email">Email du destinataire <span style="color: var(--danger);">*</span></label>
                         <div style="position: relative;">
                             <svg style="position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
