@@ -148,13 +148,13 @@
         </section>
 
         <section style="padding: 0 24px 80px; text-align: center;">
-            <div style="max-width: 560px; margin: 0 auto; background: rgba(22,37,52,0.5); border: 1px solid rgba(33,126,170,0.15); border-radius: 20px; padding: 32px 40px; backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-                <div style="text-align: left;">
-                    <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 4px;">Soldier est 100% gratuit</div>
-                    <div style="font-size: 0.82rem; color: var(--text-muted);">Si vous aimez le projet, vous pouvez m'encourager </div>
+            <div style="max-width: 480px; margin: 0 auto; background: rgba(22,37,52,0.5); border: 1px solid rgba(33,126,170,0.15); border-radius: 20px; padding: 32px 40px; backdrop-filter: blur(16px); display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <div style="text-align: center;">
+                    <div style="font-weight: 700; font-size: 1rem; color: var(--text-primary); margin-bottom: 6px;">Soldier est 100% gratuit</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">Si vous aimez le projet, vous pouvez m'encourager</div>
                 </div>
                 <a href="https://paypal.me/BriceSteve" target="_blank"
-                   style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; flex-shrink: 0; transition: background 0.15s;"
+                   style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; transition: background 0.15s;"
                    onmouseover="this.style.background='#005ea6'"
                    onmouseout="this.style.background='#0070ba'">
                     <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg"
