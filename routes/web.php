@@ -66,12 +66,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/totp/desactiver', [SettingsController::class, 'desactiverTotp'])->name('settings.totp.desactiver');
     Route::post('/settings/mot-de-passe', [SettingsController::class, 'changerMotDePasse'])->name('settings.mot-de-passe');
     Route::post('/settings/mot-de-passe/compte', [SettingsController::class, 'changerMotDePasseCompte'])->name('settings.mot-de-passe.compte');
+    Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 });
 
 Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
 
-Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::post('/passkeys/options-connexion', [PasskeyController::class, 'optionsConnexion'])->name('passkeys.options-connexion');
 Route::post('/passkeys/connecter', [PasskeyController::class, 'connecter'])->name('passkeys.connecter');
