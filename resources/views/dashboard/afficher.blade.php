@@ -107,7 +107,7 @@
                 @if(!empty($donnees['donnees']['cvv']) || !empty($donnees['donnees']['code_pin']))
                     <div style="padding: 8px 0;">
                         <button @click="showMdp = !showMdp" class="btn-secondary" style="font-size: 0.8rem; padding: 6px 14px;">
-                            <span x-text="showMdp ? '🙈 Masquer CVV/PIN' : '👁 Afficher CVV/PIN'"></span>
+                            <span x-text="showMdp ? 'Masquer CVV/PIN' : 'Afficher CVV/PIN'"></span>
                         </button>
                     </div>
                 @endif

@@ -25,50 +25,51 @@
                 <form method="POST" action="{{ route('partage.envoyer') }}">
                     @csrf
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-                        <div>
-                            <label for="coffre_id">Coffre à partager <span style="color: var(--danger);">*</span></label>
-                            <select id="coffre_id" name="coffre_id"
-                                    class="input @error('coffre_id') input-error @enderror"
-                                    style="cursor: pointer;"
-                            >
-                                <option value="">Sélectionner un coffre...</option>
-                                @foreach($coffres as $coffre)
-                                    <option value="{{ $coffre->id }}" {{ old('coffre_id') == $coffre->id ? 'selected' : '' }}>
-                                        {{ $coffre->nom }} ({{ $coffre->elements_count }} entrée{{ $coffre->elements_count > 1 ? 's' : '' }})
-                                        — {{ $coffre->elements->pluck('label')->join(', ') }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('coffre_id') <p class="error-msg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p> @enderror
-                        </div>
+                    <div>
+                        <label for="coffre_id">Coffre à partager <span style="color: var(--danger);">*</span></label>
+                        <select id="coffre_id" name="coffre_id"
+                                class="input @error('coffre_id') input-error @enderror"
+                                style="cursor: pointer;"
+                                x-model="coffreSelectionne"
+                        >
+                            <option value="">Sélectionner un coffre...</option>
+                            @foreach($coffres as $coffre)
+                                <option value="{{ $coffre->id }}">
+                                    {{ $coffre->nom }} ({{ $coffre->elements_count }} entrée{{ $coffre->elements_count > 1 ? 's' : '' }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('coffre_id') <p class="error-msg">...</p> @enderror
 
-                        <div>
-                            <label>Permission</label>
-                            <div style="display: flex; gap: 8px; margin-top: 6px;">
-                                @foreach(['lecture' => ['Lecture', 'eye'], 'ecriture' => ['Écriture', 'pencil']] as $val => [$lab, $icon])
-                                    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 0;">
-                                        <input
-                                            type="radio"
-                                            name="permission"
-                                            value="{{ $val }}"
-                                            id="perm_{{ $val }}"
-                                            {{ old('permission', 'lecture') === $val ? 'checked' : '' }}
-                                            @change="permission = '{{ $val }}'"
-                                            style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0;"
-                                        >
-                                        <label for="perm_{{ $val }}" style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
-                                            @if($icon === 'eye')
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                            @else
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        @foreach($coffres as $coffre)
+                            <div x-show="coffreSelectionne == '{{ $coffre->id }}'"
+                                 x-transition
+                                 style="margin-top: 10px; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.2); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
+                                <div style="font-size: 0.72rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;">
+                                    Éléments inclus dans ce partage
+                                </div>
+                                @foreach($coffre->elements as $el)
+                                    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; background: var(--bg-card); border-radius: 7px; border: 1px solid rgba(33,126,170,0.15);">
+                                        <div style="width: 28px; height: 28px; border-radius: 7px; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                            @if($el->favicon_url)
+                                                <img src="{{ $el->favicon_url }}" style="width: 18px; height: 18px; object-fit: contain;"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                             @endif
-                                            <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">{{ $lab }}</span>
-                                        </label>
+                                            <div style="{{ $el->favicon_url ? 'display:none;' : '' }} width:100%; height:100%; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:var(--accent-bright);">
+                                                {{ strtoupper(substr($el->label, 0, 1)) }}
+                                            </div>
+                                        </div>
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-primary);">{{ $el->label }}</div>
+                                            <div style="font-size: 0.72rem; color: var(--text-muted);">{{ ucfirst($el->type) }}</div>
+                                        </div>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0;">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
+                        @endforeach
                     </div>
 
                     <div style="margin-bottom: 18px;">

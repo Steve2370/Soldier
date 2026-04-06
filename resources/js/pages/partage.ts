@@ -4,6 +4,7 @@ export function partage(hasErrors: boolean, initialPermission: string) {
     return {
         showFormulaire: hasErrors as boolean,
         permission: initialPermission as string,
+        coffreSelectionne: '' as string,
 
         confirmerRevocation(event: Event, nom: string): void {
             const form = event.target as HTMLFormElement
