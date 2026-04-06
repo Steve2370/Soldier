@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Soldier') — Password Manager</title>
+    <title>@yield('title', 'Soldier') Password Manager</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=999">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=999">
     <link rel="apple-touch-icon" href="{{ asset('assets/Soldier-Logotype.png') }}">
@@ -205,7 +205,6 @@
         }
         .eye-btn:hover { color: var(--accent-bright); }
 
-        /* Mobile */
         .mobile-topbar {
             display: none;
             position: fixed;
@@ -261,7 +260,6 @@
 <x-rain-background />
 
 @auth
-    {{-- Navbar mobile --}}
     <div class="mobile-topbar">
         <button @click="mobileMenu = !mobileMenu" class="mobile-menu-btn" aria-label="Menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
