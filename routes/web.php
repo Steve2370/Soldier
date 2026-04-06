@@ -72,5 +72,6 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
 
+Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::post('/passkeys/options-connexion', [PasskeyController::class, 'optionsConnexion'])->name('passkeys.options-connexion');
 Route::post('/passkeys/connecter', [PasskeyController::class, 'connecter'])->name('passkeys.connecter');
