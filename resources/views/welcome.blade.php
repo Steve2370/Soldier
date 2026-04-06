@@ -104,7 +104,7 @@
                             autoplay muted loop playsinline
                             class="feature-video"
                         >
-                            <source src="{{ asset('assets/' . $feature['video']) }}" type="video/mp4">
+                            <source src="/assets/videos/{{ $feature['video'] }}" type="video/mp4">
                             <div class="video-placeholder">
                                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(33,126,170,0.4)" stroke-width="1">{!! $feature['icon'] !!}</svg>
                             </div>
