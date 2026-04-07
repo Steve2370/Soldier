@@ -29,9 +29,9 @@ Route::get('/auth/github/callback', [AuthController::class, 'callbackGithub'])->
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'callbackGoogle'])->name('auth.google.callback');
 
+Route::get('/', fn() => redirect()->route('dashboard'));
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/', fn() => redirect()->route('dashboard'));
     Route::get('/oauth/master-password', [AuthController::class, 'showOauthMasterPassword'])->name('oauth.master-password');
     Route::post('/oauth/master-password', [AuthController::class, 'configurerOauthMasterPassword'])->name('oauth.master-password.post');
 
