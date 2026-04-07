@@ -22,7 +22,7 @@
                     Partager un coffre
                 </h3>
 
-                <form method="POST" action="{{ route('partage.envoyer') }}">
+                <form method="POST" action="{{ route('partage.envoyer') }}" @submit="preparerEnvoi($event)">
                     @csrf
 
                     <div>
@@ -49,39 +49,33 @@
                                     Éléments inclus dans ce partage
                                 </div>
                                 @foreach($coffre->elements as $el)
-                                    <div x-data="{ checked: true }"
-                                         @click="checked = !checked"
-                                         :style="checked
-                                         ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition: all 0.15s;'
-                                         : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition: all 0.15s;'">
-
-                                        <input type="hidden" name="element_ids[]" :value="checked ? '{{ $el->id }}' : ''" x-show="false">
-                                        <template x-if="checked">
-                                            <input type="hidden" name="element_ids[]" value="{{ $el->id }}">
-                                        </template>
-
+                                    <label style="display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.15); cursor:pointer; transition: all 0.15s;"
+                                           x-data="{ checked: true }"
+                                           :style="checked ? 'border-color:rgba(33,126,170,0.3); opacity:1;' : 'border-color:rgba(33,126,170,0.08); opacity:0.45;'">
+                                        <input type="checkbox" name="element_ids[]" value="{{ $el->id }}"
+                                               x-model="checked"
+                                               style="display:none;">
                                         <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
-                                                <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;"
-                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;">
                                             @endif
-                                            <div style="{{ $el->favicon_url ? 'display:none;' : '' }} width:100%; height:100%; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; color:var(--accent-bright);">
-                                                {{ strtoupper(substr($el->label, 0, 1)) }}
-                                            </div>
+                                            @if(!$el->favicon_url)
+                                                <span style="font-size:0.7rem; font-weight:700; color:var(--accent-bright);">{{ strtoupper(substr($el->label, 0, 1)) }}</span>
+                                            @endif
                                         </div>
                                         <div style="flex:1; min-width:0;">
                                             <div style="font-size:0.8125rem; font-weight:600; color:var(--text-primary);">{{ $el->label }}</div>
                                             <div style="font-size:0.72rem; color:var(--text-muted);">{{ ucfirst($el->type) }}</div>
                                         </div>
                                         <div :style="checked
-                                            ? 'width:36px; height:20px; border-radius:10px; background:var(--accent); position:relative; flex-shrink:0; transition:background 0.2s;'
-                                            : 'width:36px; height:20px; border-radius:10px; background:rgba(255,255,255,0.1); position:relative; flex-shrink:0; transition:background 0.2s;'">
+                                            ? 'width:36px; height:20px; border-radius:10px; background:var(--accent); position:relative; flex-shrink:0; transition:all 0.2s;'
+                                            : 'width:36px; height:20px; border-radius:10px; background:rgba(255,255,255,0.1); position:relative; flex-shrink:0; transition:all 0.2s;'">
                                             <div :style="checked
                                                 ? 'position:absolute; top:3px; left:18px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;'
                                                 : 'position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;'">
                                             </div>
                                         </div>
-                                    </div>
+                                    </label>
                                 @endforeach
                             </div>
                         @endforeach
