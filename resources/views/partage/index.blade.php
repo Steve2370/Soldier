@@ -55,9 +55,10 @@
                                          ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition: all 0.15s;'
                                          : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition: all 0.15s;'">
 
-                                        <input type="checkbox" name="element_ids[]" value="{{ $el->id }}"
-                                               x-bind:checked="checked"
-                                               style="display:none;">
+                                        <input type="hidden" name="element_ids[]" :value="checked ? '{{ $el->id }}' : ''" x-show="false">
+                                        <template x-if="checked">
+                                            <input type="hidden" name="element_ids[]" value="{{ $el->id }}">
+                                        </template>
 
                                         <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
