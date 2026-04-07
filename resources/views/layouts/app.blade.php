@@ -292,7 +292,7 @@
 
             <a href="{{ route('dashboard') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-                Dashboard
+                Tableau de bord
             </a>
 
             <a href="{{ route('generateur') }}" class="nav-item {{ request()->routeIs('generateur') ? 'active' : '' }}">
