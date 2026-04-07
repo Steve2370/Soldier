@@ -18,6 +18,7 @@ class ShareCoffre extends Model
         'expire_le',
         'statut',
         'accepte_le',
+        'element_ids',
     ];
 
     protected $hidden = [
