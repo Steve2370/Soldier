@@ -49,17 +49,16 @@
                                     Éléments inclus dans ce partage
                                 </div>
                                 @foreach($coffre->elements as $el)
-                                    <label style="display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.15); cursor:pointer; transition: all 0.15s;"
-                                           x-data="{ checked: true }"
-                                           :style="checked ? 'border-color:rgba(33,126,170,0.3); opacity:1;' : 'border-color:rgba(33,126,170,0.08); opacity:0.45;'">
+                                    <label x-data="{ checked: true }"
+                                           :style="checked
+                                       ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition:all 0.15s;'
+                                       : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition:all 0.15s;'">
                                         <input type="checkbox" name="element_ids[]" value="{{ $el->id }}"
-                                               x-model="checked"
-                                               style="display:none;">
+                                               x-model="checked" style="display:none;">
                                         <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
                                                 <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;">
-                                            @endif
-                                            @if(!$el->favicon_url)
+                                            @else
                                                 <span style="font-size:0.7rem; font-weight:700; color:var(--accent-bright);">{{ strtoupper(substr($el->label, 0, 1)) }}</span>
                                             @endif
                                         </div>
