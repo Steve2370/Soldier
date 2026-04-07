@@ -19,6 +19,7 @@ class InvitationPartage extends Model
         'statut',
         'expire_le',
         'traitee_le',
+        'element_ids',
     ];
 
     protected $hidden = [
