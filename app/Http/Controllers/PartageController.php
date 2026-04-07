@@ -69,40 +69,36 @@ class PartageController extends Controller
             'coffre_id' => ['required', 'exists:coffres,id'],
             'email' => ['required', 'email', 'max:255'],
             'permission' => ['required', 'in:lecture,ecriture'],
+            'element_ids' => ['required', 'array', 'min:1'],
+            'element_ids.*' => ['integer', 'exists:elements_coffres,id'],
         ]);
 
         $user = auth()->user();
         $coffre = Coffre::findOrFail($request->coffre_id);
 
-        if ($coffre->user_id !== $user->id) {
-            abort(403);
-        }
+        if ($coffre->user_id !== $user->id) abort(403);
 
         if ($request->email === $user->email) {
             return back()->withErrors(['email' => 'Vous ne pouvez pas partager avec vous-même.']);
         }
 
         $kek = SessionHelper::obtenirKek();
-
-        $dataKey = $this->keyManagement->dechiffrerDataKeyCoffre(
-            $coffre->data_key_encrypted,
-            $kek
-        );
-
+        $dataKey = $this->keyManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
         sodium_memzero($kek);
 
-        $destinataire = User::where('email', $request->email)->first();
+        $elements = $coffre->elements()->whereIn('id', $request->element_ids)->get();
+        if ($elements->isEmpty()) {
+            sodium_memzero($dataKey);
+            return back()->withErrors(['element_ids' => 'Aucun élément valide sélectionné.']);
+        }
 
+        $destinataire = User::where('email', $request->email)->first();
         $dataKeyChiffree = null;
 
         if ($destinataire) {
             $clePublique = $destinataire->clesUser?->public_key;
-
             if ($clePublique) {
-                $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique(
-                    $dataKey,
-                    $clePublique
-                );
+                $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique($dataKey, $clePublique);
             }
 
             $partageExistant = ShareCoffre::where('coffre_id', $coffre->id)
@@ -129,23 +125,20 @@ class PartageController extends Controller
             'permission' => $request->permission,
             'statut' => 'en_attente',
             'expire_le' => now()->addHours(72),
+            'element_ids' => json_encode($request->element_ids),
         ]);
 
         Mail::to($request->email)->send(new InvitationPartageMail(
-            $user,
-            $request->email,
-            $coffre->nom,
+            $user, $request->email, $coffre->nom,
             $request->permission,
             route('partage.accepter', $token)
         ));
 
-        return redirect()
-            ->route('partage.index')
-            ->with('toast', [
-                'type' => 'success',
-                'titre' => 'Invitation envoyée',
-                'message' => "Un email a été envoyé à {$request->email}.",
-            ]);
+        return redirect()->route('partage.index')->with('toast', [
+            'type' => 'success',
+            'titre' => 'Invitation envoyée',
+            'message' => "Un email a été envoyé à {$request->email}.",
+        ]);
     }
 
     /**
@@ -211,6 +204,7 @@ class PartageController extends Controller
             'permission' => $invitation->permission,
             'statut' => 'accepte',
             'accepte_le' => now(),
+            'element_ids' => $invitation->element_ids,
         ]);
 
         $invitation->update([

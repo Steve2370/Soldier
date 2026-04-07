@@ -59,7 +59,8 @@ class DashboardController extends Controller
                     $share->data_key_destinataire_encrypted,
                     $clePrivee
                 );
-                $elements = $this->coffreService->listerElements($share->coffre, $dataKey);
+                $elementIds = $share->element_ids ? json_decode($share->element_ids, true) : null;
+                $elements = $this->coffreService->listerElements($share->coffre, $dataKey, $elementIds);
                 sodium_memzero($dataKey);
 
                 return [

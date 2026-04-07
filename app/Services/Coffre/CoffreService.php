@@ -58,14 +58,20 @@ readonly class CoffreService
         ]);
     }
 
-    public function listerElements(Coffre $coffre, string $dataKey): array
+    public function listerElements(Coffre $coffre, string $dataKey, ?array $elementIds = null): array
     {
-        return $coffre->elements()
+        $query = $coffre->elements()
             ->whereNull('deleted_at')
-            ->orderBy('label')
-            ->get()
+            ->orderBy('label');
+
+        if ($elementIds !== null) {
+            $query->whereIn('id', $elementIds);
+        }
+
+        return $query->get()
             ->map(fn(ElementCoffre $element) =>
-            $this->dechiffrerElement($element, $dataKey)) ->toArray();
+                $this->dechiffrerElement($element, $dataKey))
+            ->toArray();
     }
 
     public function lireElement(ElementCoffre $element, string $dataKey): array

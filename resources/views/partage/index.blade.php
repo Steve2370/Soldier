@@ -52,8 +52,13 @@
                                     <div x-data="{ checked: true }"
                                          @click="checked = !checked"
                                          :style="checked
-             ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition: all 0.15s;'
-             : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition: all 0.15s;'">
+                                         ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition: all 0.15s;'
+                                         : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition: all 0.15s;'">
+
+                                        <input type="checkbox" name="element_ids[]" value="{{ $el->id }}"
+                                               x-bind:checked="checked"
+                                               style="display:none;">
+
                                         <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
                                                 <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;"
@@ -108,7 +113,7 @@
                             <input type="email" id="email" name="email"
                                    class="input @error('email') input-error @enderror"
                                    value="{{ old('email') }}"
-                                   placeholder="collegue@exemple.com"
+                                   placeholder="destinataire@soldier.com"
                                    style="padding-left: 38px;">
                         </div>
                         @error('email') <p class="error-msg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p> @enderror
