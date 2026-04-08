@@ -103,7 +103,7 @@
                             <button type="button" @click="genererMdp()" style="font-size: 0.775rem; color: var(--accent-bright); background: rgba(33,126,170,0.12); border: 1px solid rgba(33,126,170,0.3); padding: 3px 10px; border-radius: 20px; cursor: pointer; font-weight: 600; font-family: 'Audiowide', sans-serif;">Générer</button>
                         </div>
                         <div style="position: relative;">
-                            <input type="password" name="mot_de_passe" class="input @error('mot_de_passe') input-error @enderror"
+                            <input type="password" id="mdp_visuel" name="mot_de_passe" class="input @error('mot_de_passe') input-error @enderror"
                                    x-model="motDePasse"
                                    @input="motDePasse = $event.target.value; calculerForce()"
                                    placeholder="••••••••" autocomplete="off" style="padding-right: 44px;">
@@ -326,7 +326,7 @@
 
                     toggleMdp() {
                         this.showMdp = !this.showMdp;
-                        const input = document.getElementById('mot_de_passe');
+                        const input = document.getElementById('mdp_visuel');
                         if (input) input.type = this.showMdp ? 'text' : 'password';
                     },
 
