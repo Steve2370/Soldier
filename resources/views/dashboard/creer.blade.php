@@ -326,7 +326,7 @@
 
                     toggleMdp() {
                         this.showMdp = !this.showMdp;
-                        const input = document.getElementById('mdp_visuel');
+                        const input = document.getElementById('mot_de_passe');
                         if (input) input.type = this.showMdp ? 'text' : 'password';
                     },
 
