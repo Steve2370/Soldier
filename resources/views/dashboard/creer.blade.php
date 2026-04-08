@@ -95,7 +95,7 @@
                     </div>
                     <div style="margin-bottom: 18px;">
                         <label>Identifiant / Email</label>
-                        <input type="text" name="identifiant" class="input" value="{{ old('identifiant') }}" placeholder="leon@exemple.com" autocomplete="off">
+                        <input type="text" name="identifiant" class="input" value="{{ old('identifiant') }}" placeholder="sergent@soldier.com" autocomplete="off">
                     </div>
                     <div style="margin-bottom: 18px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -172,7 +172,7 @@
                     </div>
                     <div style="margin-bottom: 18px;">
                         <label>Email</label>
-                        <input type="email" name="email" class="input" value="{{ old('email') }}" placeholder="leon@exemple.com">
+                        <input type="email" name="email" class="input" value="{{ old('email') }}" placeholder="sergent@soldier.com">
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
                         <div>

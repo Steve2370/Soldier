@@ -74,7 +74,7 @@
                             <input type="text" id="identifiant" name="identifiant"
                                    class="input @error('identifiant') input-error @enderror"
                                    value="{{ old('identifiant', $donnees['donnees']['identifiant'] ?? '') }}"
-                                   placeholder="leon@exemple.com" autocomplete="off" style="padding-left: 38px;">
+                                   placeholder="sergentn@soldier.com" autocomplete="off" style="padding-left: 38px;">
                         </div>
                         @error('identifiant')<p class="error-msg">{{ $message }}</p>@enderror
                     </div>
@@ -159,7 +159,7 @@
                     </div>
                     <div style="margin-bottom: 18px;">
                         <label>Email</label>
-                        <input type="email" name="email" class="input" value="{{ old('email', $donnees['donnees']['email'] ?? '') }}" placeholder="leon@exemple.com">
+                        <input type="email" name="email" class="input" value="{{ old('email', $donnees['donnees']['email'] ?? '') }}" placeholder="sergent@soldier.com">
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
                         <div>
