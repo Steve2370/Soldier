@@ -72,6 +72,7 @@ class AuthApiController extends Controller
                 'params' => $cleUser->kdf_params,
             ],
             'coffre' => [
+                'encrypted_kek' => $cleUser->encrypted_kek,
                 'data_key_encrypted' => $coffre->data_key_encrypted,
                 'verification' => $cleUser->verification_master_key,
             ],
