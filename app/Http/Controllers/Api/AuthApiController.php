@@ -51,6 +51,12 @@ class AuthApiController extends Controller
             return response()->json(['error' => 'Coffre non initialisé.'], 422);
         }
 
+        $coffre = $user->coffres()->first();
+
+        if (!$coffre) {
+            return response()->json(['error' => 'Coffre introuvable.'], 422);
+        }
+
         $token = $user->createToken('extension-chrome', ['read:services'])->plainTextToken;
 
         return response()->json([
@@ -66,7 +72,7 @@ class AuthApiController extends Controller
                 'params' => $cleUser->kdf_params,
             ],
             'coffre' => [
-                'data_key_encrypted' => $cleUser->encrypted_kek,
+                'data_key_encrypted' => $coffre->data_key_encrypted,
                 'verification' => $cleUser->verification_master_key,
             ],
         ]);
