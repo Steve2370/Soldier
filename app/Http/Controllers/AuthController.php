@@ -261,8 +261,11 @@ class AuthController extends Controller
         return $this->handleOauthCallback('github');
     }
 
-    public function redirectGoogle()
+    public function redirectGoogle(): RedirectResponse
     {
+        if (request()->has('extension_redirect')) {
+            session(['extension_redirect' => request()->get('extension_redirect')]);
+        }
         return Socialite::driver('google')->redirect();
     }
 
@@ -294,27 +297,46 @@ class AuthController extends Controller
             }
         }
 
-        if ($user) {
-            Auth::login($user);
-            $coffreExiste = $user->coffres()->exists();
-            if (!$coffreExiste) {
-                session(['oauth_new_user' => true]);
-            } else {
-                session(['oauth_login' => true]);
-            }
-            return redirect()->route('oauth.master-password');
+        if (!$user) {
+            $user = User::create([
+                'name' => $oauthUser->getName() ?? $oauthUser->getNickname() ?? 'Utilisateur',
+                'email' => $oauthUser->getEmail(),
+                'password' => Hash::make(Str::random(32)),
+                'oauth_provider' => $provider,
+                'oauth_id' => $oauthUser->getId(),
+            ]);
         }
 
-        $user = User::create([
-            'name' => $oauthUser->getName() ?? $oauthUser->getNickname() ?? 'Utilisateur',
-            'email' => $oauthUser->getEmail(),
-            'password' => Hash::make(Str::random(32)),
-            'oauth_provider' => $provider,
-            'oauth_id' => $oauthUser->getId(),
-        ]);
-
         Auth::login($user);
-        session(['oauth_new_user' => true]);
+
+        $extensionRedirect = request()->get('extension_redirect')
+            ?? session('extension_redirect');
+
+        if ($extensionRedirect) {
+            session()->forget('extension_redirect');
+
+            if (!$user->coffres()->exists()) {
+                return redirect($extensionRedirect . '?' . http_build_query([
+                        'error' => 'Créez d\'abord un compte sur soldierkey.com',
+                    ]));
+            }
+
+            $token = $user->createToken('extension-chrome', ['read:services'])->plainTextToken;
+
+            return redirect($extensionRedirect . '?' . http_build_query([
+                    'extension_token' => $token,
+                    'email' => $user->email,
+                    'name' => $user->name,
+                    'avatar' => $user->avatar ? \Storage::url($user->avatar) : '',
+                ]));
+        }
+        $coffreExiste = $user->coffres()->exists();
+        if (!$coffreExiste) {
+            session(['oauth_new_user' => true]);
+        } else {
+            session(['oauth_login' => true]);
+        }
+
         return redirect()->route('oauth.master-password');
     }
 

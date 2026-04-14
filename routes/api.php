@@ -10,5 +10,6 @@ Route::post('/auth/login', [AuthApiController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profil', [AuthApiController::class, 'profil']);
     Route::post('/auth/logout', [AuthApiController::class, 'logout']);
+    Route::get('/auth/oauth-data', [AuthApiController::class, 'oauthData']);
     Route::get('/services', [ServicesApiController::class, 'index']);
 });

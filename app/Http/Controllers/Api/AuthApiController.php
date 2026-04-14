@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exceptions\InvalidMasterPasswordException;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Coffre\CleManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Testing\Fluent\Concerns\Has;
 
 class AuthApiController extends Controller
 {
@@ -46,13 +44,11 @@ class AuthApiController extends Controller
         }
 
         $cleUser = $user->clesUser;
-
         if (!$cleUser) {
             return response()->json(['error' => 'Coffre non initialisé.'], 422);
         }
 
         $coffre = $user->coffres()->first();
-
         if (!$coffre) {
             return response()->json(['error' => 'Coffre introuvable.'], 422);
         }
@@ -79,10 +75,44 @@ class AuthApiController extends Controller
         ]);
     }
 
+    public function oauthData(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $cleUser = $user->clesUser;
+        if (!$cleUser) {
+            return response()->json(['error' => 'Coffre non initialisé.'], 422);
+        }
+
+        $coffre = $user->coffres()->first();
+        if (!$coffre) {
+            return response()->json(['error' => 'Coffre introuvable.'], 422);
+        }
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => $user->avatar ? \Storage::url($user->avatar) : null,
+            ],
+            'kdf' => [
+                'sel' => $cleUser->kdf_salt,
+                'algorithme' => $cleUser->kdf_algorithme,
+                'params' => $cleUser->kdf_params,
+            ],
+            'coffre' => [
+                'encrypted_kek' => $cleUser->encrypted_kek,
+                'data_key_encrypted' => $coffre->data_key_encrypted,
+                'verification' => $cleUser->verification_master_key,
+            ],
+        ]);
+    }
+
     public function profil(Request $request): JsonResponse
     {
         $user = $request->user();
-        $cleUser = $user->clesUser();
+        $cleUser = $user->clesUser;
 
         return response()->json([
             'user' => [
