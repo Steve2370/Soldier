@@ -327,7 +327,7 @@ class AuthController extends Controller
                     'extension_token' => $token,
                     'email' => $user->email,
                     'name' => $user->name,
-                    'avatar' => $user->avatar ? \Storage::url($user->avatar) : '',
+                    'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : '',
                 ]));
         }
         $coffreExiste = $user->coffres()->exists();
