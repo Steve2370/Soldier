@@ -124,29 +124,69 @@ class AuthController extends Controller
         $email = session('login_email');
 
         if (!$email) {
+            \Log::warning('Aucun email en session');
             return redirect()->route('connexion');
         }
 
-        if (!Auth::attempt(
+        \Log::info('Tentative Auth::attempt', [
+            'email' => $email,
+        ]);
+
+        $authOk = Auth::attempt(
             ['email' => $email, 'password' => $request->password],
-            $request->boolean('remember'))) {
-            return back()->withErrors(['password' => 'Mot de passe incorrect.',]);
+            $request->boolean('remember')
+        );
+
+        \Log::info('Résultat Auth::attempt', [
+            'email' => $email,
+            'success' => $authOk,
+        ]);
+
+        if (!$authOk) {
+            \Log::warning('Échec login utilisateur', [
+                'email' => $email,
+            ]);
+
+            return back()->withErrors([
+                'password' => 'Mot de passe du compte incorrect.',
+            ]);
         }
+
+        \Log::info('Login utilisateur réussi', [
+            'email' => $email,
+        ]);
 
         $user = Auth::user();
 
         try {
             $cles = $this->cleManagement->deverouillerCles(
                 $user,
-                $request->master_password);
+                $request->master_password
+            );
+
+            \Log::info('Déverrouillage coffre réussi', [
+                'user_id' => $user->id,
+            ]);
+
         } catch (InvalidMasterPasswordException) {
+            \Log::warning('Master password incorrect', [
+                'user_id' => $user->id,
+            ]);
+
             Auth::logout();
-            return back()->withErrors(['password' => 'Impossible de déverrouiller le coffre.',]);
+
+            return back()->withErrors([
+                'master_password' => 'Master password incorrect.',
+            ]);
         }
 
         $mfaActif = $user->mfa()->where('actif', true)->exists();
 
         if ($mfaActif) {
+            \Log::info('MFA activé, redirection', [
+                'user_id' => $user->id,
+            ]);
+
             session([
                 'mfa_pending_kek' => base64_encode($cles['kek']),
                 'mfa_pending_cle_privee' => $cles['cle_privee'],
@@ -167,8 +207,13 @@ class AuthController extends Controller
 
         session()->forget('login_email');
         $request->session()->regenerate();
+
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
         sodium_memzero($cles['kek']);
+
+        \Log::info('Connexion complète réussie', [
+            'user_id' => $user->id,
+        ]);
 
         Mail::to($user->email)->send(new NouvelleConnexionMail(
             $user,
