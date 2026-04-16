@@ -17,6 +17,9 @@ class AuthApiController extends Controller
         private readonly CleManagementService $cleManagement,
     ) {}
 
+    /**
+     * @throws \SodiumException
+     */
     public function login(Request $request): JsonResponse
     {
         $key = 'login:' . str($request->email)->lower() . '|' . $request->ip();
@@ -63,7 +66,12 @@ class AuthApiController extends Controller
 
         $coffre = $user->coffres()->first();
         if (!$coffre) {
-            return response()->json(['error' => 'Coffre introuvable.'], 422);
+            $clesTemp = $this->cleManagement->deverouillerCles($user, $request->master_password);
+            $coffre = app(\App\Services\Coffre\CoffreService::class)->creerCoffre($user, [
+                'nom'    => 'Mon coffre',
+                'couleur' => '#217eaa',
+            ], $clesTemp['kek']);
+            sodium_memzero($clesTemp['kek']);
         }
 
         RateLimiter::clear($key);
