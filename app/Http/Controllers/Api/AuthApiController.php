@@ -8,6 +8,8 @@ use App\Services\Coffre\CleManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 class AuthApiController extends Controller
 {
@@ -17,6 +19,17 @@ class AuthApiController extends Controller
 
     public function login(Request $request): JsonResponse
     {
+        $key = 'login:' . str($request->email)->lower() . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            return response()->json([
+                'error' => "Trop de tentatives. Réessayez dans {$seconds} secondes."
+            ], 429);
+        }
+
+        RateLimiter::hit($key, 300);
+
         $request->validate([
             'email' => ['required', 'email'],
             'password' => ['nullable', 'string'],
@@ -53,6 +66,7 @@ class AuthApiController extends Controller
             return response()->json(['error' => 'Coffre introuvable.'], 422);
         }
 
+        RateLimiter::clear($key);
         $token = $user->createToken('extension-chrome', ['read:services'])->plainTextToken;
 
         return response()->json([

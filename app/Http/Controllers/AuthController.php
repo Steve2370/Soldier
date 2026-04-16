@@ -55,6 +55,12 @@ class AuthController extends Controller
         $cles = $this->cleManagement->deverouillerCles($user, $request->validated('master_password'));
         $request->session()->regenerate();
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
+
+        $this->coffreService->creerCoffre($user, [
+            'nom' => 'Mon coffre',
+            'couleur' => '#217eaa',
+        ], $cles['kek']);
+
         sodium_memzero($cles['kek']);
 
         return redirect()->route('dashboard')
