@@ -1,53 +1,37 @@
 <?php
-
 namespace App\Services\Crypto;
 
 use App\Exceptions\DecryptionException;
 use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
-use Illuminate\Contracts\Encryption\DecryptException;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class RsaCryptoService implements CryptoAsymmetricInterface
 {
     private const int BITS_CLE = 4096;
-    private const int PADDING = OPENSSL_PKCS1_OAEP_PADDING;
 
     public function genererPaireCles(): array
     {
-        $config = [
-            'digest_alg' => 'sha256',
-            'private_key_bits' => self::BITS_CLE,
-            'private_key_type' => OPENSSL_KEYTYPE_RSA,
-        ];
-
-        $ressouces = openssl_pkey_new($config);
-
-        if ($ressouces === false) {
-            throw new \RuntimeException('Impossible de générer la paire de clés RSA : ' . openssl_error_string());
-        }
-
-        openssl_pkey_export($ressouces, $privateKey);
-        $details = openssl_pkey_get_details($ressouces);
-        $clePublique = $details['key'];
+        $privateKey = RSA::createKey(self::BITS_CLE);
+        $publicKey = $privateKey->getPublicKey();
 
         return [
-            'cle_publique' => $clePublique,
-            'cle_privee' => $privateKey,
+            'cle_publique' => (string) $publicKey,
+            'cle_privee' => (string) $privateKey,
         ];
     }
 
     public function chiffrerAvecClePublique(string $donnees, string $clePublique): string
     {
-        $ressouces = openssl_pkey_get_public($clePublique);
+        $key = PublicKeyLoader::load($clePublique)
+            ->withPadding(RSA::ENCRYPTION_OAEP)
+            ->withHash('sha256')
+            ->withMGFHash('sha256');
 
-        if ($ressouces === false) {
-            throw new \InvalidArgumentException('Clé publique RSA invalide : ' . openssl_error_string()
-            );
-        }
+        $ciphertext = $key->encrypt($donnees);
 
-        $resultat = openssl_public_encrypt($donnees, $ciphertext, $ressouces, self::PADDING);
-
-        if ($resultat === false) {
-            throw new \RuntimeException('Échec du chiffrement RSA : ' . openssl_error_string());
+        if ($ciphertext === false) {
+            throw new \RuntimeException('Échec du chiffrement RSA.');
         }
 
         return base64_encode($ciphertext);
@@ -55,16 +39,14 @@ class RsaCryptoService implements CryptoAsymmetricInterface
 
     public function decrypterAvecClePrivee(string $donneesCryptees, string $clePrivee): string
     {
-        $ressouces = openssl_pkey_get_private($clePrivee);
+        $key = PublicKeyLoader::load($clePrivee)
+            ->withPadding(RSA::ENCRYPTION_OAEP)
+            ->withHash('sha256')
+            ->withMGFHash('sha256');
 
-        if ($ressouces === false) {
-            throw new \InvalidArgumentException('Clé privée RSA invalide : ' . openssl_error_string());
-        }
+        $plaintext = $key->decrypt(base64_decode($donneesCryptees));
 
-        $resultat = openssl_private_decrypt(
-            base64_decode($donneesCryptees), $plaintext, $ressouces, self::PADDING);
-
-        if ($resultat === false) {
+        if ($plaintext === false) {
             throw new DecryptionException();
         }
 

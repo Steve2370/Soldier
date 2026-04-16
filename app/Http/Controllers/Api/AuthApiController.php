@@ -106,6 +106,7 @@ class AuthApiController extends Controller
                 'data_key_encrypted' => $coffre->data_key_encrypted,
                 'verification' => $cleUser->verification_master_key,
             ],
+            'cle_privee_chiffree' => $cleUser->encrypted_private_key,
         ]);
     }
 
