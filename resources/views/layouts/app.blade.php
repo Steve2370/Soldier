@@ -271,7 +271,6 @@
         <div style="width: 40px;"></div>
     </div>
 
-    {{-- Overlay --}}
     <div x-show="mobileMenu" @click="mobileMenu = false"
          style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 39;"
          x-transition:enter="transition ease-out duration-200"
@@ -434,6 +433,70 @@
     function showToast(type, titre, message = '', duration = 5000) {
         window.dispatchEvent(new CustomEvent('toast', { detail: { type, titre, message, duration } }));
     }
+</script>
+
+<div id="session-warning" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#141414; border:1px solid #2a2a2a; border-radius:16px; padding:32px; max-width:400px; width:90%; text-align:center;">
+        <div style="width:56px; height:56px; border-radius:14px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h2 style="color:#fff; font-size:1.1rem; margin-bottom:10px;">Session sur le point d'expirer</h2>
+        <p style="color:#808080; font-size:0.875rem; margin-bottom:24px;">Vous serez déconnecté dans <span id="countdown" style="color:#f59e0b; font-weight:700;">2:00</span> en raison d'inactivité.</p>
+        <button onclick="resetSessionTimer()" style="background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border:none; border-radius:10px; padding:12px 32px; font-size:0.9rem; font-weight:700; cursor:pointer; width:100%;">
+            Rester connecté
+        </button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const TIMEOUT = 60 * 60 * 1000;
+        const WARNING = 2 * 60 * 1000;
+        let warningTimer, logoutTimer, countdownInterval;
+        let countdownSec = 120;
+
+        function resetSessionTimer() {
+            clearTimeout(warningTimer);
+            clearTimeout(logoutTimer);
+            clearInterval(countdownInterval);
+            document.getElementById('session-warning').style.display = 'none';
+            countdownSec = 120;
+            warningTimer = setTimeout(showWarning, TIMEOUT - WARNING);
+            logoutTimer = setTimeout(doLogout, TIMEOUT);
+        }
+
+        function showWarning() {
+            countdownSec = 120;
+            document.getElementById('session-warning').style.display = 'flex';
+            countdownInterval = setInterval(() => {
+                countdownSec--;
+                const m = Math.floor(countdownSec / 60).toString().padStart(1,'0');
+                const s = (countdownSec % 60).toString().padStart(2,'0');
+                document.getElementById('countdown').textContent = m + ':' + s;
+                if (countdownSec <= 0) clearInterval(countdownInterval);
+            }, 1000);
+        }
+
+        function doLogout() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("deconnexion") }}';
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        window.resetSessionTimer = resetSessionTimer;
+        ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(ev => {
+            document.addEventListener(ev, resetSessionTimer, { passive: true });
+        });
+
+        resetSessionTimer();
+    })();
 </script>
 
 @stack('scripts')
