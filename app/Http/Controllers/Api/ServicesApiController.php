@@ -65,7 +65,7 @@ class ServicesApiController extends Controller
                     'coffre' => [
                         'id' => $coffre->id,
                         'nom' => $coffre->nom,
-                        'data_key_encrypted' => $coffre->data_key_destinataire_encrypted,
+                        'data_key_encrypted' => $share->data_key_destinataire_encrypted,
                         'data_key_type' => 'rsa',
                     ],
                 ];
