@@ -1,12 +1,20 @@
 <x-emails.layout sujet="{{ $expediteur->name }} partage un coffre avec vous">
 
-    <div class="icon-wrap icon-info">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2.5">
-            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-        </svg>
-    </div>
-
+    @if($expediteur->avatar)
+        <div style="text-align:center; margin-bottom: 20px;">
+            <img src="https://soldierkey.com/storage/{{ $expediteur->avatar }}"
+                 alt="{{ $expediteur->name }}"
+                 width="72" height="72"
+                 style="border-radius:50%; border: 2px solid #217eaa; object-fit:cover;">
+        </div>
+    @else
+        <div class="icon-wrap icon-info" style="margin-bottom:20px;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2.5">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+        </div>
+    @endif
     <h1>{{ $expediteur->name }}<br>partage un coffre avec vous</h1>
     <p>Vous avez reçu une invitation à accéder à un coffre sécurisé sur Soldier.</p>
 
