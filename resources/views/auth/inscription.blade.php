@@ -129,7 +129,7 @@
                         </p>
                     </div>
 
-                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 13px;">
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 13px;" onclick="this.disabled=true; this.closest('form').submit();">
                         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                             <circle cx="8.5" cy="7" r="4"/>
