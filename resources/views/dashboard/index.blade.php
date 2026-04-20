@@ -4,6 +4,22 @@
 @section('content')
     <div x-data="dashboard()">
 
+        @if(session('security_alert'))
+            <div x-data="{ show: true }" x-show="show" x-transition
+                 style="margin: 16px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px;">
+                <svg style="flex-shrink:0; margin-top:2px;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div style="flex:1;">
+                    <div style="font-size:0.875rem; font-weight:700; color:#ef4444; margin-bottom:4px;">Alerte de sécurité</div>
+                    <div style="font-size:0.8rem; color:#a0a0a0; line-height:1.5;">Un ou plusieurs éléments de votre coffre n'ont pas pu être déchiffrés. Cela peut indiquer une tentative de manipulation de vos données. Contactez <a href="mailto:support@soldierkey.com" style="color:#ef4444;">support@soldierkey.com</a>.</div>
+                </div>
+                <button @click="show = false" style="background:none; border:none; cursor:pointer; color:#606060; flex-shrink:0;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        @endif
+
         <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 30px;">
             <div>
                 <h1 style="font-size: 1.625rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">
