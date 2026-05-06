@@ -77,6 +77,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [AdminController::class, 'index'])->name('index');
     Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
     Route::get('/logs/export', [AdminController::class, 'exportLogs'])->name('logs.export');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'supprimerUser'])->name('admin.users.supprimer');
 });
 
 Route::get('/privacy', fn() => view('privacy'))->name('privacy');
