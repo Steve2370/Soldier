@@ -36,25 +36,25 @@
 
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:20px;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" style="margin-bottom:8px;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-                    <div style="font-size:1.75rem; font-weight:800; color:#22c55e;">{{ $newUsersWeek }}</div>
+                    <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $newUsersWeek }}</div>
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Nouveaux (7j)</div>
                 </div>
 
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:20px;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" style="margin-bottom:8px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                    <div style="font-size:1.75rem; font-weight:800; color:#f59e0b;">{{ $activeUsers30d }}</div>
+                    <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $activeUsers30d }}</div>
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Actifs (30j)</div>
                 </div>
 
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:20px;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" style="margin-bottom:8px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <div style="font-size:1.75rem; font-weight:800; color:#8b5cf6;">{{ $totalServices }}</div>
+                    <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $totalServices }}</div>
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Services créés</div>
                 </div>
 
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:20px;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" style="margin-bottom:8px;"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                    <div style="font-size:1.75rem; font-weight:800; color:#ec4899;">{{ $totalShares }}</div>
+                    <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $totalShares }}</div>
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Partages actifs</div>
                 </div>
 
