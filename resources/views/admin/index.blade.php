@@ -1,7 +1,41 @@
 @extends('layouts.app')
 
 @section('content')
-    <div x-data="adminDashboard()">
+    <div x-data="{ ...adminDashboard(), confirmDelete: false, deleteUrl: '', deleteName: '' }">
+
+        <div x-show="confirmDelete"
+             style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;"
+             :style="confirmDelete ? 'display:flex;' : 'display:none;'">
+            <div style="background:#141414; border:1px solid #2a2a2a; border-radius:16px; padding:32px; max-width:420px; width:90%; text-align:center;">
+                <div style="width:56px; height:56px; border-radius:14px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6"/><path d="M14 11v6"/>
+                        <path d="M9 6V4h6v2"/>
+                    </svg>
+                </div>
+                <h2 style="color:#fff; font-size:1.1rem; font-weight:700; margin-bottom:10px;">Supprimer l'utilisateur</h2>
+                <p style="color:#808080; font-size:0.875rem; margin-bottom:24px;">
+                    Vous êtes sur le point de supprimer <strong x-text="deleteName" style="color:#fff;"></strong> définitivement.<br>
+                    Cette action est irréversible.
+                </p>
+                <div style="display:flex; gap:12px;">
+                    <button @click="confirmDelete = false"
+                            style="flex:1; background:rgba(255,255,255,0.05); color:#a0a0a0; border:1px solid #2a2a2a; border-radius:10px; padding:12px; font-size:0.9rem; font-weight:600; cursor:pointer;">
+                        Annuler
+                    </button>
+                    <form :action="deleteUrl" method="POST" style="flex:1;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                style="width:100%; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:10px; padding:12px; font-size:0.9rem; font-weight:600; cursor:pointer;">
+                            Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <div style="padding: 24px 28px 0; display:flex; align-items:center; justify-content:space-between;">
             <div>
@@ -61,21 +95,19 @@
             </div>
 
             <div style="display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:28px;">
-
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:24px;">
                     <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px;">Inscriptions (30 derniers jours)</h3>
                     <canvas id="inscriptionsChart" height="120"></canvas>
                 </div>
-
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:24px;">
                     <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px;">Actions par type</h3>
                     <canvas id="actionsChart" height="120"></canvas>
                 </div>
             </div>
 
-            <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:24px;">
+            <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:24px; overflow-x:auto;">
                 <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px;">Activité récente</h3>
-                <table style="width:100%; border-collapse:collapse;">
+                <table style="width:100%; border-collapse:collapse; min-width:600px;">
                     <thead>
                     <tr style="border-bottom:1px solid var(--border-primary);">
                         <th style="text-align:left; padding:8px 12px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">DATE</th>
@@ -91,9 +123,9 @@
                             <td style="padding:10px 12px; font-size:0.78rem; color:var(--text-muted);">{{ $log->created_at->format('d/m H:i') }}</td>
                             <td style="padding:10px 12px; font-size:0.8rem; color:var(--text-primary);">{{ $log->user->name ?? 'Supprimé' }}</td>
                             <td style="padding:10px 12px;">
-                            <span style="background:rgba(45,159,212,0.1); color:#2d9fd4; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">
-                                {{ $log->action }}
-                            </span>
+                                <span style="background:rgba(45,159,212,0.1); color:#2d9fd4; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">
+                                    {{ $log->action }}
+                                </span>
                             </td>
                             <td style="padding:10px 12px; font-size:0.78rem; color:var(--text-muted); font-family:monospace;">{{ $log->ip_address }}</td>
                             <td style="padding:10px 12px; font-size:0.78rem; color:var(--text-muted);">{{ Str::limit($log->description, 60) }}</td>
@@ -108,7 +140,7 @@
 
         <div x-show="tab==='users'" style="padding: 0 12px 28px;">
             <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden; overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; min-width:800px;">
+                <table style="width:100%; border-collapse:collapse; min-width:900px;">
                     <thead>
                     <tr style="background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border-primary);">
                         <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">UTILISATEUR</th>
@@ -119,11 +151,12 @@
                         <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">MFA</th>
                         <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">SERVICES</th>
                         <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">ADMIN</th>
+                        <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">ACTION</th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($users as $u)
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);" class="hover-row">
+                        <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
                             <td style="padding:12px 16px;">
                                 <div style="display:flex; align-items:center; gap:10px;">
                                     @if($u->avatar)
@@ -139,16 +172,14 @@
                             <td style="padding:12px 16px; font-size:0.82rem; color:var(--text-muted);">{{ $u->email }}</td>
                             <td style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $u->created_at->format('d/m/Y') }}</td>
                             <td style="padding:12px 16px;">
-                            <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">
-                                Free
-                            </span>
+                                <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Free</span>
                             </td>
                             <td style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">
                                 {{ $u->oauth_provider ? ucfirst($u->oauth_provider) : 'Email' }}
                             </td>
                             <td style="padding:12px 16px;">
                                 @if($u->mfa_email_enabled || $u->totp_enabled)
-                                    <span style="color:#22c55e; font-size:0.78rem;">Actif</span>
+                                    <span style="color:#22c55e; font-size:0.78rem;">✓ Actif</span>
                                 @else
                                     <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
                                 @endif
@@ -158,19 +189,19 @@
                             </td>
                             <td style="padding:12px 16px;">
                                 @if($u->is_admin)
-                                    <span style="color:#f59e0b; font-size:0.78rem;">Admin</span>
+                                    <span style="color:#f59e0b; font-size:0.78rem;">⭐ Admin</span>
                                 @else
                                     <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
                                 @endif
                             </td>
                             <td style="padding:12px 16px;">
                                 @if(!$u->is_admin)
-                                    <form method="POST" action="{{ route('admin.users.supprimer', $u) }}" onsubmit="return confirm('Supprimer {{ $u->name }} définitivement ?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" style="background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:4px 10px; font-size:0.75rem; cursor:pointer;">
-                                            Supprimer
-                                        </button>
-                                    </form>
+                                    <button
+                                        @click="confirmDelete = true; deleteUrl = '{{ route('admin.users.supprimer', $u) }}'; deleteName = '{{ addslashes($u->name) }}'"
+                                        style="background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:5px 12px; font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                                        Supprimer
+                                    </button>
                                 @else
                                     <span style="color:var(--text-muted); font-size:0.75rem;">—</span>
                                 @endif
