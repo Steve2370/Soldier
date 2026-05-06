@@ -157,8 +157,8 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script>
-            function adminDashboard() {
-                return {
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('adminDashboard', () => ({
                     tab: 'overview',
                     init() {
                         this.$nextTick(() => this.initCharts());
@@ -169,10 +169,10 @@
                             new Chart(inscCtx, {
                                 type: 'line',
                                 data: {
-                                    labels: {!! $inscriptionsParJour->pluck('date')->map(fn($d) => '"'.date('d/m', strtotime($d)).'"')->join(',') !!},
+                                    labels: [{!! $inscriptionsParJour->pluck('date')->map(fn($d) => '"'.date('d/m', strtotime($d)).'"')->join(',') !!}],
                                     datasets: [{
                                         label: 'Inscriptions',
-                                        data: {!! $inscriptionsParJour->pluck('total')->join(',') !!},
+                                        data: [{!! $inscriptionsParJour->pluck('total')->join(',') !!}],
                                         borderColor: '#2d9fd4',
                                         backgroundColor: 'rgba(45,159,212,0.1)',
                                         borderWidth: 2,
@@ -197,9 +197,9 @@
                             new Chart(actCtx, {
                                 type: 'doughnut',
                                 data: {
-                                    labels: {!! $actionsParType->pluck('action')->map(fn($a) => '"'.$a.'"')->join(',') !!},
+                                    labels: [{!! $actionsParType->pluck('action')->map(fn($a) => '"'.$a.'"')->join(',') !!}],
                                     datasets: [{
-                                        data: {!! $actionsParType->pluck('total')->join(',') !!},
+                                        data: [{!! $actionsParType->pluck('total')->join(',') !!}],
                                         backgroundColor: ['#2d9fd4','#22c55e','#f59e0b','#8b5cf6','#ec4899','#ef4444'],
                                         borderWidth: 0,
                                     }]
@@ -213,8 +213,8 @@
                             });
                         }
                     }
-                }
-            }
+                }));
+            });
         </script>
     @endpush
 @endsection
