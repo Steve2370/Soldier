@@ -44,8 +44,8 @@
             </a>
         </form>
 
-        <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden;">
-            <table style="width:100%; border-collapse:collapse;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; min-width:800px;">
                 <thead>
                 <tr style="background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border-primary);">
                     <th style="text-align:left; padding:12px 16px; font-size:0.72rem; color:var(--text-muted); font-weight:600;">DATE</th>
