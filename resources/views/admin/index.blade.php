@@ -90,7 +90,7 @@
 
         <div x-show="tab==='users'" style="padding: 0 12px 28px;">
             <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden; overflow-x:auto;">
-                <table style="width:100%; border-collapse:collapse; min-width:750px;">
+                <table style="width:100%; border-collapse:collapse; min-width:800px;">
                     <thead>
                     <tr style="background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border-primary);">
                         <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">UTILISATEUR</th>
