@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\User;
+use App\Services\Logs\ActivityLogService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -12,28 +14,20 @@ class AdminController extends Controller
     {
         $totalUsers = User::count();
         $newUsersWeek = User::where('created_at', '>=', now()->subWeek())->count();
-        $activeUsers30d = ActivityLog::where('created_at', '>=', now()->subDays(30))
-            ->distinct('user_id')->count('user_id');
+        $activeUsers30d = ActivityLog::where('created_at', '>=', now()->subDays(30))->distinct('user_id')->count('user_id');
         $totalServices = \DB::table('elements_coffres')->whereNull('deleted_at')->count();
-        $totalShares  = \DB::table('shares_coffre')->where('statut', 'accepte')->count();
+        $totalShares = \DB::table('shares_coffre')->where('statut', 'accepte')->count();
 
         $inscriptionsParJour = User::selectRaw('DATE(created_at) as date, COUNT(*) as total')
             ->where('created_at', '>=', now()->subDays(30))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+            ->groupBy('date')->orderBy('date')->get();
 
         $actionsParType = ActivityLog::selectRaw('action, COUNT(*) as total')
-            ->groupBy('action')
-            ->orderByDesc('total')
-            ->get();
+            ->groupBy('action')->orderByDesc('total')->get();
 
-        $recentLogs = ActivityLog::with('user')
-            ->orderByDesc('created_at')
-            ->limit(10)
-            ->get();
+        $recentLogs = ActivityLog::with('user')->orderByDesc('created_at')->limit(10)->get();
 
-        $users = User::orderByDesc('created_at')->get();
+        $users = User::withCount(['coffres'])->orderByDesc('created_at')->get();
 
         return view('admin.index', compact(
             'totalUsers', 'newUsersWeek', 'activeUsers30d',
@@ -47,18 +41,10 @@ class AdminController extends Controller
     {
         $query = ActivityLog::with('user')->orderByDesc('created_at');
 
-        if ($request->user_id) {
-            $query->where('user_id', $request->user_id);
-        }
-        if ($request->action) {
-            $query->where('action', $request->action);
-        }
-        if ($request->date_from) {
-            $query->where('created_at', '>=', $request->date_from);
-        }
-        if ($request->date_to) {
-            $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
-        }
+        if ($request->user_id) $query->where('user_id', $request->user_id);
+        if ($request->action)  $query->where('action', $request->action);
+        if ($request->date_from) $query->where('created_at', '>=', $request->date_from);
+        if ($request->date_to)   $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
 
         $logs = $query->paginate(50);
         $users = User::orderBy('name')->get();
@@ -94,6 +80,37 @@ class AdminController extends Controller
         return Response::make($csv, 200, [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="soldier-logs-' . now()->format('Y-m-d') . '.csv"',
+        ]);
+    }
+
+    public function supprimerUser(User $user): RedirectResponse
+    {
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.index')->with('toast', [
+                'type' => 'error',
+                'titre' => 'Action impossible',
+                'message' => 'Vous ne pouvez pas supprimer votre propre compte.',
+            ]);
+        }
+
+        $nom = $user->name;
+
+        $user->coffres()->each(function ($coffre) {
+            $coffre->elements()->forceDelete();
+            $coffre->delete();
+        });
+        $user->clesUser()->delete();
+        $user->mfa()->delete();
+        $user->passkeys()->delete();
+        $user->tokens()->delete();
+        $user->forceDelete();
+
+        ActivityLogService::log('user_supprime', "Utilisateur supprimé par admin : {$nom}");
+
+        return redirect()->route('admin.index')->with('toast', [
+            'type' => 'warning',
+            'titre' => 'Utilisateur supprimé',
+            'message' => "{$nom} a été supprimé définitivement.",
         ]);
     }
 }

@@ -11,6 +11,7 @@ use App\Models\ShareCoffre;
 use App\Models\User;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
+use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -134,6 +135,8 @@ class PartageController extends Controller
             route('partage.accepter', $token)
         ));
 
+        ActivityLogService::log('partage_envoye', "Partage envoyé à {$request->email} — coffre : {$coffre->nom}");
+
         return redirect()->route('partage.index')->with('toast', [
             'type' => 'success',
             'titre' => 'Invitation envoyée',
@@ -146,54 +149,21 @@ class PartageController extends Controller
      */
     public function accepter(string $token): RedirectResponse
     {
-        if (!Auth::check()) {
-            session(['url.intended' => route('partage.accepter', $token)]);
-            return redirect()->route('connexion');
-        }
-
-        if (!SessionHelper::havecleKek()) {
-            session(['url.intended' => route('partage.accepter', $token)]);
-            return redirect()->route('connexion');
-        }
+        if (!Auth::check()) { session(['url.intended' => route('partage.accepter', $token)]); return redirect()->route('connexion'); }
+        if (!SessionHelper::havecleKek()) { session(['url.intended' => route('partage.accepter', $token)]); return redirect()->route('connexion'); }
 
         $tokenHash = hash('sha256', $token);
-        $invitation = InvitationPartage::where('token_hash', $tokenHash)
-            ->where('statut', 'en_attente')
-            ->where('expire_le', '>', now())
-            ->firstOrFail();
-
-        $user  = auth()->user();
+        $invitation = InvitationPartage::where('token_hash', $tokenHash)->where('statut', 'en_attente')->where('expire_le', '>', now())->firstOrFail();
+        $user = auth()->user();
         $coffre = $invitation->coffre;
 
         if ($invitation->email_destinataire !== $user->email) {
-            return redirect()->route('dashboard')->with('toast', [
-                'type' => 'error',
-                'titre' => 'Invitation invalide',
-                'message' => 'Cette invitation ne vous est pas destinée.',
-            ]);
+            return redirect()->route('dashboard')->with('toast', ['type' => 'error', 'titre' => 'Invitation invalide', 'message' => 'Cette invitation ne vous est pas destinée.']);
         }
 
         $dataKeyChiffree = $invitation->data_key_encrypted;
-
         if (!$dataKeyChiffree) {
-            $clePublique = $user->clesUser?->cle_publique;
-
-            if (!$clePublique) {
-                return redirect()->route('dashboard')->with('toast', [
-                    'type' => 'error',
-                    'titre' => 'Erreur',
-                    'message' => 'Impossible de traiter l\'invitation.',
-                ]);
-            }
-
-            $proprietaire = $invitation->expediteur;
-            $kekProprietaire = null;
-
-            return redirect()->route('dashboard')->with('toast', [
-                'type' => 'warning',
-                'titre' => 'Invitation en attente',
-                'message' => 'Votre compte vient d\'être créé. Demandez à ' . $invitation->expediteur->name . ' de vous renvoyer une invitation.',
-            ]);
+            return redirect()->route('dashboard')->with('toast', ['type' => 'warning', 'titre' => 'Invitation en attente', 'message' => 'Demandez à ' . $invitation->expediteur->name . ' de vous renvoyer une invitation.']);
         }
 
         ShareCoffre::create([
@@ -207,27 +177,16 @@ class PartageController extends Controller
             'element_ids' => $invitation->element_ids,
         ]);
 
-        $invitation->update([
-            'statut' => 'acceptee',
-            'traitee_le' => now(),
-        ]);
+        $invitation->update(['statut' => 'acceptee', 'traitee_le' => now()]);
 
         $proprietaire = User::find($invitation->expediteur_id);
-        if ($proprietaire) {
-            Mail::to($proprietaire->email)->send(new InvitationAccepteeMail(
-                $proprietaire,
-                auth()->user(),
-                $coffre->nom,
-            ));
-        }
+        if ($proprietaire) Mail::to($proprietaire->email)->send(new InvitationAccepteeMail($proprietaire, auth()->user(), $coffre->nom));
 
-        return redirect()
-            ->route('dashboard')
-            ->with('toast', [
-                'type' => 'success',
-                'titre' => 'Invitation acceptée',
-                'message' => "Le coffre « {$coffre->nom} » est maintenant dans votre dashboard.",
-            ]);
+        ActivityLogService::log('partage_accepte', "Partage accepté — coffre : {$coffre->nom}");
+
+        return redirect()->route('dashboard')->with('toast', [
+            'type' => 'success', 'titre' => 'Invitation acceptée', 'message' => "Le coffre « {$coffre->nom} » est maintenant dans votre dashboard.",
+        ]);
     }
 
     public function revoquer(ShareCoffre $share): RedirectResponse
@@ -241,11 +200,13 @@ class PartageController extends Controller
         $nomDestinataire = $share->destinataire->name;
         $share->delete();
 
+        ActivityLogService::log('partage_revoque', "Accès révoqué pour {$nomDestinataire}");
+
         return redirect()
             ->route('partage.index')
             ->with('toast', [
-                'type'    => 'warning',
-                'titre'   => 'Accès révoqué',
+                'type' => 'warning',
+                'titre' => 'Accès révoqué',
                 'message' => "{$nomDestinataire} n'a plus accès à ce coffre.",
             ]);
     }
@@ -257,6 +218,8 @@ class PartageController extends Controller
         }
 
         $invitation->update(['statut' => 'expiree']);
+
+        ActivityLogService::log('invitation_annulee', "Invitation annulée pour {$invitation->email_destinataire}");
 
         return redirect()
             ->route('partage.index')

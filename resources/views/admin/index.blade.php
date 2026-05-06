@@ -148,7 +148,7 @@
                             </td>
                             <td style="padding:12px 16px;">
                                 @if($u->mfa_email_enabled || $u->totp_enabled)
-                                    <span style="color:#22c55e; font-size:0.78rem;">✓ Actif</span>
+                                    <span style="color:#22c55e; font-size:0.78rem;">Actif</span>
                                 @else
                                     <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
                                 @endif
@@ -158,9 +158,21 @@
                             </td>
                             <td style="padding:12px 16px;">
                                 @if($u->is_admin)
-                                    <span style="color:#f59e0b; font-size:0.78rem;">⭐ Admin</span>
+                                    <span style="color:#f59e0b; font-size:0.78rem;">Admin</span>
                                 @else
                                     <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
+                                @endif
+                            </td>
+                            <td style="padding:12px 16px;">
+                                @if(!$u->is_admin)
+                                    <form method="POST" action="{{ route('admin.users.supprimer', $u) }}" onsubmit="return confirm('Supprimer {{ $u->name }} définitivement ?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" style="background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:4px 10px; font-size:0.75rem; cursor:pointer;">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                @else
+                                    <span style="color:var(--text-muted); font-size:0.75rem;">—</span>
                                 @endif
                             </td>
                         </tr>

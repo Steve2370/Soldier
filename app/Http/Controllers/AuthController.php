@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\Auth\MfaService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
+use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +63,7 @@ class AuthController extends Controller
         ], $cles['kek']);
 
         sodium_memzero($cles['kek']);
+        ActivityLogService::log('inscription', 'Nouveau compte créé — ' . $user->email, $user->id);
 
         return redirect()->route('dashboard')
             ->with('toast', [
@@ -182,6 +184,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
         sodium_memzero($cles['kek']);
+        ActivityLogService::log('connexion', 'Connexion par email/mot de passe', $user->id);
 
         Mail::to($user->email)->send(new NouvelleConnexionMail(
             $user,
@@ -240,6 +243,7 @@ class AuthController extends Controller
         SessionHelper::deverouiller($kek, $clePrivee);
         SessionHelper::marquerMfaVerifie();
         sodium_memzero($kek);
+        ActivityLogService::log('connexion_mfa', 'Connexion avec MFA validé', $userId);
 
         return redirect()->route('dashboard')
             ->with('toast', [
@@ -251,6 +255,9 @@ class AuthController extends Controller
 
     public function deconnexion(Request $request): RedirectResponse
     {
+        $userId = auth()->id();
+        ActivityLogService::log('deconnexion', 'Déconnexion', $userId);
+
         SessionHelper::effacerCles();
         Auth::logout();
         $request->session()->invalidate();
@@ -343,6 +350,8 @@ class AuthController extends Controller
                     'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : '',
                 ]));
         }
+        ActivityLogService::log('connexion_oauth', 'Connexion via ' . ucfirst($provider), $user->id);
+
         $coffreExiste = $user->coffres()->exists();
         if (!$coffreExiste) {
             session(['oauth_new_user' => true]);
@@ -392,6 +401,9 @@ class AuthController extends Controller
                 sodium_memzero($kek);
                 sodium_memzero($cles['kek']);
                 Mail::to($user->email)->send(new BienvenueMail($user));
+
+                ActivityLogService::log('inscription', 'Compte créé via OAuth', $user->id);
+
                 return redirect()->route('dashboard')->with('toast', [
                     'type' => 'success',
                     'titre' => 'Coffre créé !',

@@ -10,6 +10,7 @@ use App\Models\ShareCoffre;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
 use App\Services\Crypto\RsaCryptoService;
+use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -127,6 +128,8 @@ class DashboardController extends Controller
         sodium_memzero($dataKey);
         sodium_memzero($kek);
 
+        ActivityLogService::log('service_cree', 'Service créé : ' . $request->validated('label'));
+
         return redirect()->route('dashboard')
             ->with('toast', [
                 'type' => 'success',
@@ -238,6 +241,8 @@ class DashboardController extends Controller
         ), $dataKey);
         sodium_memzero($dataKey);
 
+        ActivityLogService::log('service_modifie', 'Service modifié : ' . $request->validated('label'));
+
         return redirect()->route('dashboard')
             ->with('toast', [
                 'type' => 'success',
@@ -249,9 +254,10 @@ class DashboardController extends Controller
     public function supprimer(ElementCoffre $element): RedirectResponse
     {
         $this->verifierAcces($element);
-
         $label = $element->label;
         $this->coffreService->supprimerDefinitivement($element);
+
+        ActivityLogService::log('service_supprime', 'Service supprimé : ' . $label);
 
         return redirect()->route('dashboard')
             ->with('toast', [
