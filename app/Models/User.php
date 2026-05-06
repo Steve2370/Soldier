@@ -29,6 +29,7 @@ class User extends Authenticatable
         'oauth_provider',
         'oauth_id',
         'has_master_password',
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -42,6 +43,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'deleted_at' => 'datetime',
+            'is_admin' => 'boolean',
         ];
     }
 

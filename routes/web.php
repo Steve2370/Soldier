@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GenerateurController;
@@ -71,6 +72,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 });
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index');
+    Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
+    Route::get('/logs/export', [AdminController::class, 'exportLogs'])->name('logs.export');
+});
+
 Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
 
