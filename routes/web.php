@@ -69,6 +69,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/nom', [SettingsController::class, 'changerNom'])->name('settings.nom');
     Route::delete('/settings/compte', [SettingsController::class, 'supprimerCompte'])->name('settings.compte.supprimer');
     Route::post('/settings/mot-de-passe/compte', [SettingsController::class, 'changerMotDePasseCompte'])->name('settings.mot-de-passe.compte');
+    Route::get('/settings/sessions', [SettingsController::class, 'sessions'])->name('settings.sessions');
+    Route::delete('/settings/sessions/{sessionId}', [SettingsController::class, 'revoquerSession'])->name('settings.sessions.revoquer');
+    Route::delete('/settings/sessions', [SettingsController::class, 'revoquerToutesSessions'])->name('settings.sessions.revoquer.toutes');
 
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 });

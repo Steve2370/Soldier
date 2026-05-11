@@ -11,6 +11,7 @@ use App\Mail\TotpDesactiveMail;
 use App\Services\Auth\MfaService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Crypto\Contracts\EncryptionServiceInterface;
+use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -305,5 +306,72 @@ class SettingsController extends Controller
         $user->delete();
 
         return redirect()->route('welcome');
+    }
+
+    public function sessions(): View
+    {
+        $user = auth()->user();
+        $currentSessionId = session()->getId();
+
+        $sessions = \DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->orderByDesc('last_activity')
+            ->get()
+            ->map(function ($session) use ($currentSessionId) {
+                $ua = $session->user_agent ?? '';
+                return [
+                    'id' => $session->id,
+                    'ip' => $session->ip_address,
+                    'agent' => $ua,
+                    'device' => $this->detectDevice($ua),
+                    'browser' => $this->detectBrowser($ua),
+                    'last_active' => \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans(),
+                    'is_current' => $session->id === $currentSessionId,
+                ];
+            });
+
+        return view('settings.sessions', compact('sessions'));
+    }
+
+    public function revoquerSession(string $sessionId): RedirectResponse
+    {
+        $user = auth()->user();
+
+        if ($sessionId === session()->getId()) {
+            return back()->with('toast', ['type' => 'error', 'titre' => 'Erreur', 'message' => 'Vous ne pouvez pas révoquer votre session actuelle.']);
+        }
+
+        \DB::table('sessions')->where('id', $sessionId)->where('user_id', $user->id)->delete();
+        ActivityLogService::log('session_revoquee', 'Session révoquée manuellement');
+
+        return back()->with('toast', ['type' => 'warning', 'titre' => 'Session révoquée', 'message' => 'La session a été déconnectée.']);
+    }
+
+    public function revoquerToutesSessions(): RedirectResponse
+    {
+        $user = auth()->user();
+        $currentSessionId = session()->getId();
+
+        \DB::table('sessions')->where('user_id', $user->id)->where('id', '!=', $currentSessionId)->delete();
+        ActivityLogService::log('sessions_revoquees', 'Toutes les autres sessions révoquées');
+
+        return back()->with('toast', ['type' => 'warning', 'titre' => 'Sessions révoquées', 'message' => 'Toutes les autres sessions ont été déconnectées.']);
+    }
+
+    private function detectDevice(string $ua): string
+    {
+        if (str_contains($ua, 'iPhone') || (str_contains($ua, 'Android') && str_contains($ua, 'Mobile'))) return 'Mobile';
+        if (str_contains($ua, 'iPad') || str_contains($ua, 'Android')) return 'Tablette';
+        return 'Ordinateur';
+    }
+
+    private function detectBrowser(string $ua): string
+    {
+        if (str_contains($ua, 'Edg')) return 'Edge';
+        if (str_contains($ua, 'Chrome')) return 'Chrome';
+        if (str_contains($ua, 'Firefox')) return 'Firefox';
+        if (str_contains($ua, 'Safari')) return 'Safari';
+        if (str_contains($ua, 'Opera')) return 'Opera';
+        return 'Navigateur inconnu';
     }
 }

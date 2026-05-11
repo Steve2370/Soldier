@@ -10,7 +10,7 @@
         </div>
 
         <div style="display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0;">
-            @foreach(['securite' => 'Sécurité', 'compte' => 'Compte'] as $id => $label)
+            @foreach(['securite' => 'Sécurité', 'compte' => 'Compte', 'sessions' => 'Sessions'] as $id => $label)
                 <button
                     @click="onglet = '{{ $id }}'"
                     :class="onglet === '{{ $id }}' ? 'onglet-active' : 'onglet'"
@@ -417,6 +417,78 @@
                 </div>
             </div>
 
+        </div>
+
+        <div x-show="onglet === 'sessions'" x-transition>
+            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+                    <div>
+                        <h3 style="font-size:0.9375rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Sessions actives</h3>
+                        <p style="font-size:0.8125rem; color:var(--text-muted); margin:0;">Appareils actuellement connectés à votre compte.</p>
+                    </div>
+                    <form method="POST" action="{{ route('settings.sessions.revoquer.toutes') }}">
+                        @csrf @method('DELETE')
+                        <button type="submit" style="background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:7px 14px; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                            Déconnecter tous les autres
+                        </button>
+                    </form>
+                </div>
+
+                @php
+                    $currentSessionId = session()->getId();
+                    $sessions = \DB::table('sessions')
+                        ->where('user_id', auth()->id())
+                        ->orderByDesc('last_activity')
+                        ->get();
+                @endphp
+
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    @foreach($sessions as $sess)
+                        @php
+                            $ua = $sess->user_agent ?? '';
+                            $isCurrent = $sess->id === $currentSessionId;
+                            if (str_contains($ua, 'iPhone') || (str_contains($ua, 'Android') && str_contains($ua, 'Mobile'))) $device = 'Mobile';
+                            elseif (str_contains($ua, 'iPad') || str_contains($ua, 'Android')) $device = 'Tablette';
+                            else $device = 'Ordinateur';
+                            if (str_contains($ua, 'Edg')) $browser = 'Edge';
+                            elseif (str_contains($ua, 'Chrome')) $browser = 'Chrome';
+                            elseif (str_contains($ua, 'Firefox')) $browser = 'Firefox';
+                            elseif (str_contains($ua, 'Safari')) $browser = 'Safari';
+                            else $browser = 'Navigateur inconnu';
+                        @endphp
+                        <div style="background:var(--bg-elevated); border:1px solid {{ $isCurrent ? 'rgba(45,159,212,0.4)' : 'var(--border)' }}; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:14px;">
+                            <div style="width:40px; height:40px; border-radius:9px; background:rgba(45,159,212,0.1); border:1px solid rgba(45,159,212,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                                @if($device === 'Mobile')
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                @elseif($device === 'Tablette')
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                @else
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                @endif
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
+                                    <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary);">{{ $device }} — {{ $browser }}</span>
+                                    @if($isCurrent)
+                                        <span class="badge badge-success">Session actuelle</span>
+                                    @endif
+                                </div>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">
+                                    {{ $sess->ip_address }} · {{ \Carbon\Carbon::createFromTimestamp($sess->last_activity)->diffForHumans() }}
+                                </div>
+                            </div>
+                            @if(!$isCurrent)
+                                <form method="POST" action="{{ route('settings.sessions.revoquer', $sess->id) }}">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" style="background:none; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:5px 11px; font-size:0.775rem; cursor:pointer;">
+                                        Révoquer
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
     </div>
 
