@@ -16,7 +16,7 @@ class PricingController extends Controller
         return view('pricing.index', compact('abonnement'));
     }
 
-    public function checkout(Request $request): RedirectResponse
+    public function checkout(Request $request)
     {
         $user = auth()->user();
 
