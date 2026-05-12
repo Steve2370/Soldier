@@ -122,4 +122,19 @@ class User extends Authenticatable
     {
         return $this->clesUser()->exists();
     }
+
+    public function familyGroup()
+    {
+        return $this->hasOne(FamilyMember::class)->where('role', 'owner');
+    }
+
+    public function familyMembership()
+    {
+        return $this->hasOne(FamilyMember::class);
+    }
+
+    public function isFamilySubscriber(): bool
+    {
+        return $this->subscribed('famille');
+    }
 }

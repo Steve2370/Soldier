@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FamilleController;
 use App\Http\Controllers\GenerateurController;
 use App\Http\Controllers\PartageController;
 use App\Http\Controllers\PasskeyController;
@@ -93,6 +94,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::post('/stripe/webhook', [
     WebhookController::class, 'handleWebhook'
 ])->name('cashier.webhook');
+
+Route::middleware(['auth', 'famille'])->prefix('famille')->name('famille.')->group(function () {
+    Route::get('/', [FamilleController::class, 'index'])->name('index');
+    Route::post('/creer', [FamilleController::class, 'creerGroupe'])->name('creer');
+    Route::post('/inviter', [FamilleController::class, 'inviter'])->name('inviter');
+    Route::delete('/membres/{member}', [FamilleController::class, 'retirer'])->name('retirer');
+    Route::delete('/quitter', [FamilleController::class, 'quitter'])->name('quitter');
+});
 
 Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');

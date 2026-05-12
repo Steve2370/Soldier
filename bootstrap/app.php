@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HasFamilySubscription;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\VaultUnlocked;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->validateCsrfTokens(except: [
             'stripe/webhook',
+        ]);
+
+        $middleware->alias([
+            'vault.unlocked' => VaultUnlocked::class,
+            'admin' => IsAdmin::class,
+            'famille' => HasFamilySubscription::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

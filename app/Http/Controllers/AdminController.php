@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\FamilyGroup;
 use App\Models\User;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
@@ -17,6 +18,8 @@ class AdminController extends Controller
         $activeUsers30d = ActivityLog::where('created_at', '>=', now()->subDays(30))->distinct('user_id')->count('user_id');
         $totalServices = \DB::table('elements_coffres')->whereNull('deleted_at')->count();
         $totalShares = \DB::table('shares_coffre')->where('statut', 'accepte')->count();
+        $familyGroups = FamilyGroup::with(['owner', 'members'])->get();
+        $totalFamille = $familyGroups->count();
 
         $inscriptionsParJour = User::selectRaw('DATE(created_at) as date, COUNT(*) as total')
             ->where('created_at', '>=', now()->subDays(30))
@@ -33,7 +36,8 @@ class AdminController extends Controller
             'totalUsers', 'newUsersWeek', 'activeUsers30d',
             'totalServices', 'totalShares',
             'inscriptionsParJour', 'actionsParType',
-            'recentLogs', 'users'
+            'recentLogs', 'users',
+            'familyGroups', 'totalFamille'
         ));
     }
 

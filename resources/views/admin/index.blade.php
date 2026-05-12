@@ -56,6 +56,10 @@
                     style="background:none; border:none; padding:8px 16px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px;">
                 Utilisateurs ({{ $totalUsers }})
             </button>
+            <button @click="tab='famille'" :style="tab==='famille' ? 'border-bottom:2px solid var(--accent); color:var(--accent);' : 'color:var(--text-muted);'"
+                    style="background:none; border:none; padding:8px 16px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px;">
+                Famille ({{ $totalFamille }})
+            </button>
         </div>
 
         <div x-show="tab==='overview'" style="padding: 0 28px 28px;">
@@ -189,7 +193,7 @@
                             </td>
                             <td style="padding:12px 16px;">
                                 @if($u->is_admin)
-                                    <span style="color:#f59e0b; font-size:0.78rem;">⭐ Admin</span>
+                                    <span style="color:#f59e0b; font-size:0.78rem;">Admin</span>
                                 @else
                                     <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
                                 @endif
@@ -213,6 +217,59 @@
             </div>
         </div>
 
+    </div>
+
+    <div x-show="tab==='famille'" style="padding: 0 12px 28px;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden; overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; min-width:600px;">
+                <thead>
+                <tr style="background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border-primary);">
+                    <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">PROPRIÉTAIRE</th>
+                    <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">GROUPE</th>
+                    <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">MEMBRES</th>
+                    <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">CRÉÉ LE</th>
+                    <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">STATUT</th>
+                </tr>
+                </thead>
+                <tbody>
+                @forelse($familyGroups as $group)
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <td style="padding:12px 16px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff;">
+                                    {{ strtoupper(substr($group->owner->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">{{ $group->owner->name }}</div>
+                                    <div style="font-size:0.72rem; color:var(--text-muted);">{{ $group->owner->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding:12px 16px; font-size:0.85rem; color:var(--text-primary);">{{ $group->nom }}</td>
+                        <td style="padding:12px 16px;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary);">{{ $group->members->count() }}</span>
+                                <span style="font-size:0.78rem; color:var(--text-muted);">/ 6</span>
+                                <div style="flex:1; max-width:60px; background:rgba(255,255,255,0.05); border-radius:4px; height:4px; overflow:hidden;">
+                                    <div style="background:#2d9fd4; height:100%; width:{{ ($group->members->count() / 6) * 100 }}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $group->created_at->format('d/m/Y') }}</td>
+                        <td style="padding:12px 16px;">
+                            @if($group->owner->subscribed('famille'))
+                                <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Actif</span>
+                            @else
+                                <span style="background:rgba(239,68,68,0.1); color:#ef4444; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Inactif</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr><td colspan="5" style="padding:32px; text-align:center; color:var(--text-muted);">Aucun groupe famille</td></tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @push('scripts')

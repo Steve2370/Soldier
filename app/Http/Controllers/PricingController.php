@@ -20,6 +20,14 @@ class PricingController extends Controller
     {
         $user = auth()->user();
 
+        if (!$user) {
+            return redirect()->route('inscription')->with('toast', [
+                'type' => 'info',
+                'titre' => 'Connexion requise',
+                'message' => 'Connectez-vous d\'abord, puis revenez sur la page Tarifs.',
+            ]);
+        }
+
         if ($user->subscribed('famille')) {
             return redirect()->route('pricing.portail');
         }
