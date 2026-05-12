@@ -71,10 +71,8 @@
                 @endauth
             </div>
 
-            {{-- Plan Famille --}}
             <div style="background:rgba(22,37,52,0.8); border:1px solid rgba(45,159,212,0.5); border-radius:24px; padding:40px; backdrop-filter:blur(16px); display:flex; flex-direction:column; position:relative; overflow:hidden;">
 
-                {{-- Badge populaire --}}
                 <div style="position:absolute; top:20px; right:20px; background:linear-gradient(135deg,#217eaa,#2d9fd4); border-radius:20px; padding:4px 12px; font-size:0.7rem; font-weight:700; color:#fff; letter-spacing:0.04em;">
                     POPULAIRE
                 </div>
@@ -88,7 +86,7 @@
                     </div>
                     <div style="font-size:0.8rem; font-weight:700; color:var(--accent-bright); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Famille</div>
                     <div style="display:flex; align-items:baseline; gap:4px; margin-bottom:8px;">
-                        <span style="font-size:3rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.02em;">4,99$</span>
+                        <span style="font-size:3rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.02em;">3,99$</span>
                         <span style="font-size:0.9rem; color:var(--text-muted);">/mois</span>
                     </div>
                     <p style="font-size:0.875rem; color:var(--text-secondary); line-height:1.6; margin:0;">Pour les familles qui veulent partager la sécurité jusqu'à 6 membres.</p>
@@ -134,7 +132,6 @@
         </div>
     </section>
 
-    {{-- FAQ --}}
     <section style="padding: 0 24px 80px;">
         <div style="max-width:680px; margin:0 auto;">
             <h2 style="font-size:1.75rem; font-weight:800; color:var(--text-primary); text-align:center; margin-bottom:40px; letter-spacing:-0.02em;">Questions fréquentes</h2>
@@ -159,7 +156,6 @@
         </div>
     </section>
 
-    {{-- CTA Café --}}
     <section style="padding: 0 24px 80px; text-align:center;">
         <div style="max-width:480px; margin:0 auto; background:rgba(22,37,52,0.5); border:1px solid rgba(33,126,170,0.15); border-radius:20px; padding:32px 40px; backdrop-filter:blur(16px); display:flex; flex-direction:column; align-items:center; gap:20px;">
             <div style="text-align:center;">

@@ -10,6 +10,7 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Cashier\Http\Controllers\WebhookController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
@@ -88,6 +89,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/logs/export', [AdminController::class, 'exportLogs'])->name('logs.export');
     Route::delete('/users/{user}', [AdminController::class, 'supprimerUser'])->name('users.supprimer');
 });
+
+Route::post('/stripe/webhook', [
+    WebhookController::class, 'handleWebhook'
+])->name('cashier.webhook');
 
 Route::get('/privacy', fn() => view('privacy'))->name('privacy');
 Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
