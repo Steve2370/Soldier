@@ -264,6 +264,7 @@
         <img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Soldier Logo" class="logo-img">
     </a>
     <div class="navbar-links">
+        <a href="{{ route('pricing') }}" class="btn-nav-connexion" style="{{ request()->routeIs('pricing') ? 'color:#2d9fd4; border-color:rgba(45,159,212,0.4);' : '' }}">Tarifs</a>
         <a href="{{ route('connexion') }}" class="btn-nav-connexion">Connexion</a>
         <a href="{{ route('inscription') }}" class="btn-nav-inscription">Créer un compte</a>
     </div>
