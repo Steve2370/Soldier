@@ -6,12 +6,14 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GenerateurController;
 use App\Http\Controllers\PartageController;
 use App\Http\Controllers\PasskeyController;
+use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
+    Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 
     Route::get('/connexion', [AuthController::class, 'showConnexion'])->name('connexion');
     Route::post('/connexion', [AuthController::class, 'verifierEmail'])->name('connexion.post');
@@ -72,6 +74,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings/sessions', [SettingsController::class, 'sessions'])->name('settings.sessions');
     Route::delete('/settings/sessions/{sessionId}', [SettingsController::class, 'revoquerSession'])->name('settings.sessions.revoquer');
     Route::delete('/settings/sessions', [SettingsController::class, 'revoquerToutesSessions'])->name('settings.sessions.revoquer.toutes');
+
+    Route::post('/pricing/checkout', [PricingController::class, 'checkout'])->name('pricing.checkout');
+    Route::get('/pricing/succes', [PricingController::class, 'succes'])->name('pricing.succes');
+    Route::get('/pricing/portail', [PricingController::class, 'portail'])->name('pricing.portail');
 
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 });
