@@ -118,7 +118,7 @@
                         <form method="POST" action="{{ route('pricing.checkout') }}">
                             @csrf
                             <button type="submit" style="width:100%; background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border:none; border-radius:12px; padding:14px; font-size:0.9rem; font-weight:700; cursor:pointer;">
-                                Commencer — 4,99$/mois →
+                                Commencer — 3,99$/mois →
                             </button>
                         </form>
                     @endif

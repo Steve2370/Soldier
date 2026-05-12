@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MembreFamilleAjouteMail;
 use App\Models\FamilyGroup;
 use App\Models\FamilyMember;
 use App\Models\User;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class FamilleController extends Controller
@@ -47,7 +49,7 @@ class FamilleController extends Controller
     {
         $request->validate(['email' => ['required', 'email']]);
 
-        $user  = auth()->user();
+        $user = auth()->user();
         $group = FamilyGroup::where('owner_id', $user->id)->with('members')->firstOrFail();
 
         if ($group->isFull()) {
@@ -75,6 +77,8 @@ class FamilleController extends Controller
             'joined_at' => now(),
         ]);
 
+        Mail::to($user->email)->send(new MembreFamilleAjouteMail($user, $destinataire));
+
         ActivityLogService::log('famille_membre_invite', "Membre ajouté : {$request->email}");
 
         return back()->with('toast', ['type' => 'success', 'titre' => 'Membre ajouté', 'message' => "{$destinataire->name} a été ajouté à votre groupe."]);
@@ -82,7 +86,7 @@ class FamilleController extends Controller
 
     public function retirer(FamilyMember $member): RedirectResponse
     {
-        $user  = auth()->user();
+        $user = auth()->user();
         $group = FamilyGroup::where('owner_id', $user->id)->firstOrFail();
 
         if ($member->family_group_id !== $group->id || $member->role === 'owner') {

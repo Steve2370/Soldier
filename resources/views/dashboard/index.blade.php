@@ -384,7 +384,39 @@
         </script>
     @endpush
 
-    <div style="margin-top: 48px; padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+    @if(!auth()->user()->subscribed('famille'))
+        <div style="margin-top: 32px; padding: 20px 24px; background: linear-gradient(135deg, rgba(45,159,212,0.08), rgba(33,126,170,0.05)); border: 1px solid rgba(45,159,212,0.25); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 40px; height: 40px; background: rgba(45,159,212,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 2px;">Plan Famille disponible</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted);">Partagez Soldier avec jusqu'à 6 membres pour 3,99$/mois</div>
+                </div>
+            </div>
+            <a href="{{ route('pricing') }}" style="background: linear-gradient(135deg,#217eaa,#2d9fd4); color: #fff; border: none; border-radius: 9px; padding: 9px 20px; font-size: 0.8rem; font-weight: 700; text-decoration: none; white-space: nowrap; font-family: 'Audiowide', sans-serif;">
+                Découvrir →
+            </a>
+        </div>
+    @else
+        <div style="margin-top: 32px; padding: 20px 24px; background: linear-gradient(135deg, rgba(34,197,94,0.06), rgba(34,197,94,0.03)); border: 1px solid rgba(34,197,94,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 40px; height: 40px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem; color: #22c55e; margin-bottom: 2px;">Plan Famille actif ✓</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted);">Gérez votre groupe famille et invitez vos membres</div>
+                </div>
+            </div>
+            <a href="{{ route('famille.index') }}" style="background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); border-radius: 9px; padding: 9px 20px; font-size: 0.8rem; font-weight: 700; text-decoration: none; white-space: nowrap; font-family: 'Audiowide', sans-serif;">
+                Gérer le groupe →
+            </a>
+        </div>
+    @endif
+
+    <div style="margin-top: 16px; padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
         <div style="display: flex; align-items: center; gap: 14px;">
             <div style="width: 40px; height: 40px; background: rgba(33,126,170,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
