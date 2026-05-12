@@ -12,9 +12,9 @@ use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 
+Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 Route::middleware('guest')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
-    Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 
     Route::get('/connexion', [AuthController::class, 'showConnexion'])->name('connexion');
     Route::post('/connexion', [AuthController::class, 'verifierEmail'])->name('connexion.post');
