@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\MembreFamilleAjouteMail;
+use App\Mail\MembreInviteFamilleMail;
 use App\Models\FamilyGroup;
 use App\Models\FamilyMember;
 use App\Models\User;
@@ -78,6 +79,7 @@ class FamilleController extends Controller
         ]);
 
         Mail::to($user->email)->send(new MembreFamilleAjouteMail($user, $destinataire));
+        Mail::to($destinataire->email)->send(new MembreInviteFamilleMail($user, $destinataire));
 
         ActivityLogService::log('famille_membre_invite', "Membre ajouté : {$request->email}");
 

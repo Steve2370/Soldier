@@ -53,7 +53,7 @@
                                 <div style="font-size:0.75rem; color:var(--text-muted);">{{ $member->user->email }}</div>
                             </div>
                             @if($member->role === 'owner')
-                                <span style="font-size:0.72rem; color:#2d9fd4; font-weight:600;">⭐ Propriétaire</span>
+                                <span style="font-size:0.72rem; color:#2d9fd4; font-weight:600;">Propriétaire</span>
                             @else
                                 <form method="POST" action="{{ route('famille.retirer', $member) }}">
                                     @csrf @method('DELETE')

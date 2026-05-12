@@ -80,6 +80,39 @@
                         @endforeach
                     </div>
 
+                    @if(auth()->user()->subscribed('famille') && $familyMembers->count() > 0)
+                        <div style="margin-bottom: 18px; background: rgba(45,159,212,0.05); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; padding: 14px 16px;">
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span style="font-size:0.8rem; font-weight:700; color:#2d9fd4;">Partager avec un membre famille</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                @foreach($familyMembers as $membre)
+                                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; padding:8px 10px; background:var(--bg-card); border-radius:8px; border:1px solid rgba(45,159,212,0.15);"
+                                           @click="document.getElementById('email').value = '{{ $membre->user->email }}'; showFormulaire = true;">
+                                        <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; flex-shrink:0; overflow:hidden;">
+                                            @if($membre->user->avatar)
+                                                <img src="{{ Storage::url($membre->user->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
+                                            @else
+                                                {{ strtoupper(substr($membre->user->name, 0, 1)) }}
+                                            @endif
+                                        </div>
+                                        <div style="flex:1;">
+                                            <div style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $membre->user->name }}</div>
+                                            <div style="font-size:0.72rem; color:var(--text-muted);">{{ $membre->user->email }}</div>
+                                        </div>
+                                        <button type="button"
+                                                @click.stop="document.getElementById('email').value = '{{ $membre->user->email }}'"
+                                                style="background:rgba(45,159,212,0.1); color:#2d9fd4; border:1px solid rgba(45,159,212,0.3); border-radius:6px; padding:4px 10px; font-size:0.75rem; cursor:pointer; font-family:'Audiowide',sans-serif;">
+                                            Sélectionner
+                                        </button>
+                                    </label>
+                                @endforeach
+                            </div>
+                            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:8px;">Cliquez sur un membre pour pré-remplir son email.</p>
+                        </div>
+                    @endif
+
                     <div style="margin-bottom: 18px;">
                         <label>Permission</label>
                         <div style="display: flex; gap: 16px; margin-top: 8px;">

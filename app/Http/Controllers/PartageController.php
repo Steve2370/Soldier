@@ -6,6 +6,7 @@ use App\Helpers\SessionHelper;
 use App\Mail\InvitationAccepteeMail;
 use App\Mail\InvitationPartageMail;
 use App\Models\Coffre;
+use App\Models\FamilyGroup;
 use App\Models\InvitationPartage;
 use App\Models\ShareCoffre;
 use App\Models\User;
@@ -50,11 +51,14 @@ class PartageController extends Controller
             ->get();
 
         $coffres = $user->coffres()->with('elements')->withCount('elements')->get();
+        $familyGroup = FamilyGroup::where('owner_id', $user->id)->with('members.user')->first();
+        $familyMembers = $familyGroup ? $familyGroup->members->where('role', 'member') : collect();
 
         return view('partage.index', compact(
             'partagesEnvoyes',
             'partagesRecus',
             'invitationsEnAttente',
+            'familyGroup', 'familyMembers',
             'coffres'
         ));
     }
@@ -136,6 +140,20 @@ class PartageController extends Controller
         ));
 
         ActivityLogService::log('partage_envoye', "Partage envoyé à {$request->email} — coffre : {$coffre->nom}");
+
+        $familyGroup = FamilyGroup::where('owner_id', $user->id)->with('members.user')->first();
+        if ($familyGroup && $destinataire && $familyGroup->members->where('user_id', $destinataire->id)->count() > 0) {
+            foreach ($familyGroup->members as $membre) {
+                if ($membre->user_id !== $user->id) {
+                    Mail::to($membre->user->email)->send(new \App\Mail\PartageGroupeFamilleMail(
+                        $user,
+                        $destinataire,
+                        $coffre->nom,
+                        route('partage.accepter', $token)
+                    ));
+                }
+            }
+        }
 
         return redirect()->route('partage.index')->with('toast', [
             'type' => 'success',
