@@ -34,53 +34,47 @@ class DashboardController extends Controller
         if ($kek === null) {
             return view('dashboard.index', ['services' => collect()]);
         }
-        $coffres = $user->coffres()->withCount('elements')->get();
+
+        $familyCoffreId = FamilyGroup::where('owner_id', $user->id)->value('coffre_id');
+
+        $familyCoffreIdsRecus = FamilyGroup::whereHas('members', function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->pluck('coffre_id')->filter()->toArray();
+
+        $coffres = $user->coffres()
+            ->withCount('elements')
+            ->when($familyCoffreId, fn($q) => $q->where('id', '!=', $familyCoffreId))
+            ->get();
+
         $services = $coffres->map(function (Coffre $coffre) use ($kek, $user) {
             try {
-                $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-                    $coffre->data_key_encrypted,
-                    $kek
-                );
+                $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
                 $elements = $this->coffreService->listerElements($coffre, $dataKey);
                 sodium_memzero($dataKey);
-
-                return [
-                    'coffre' => $coffre,
-                    'elements' => $elements,
-                    'partage' => false,
-                ];
+                return ['coffre' => $coffre, 'elements' => $elements, 'partage' => false];
             } catch (\Exception $e) {
-                \Log::warning('Échec déchiffrement coffre personnel, car possible manipulation de données', [
-                    'user_id' => $user->id,
-                    'coffre_id' => $coffre->id,
-                    'exception' => $e->getMessage(),
+                \Log::warning('Échec déchiffrement coffre personnel — possible manipulation de données', [
+                    'user_id' => $user->id, 'coffre_id' => $coffre->id, 'exception' => $e->getMessage(),
                 ]);
                 session()->flash('security_alert', true);
                 return null;
             }
         })->filter();
 
-        $familyCoffreIds = FamilyGroup::whereHas('members', function($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->pluck('coffre_id')->filter()->toArray();
-
         $partages = $user->sharesRecus()
             ->where('statut', 'accepte')
-            ->when(!empty($familyCoffreIds), fn($q) => $q->whereNotIn('coffre_id', $familyCoffreIds))
+            ->when(!empty($familyCoffreIdsRecus), fn($q) => $q->whereNotIn('coffre_id', $familyCoffreIdsRecus))
+            ->when($familyCoffreId, fn($q) => $q->where('coffre_id', '!=', $familyCoffreId))
             ->with('coffre')
             ->get();
 
         $servicesPartages = $partages->map(function ($share) use ($kek, $user) {
             try {
                 $clePrivee = SessionHelper::obtenirClePrivee();
-                $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
-                    $share->data_key_destinataire_encrypted,
-                    $clePrivee
-                );
+                $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
                 $elementIds = $share->element_ids ? json_decode($share->element_ids, true) : null;
                 $elements = $this->coffreService->listerElements($share->coffre, $dataKey, $elementIds);
                 sodium_memzero($dataKey);
-
                 return [
                     'coffre' => $share->coffre,
                     'elements' => $elements,
@@ -90,9 +84,7 @@ class DashboardController extends Controller
                 ];
             } catch (\Exception $e) {
                 \Log::warning('Échec déchiffrement service partagé — possible manipulation de données', [
-                    'user_id' => $user->id,
-                    'share_id' => $share->id ?? null,
-                    'exception' => $e->getMessage(),
+                    'user_id' => $user->id, 'share_id' => $share->id ?? null, 'exception' => $e->getMessage(),
                 ]);
                 session()->flash('security_alert', true);
                 return null;
@@ -117,31 +109,27 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $kek = SessionHelper::obtenirKek();
-        $coffre = $user->coffres()->first()
-            ?? $this->coffreService->creerCoffre($user, [
-                'nom' => 'Mon coffre',
-                'couleur' => '#03A63C',
-            ], $kek);
+
+        $familyCoffreId = FamilyGroup::where('owner_id', $user->id)->value('coffre_id');
+
+        $coffre = $user->coffres()
+            ->when($familyCoffreId, fn($q) => $q->where('id', '!=', $familyCoffreId))
+            ->first()
+            ?? $this->coffreService->creerCoffre($user, ['nom' => 'Mon coffre', 'couleur' => '#03A63C'], $kek);
 
         $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
         $faviconUrl = $this->coffreService->resoudreFavicon($request->validated('url') ?? '', $request->validated('label') ?? '');
 
-        $this->coffreService->ajouterElement($coffre, array_merge(
-            $request->validated(),
-            ['favicon_url' => $faviconUrl]
-        ), $dataKey);
+        $this->coffreService->ajouterElement($coffre, array_merge($request->validated(), ['favicon_url' => $faviconUrl]), $dataKey);
 
         sodium_memzero($dataKey);
         sodium_memzero($kek);
 
         ActivityLogService::log('service_cree', 'Service créé : ' . $request->validated('label'));
 
-        return redirect()->route('dashboard')
-            ->with('toast', [
-                'type' => 'success',
-                'titre' => 'Service ajouté',
-                'message' => "« {$request->validated('label')} » a été enregistré.",
-            ]);
+        return redirect()->route('dashboard')->with('toast', [
+            'type' => 'success', 'titre' => 'Service ajouté', 'message' => "« {$request->validated('label')} » a été enregistré.",
+        ]);
     }
 
     /**
@@ -151,30 +139,9 @@ class DashboardController extends Controller
     {
         $this->verifierAcces($element);
         $user = auth()->user();
-
-        if ($element->coffre->user_id === $user->id) {
-            $kek = SessionHelper::obtenirKek();
-            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-                $element->coffre->data_key_encrypted,
-                $kek
-            );
-            sodium_memzero($kek);
-        } else {
-            $share = ShareCoffre::where('coffre_id', $element->coffre->id)
-                ->where('destinataire_id', $user->id)
-                ->where('statut', 'accepte')
-                ->firstOrFail();
-
-            $clePrivee = SessionHelper::obtenirClePrivee();
-            $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
-                $share->data_key_destinataire_encrypted,
-                $clePrivee
-            );
-        }
-
+        $dataKey = $this->obtenirDataKey($element, $user);
         $donnees = $this->coffreService->lireElement($element, $dataKey);
         sodium_memzero($dataKey);
-
         return view('dashboard.afficher', compact('element', 'donnees'));
     }
 
@@ -185,30 +152,9 @@ class DashboardController extends Controller
     {
         $this->verifierAcces($element);
         $user = auth()->user();
-
-        if ($element->coffre->user_id === $user->id) {
-            $kek = SessionHelper::obtenirKek();
-            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-                $element->coffre->data_key_encrypted,
-                $kek
-            );
-            sodium_memzero($kek);
-        } else {
-            $share = ShareCoffre::where('coffre_id', $element->coffre->id)
-                ->where('destinataire_id', $user->id)
-                ->where('statut', 'accepte')
-                ->firstOrFail();
-
-            $clePrivee = SessionHelper::obtenirClePrivee();
-            $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
-                $share->data_key_destinataire_encrypted,
-                $clePrivee
-            );
-        }
-
+        $dataKey = $this->obtenirDataKey($element, $user);
         $donnees = $this->coffreService->lireElement($element, $dataKey);
         sodium_memzero($dataKey);
-
         return view('dashboard.modifier', compact('element', 'donnees'));
     }
 
@@ -219,42 +165,17 @@ class DashboardController extends Controller
     {
         $this->verifierAcces($element);
         $user = auth()->user();
-
-        if ($element->coffre->user_id === $user->id) {
-            $kek = SessionHelper::obtenirKek();
-            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre(
-                $element->coffre->data_key_encrypted,
-                $kek
-            );
-            sodium_memzero($kek);
-        } else {
-            $share = ShareCoffre::where('coffre_id', $element->coffre->id)
-                ->where('destinataire_id', $user->id)
-                ->where('statut', 'accepte')
-                ->firstOrFail();
-
-            $clePrivee = SessionHelper::obtenirClePrivee();
-            $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee(
-                $share->data_key_destinataire_encrypted,
-                $clePrivee
-            );
-        }
+        $dataKey = $this->obtenirDataKey($element, $user);
 
         $faviconUrl = $this->coffreService->resoudreFavicon($request->validated('url') ?? '');
-        $this->coffreService->mettreAJourElement($element, array_merge(
-            $request->validated(),
-            ['favicon_url' => $faviconUrl]
-        ), $dataKey);
+        $this->coffreService->mettreAJourElement($element, array_merge($request->validated(), ['favicon_url' => $faviconUrl]), $dataKey);
         sodium_memzero($dataKey);
 
         ActivityLogService::log('service_modifie', 'Service modifié : ' . $request->validated('label'));
 
-        return redirect()->route('dashboard')
-            ->with('toast', [
-                'type' => 'success',
-                'titre' => 'Service mis à jour',
-                'message' => "« {$request->validated('label')} » a été modifié.",
-            ]);
+        return redirect()->route('dashboard')->with('toast', [
+            'type' => 'success', 'titre' => 'Service mis à jour', 'message' => "« {$request->validated('label')} » a été modifié.",
+        ]);
     }
 
     public function supprimer(ElementCoffre $element): RedirectResponse
@@ -265,36 +186,36 @@ class DashboardController extends Controller
 
         ActivityLogService::log('service_supprime', 'Service supprimé : ' . $label);
 
-        return redirect()->route('dashboard')
-            ->with('toast', [
-                'type' => 'warning',
-                'titre' => 'Service supprimé',
-                'message' => "« {$label} » a été supprimé.",
-            ]);
+        return redirect()->route('dashboard')->with('toast', [
+            'type' => 'warning', 'titre' => 'Service supprimé', 'message' => "« {$label} » a été supprimé.",
+        ]);
     }
 
     public function toggleFavori(ElementCoffre $element): JsonResponse
     {
         $this->verifierAcces($element);
         $favori = $this->coffreService->toggleFavori($element);
-
         return response()->json(['favori' => $favori]);
+    }
+
+    private function obtenirDataKey(ElementCoffre $element, $user): string
+    {
+        if ($element->coffre->user_id === $user->id) {
+            $kek = SessionHelper::obtenirKek();
+            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($element->coffre->data_key_encrypted, $kek);
+            sodium_memzero($kek);
+            return $dataKey;
+        }
+        $share = ShareCoffre::where('coffre_id', $element->coffre->id)->where('destinataire_id', $user->id)->where('statut', 'accepte')->firstOrFail();
+        $clePrivee = SessionHelper::obtenirClePrivee();
+        return app(RsaCryptoService::class)->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
     }
 
     private function verifierAcces(ElementCoffre $element): void
     {
         $user = auth()->user();
-        if ($element->coffre->user_id === $user->id) {
-            return;
-        }
-
-        $shareExiste = ShareCoffre::where('coffre_id', $element->coffre->id)
-            ->where('destinataire_id', $user->id)
-            ->where('statut', 'accepte')
-            ->exists();
-
-        if (!$shareExiste) {
-            abort(403, 'Accès non autorisé.');
-        }
+        if ($element->coffre->user_id === $user->id) return;
+        $shareExiste = ShareCoffre::where('coffre_id', $element->coffre->id)->where('destinataire_id', $user->id)->where('statut', 'accepte')->exists();
+        if (!$shareExiste) abort(403, 'Accès non autorisé.');
     }
 }

@@ -78,7 +78,7 @@
                                     <div style="display:flex; align-items:center; gap:6px;">
                                         <span style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $member->user->name }}</span>
                                         @if($member->role === 'owner')
-                                            <span style="font-size:0.65rem; color:#2d9fd4; font-weight:700; background:rgba(45,159,212,0.1); border-radius:20px; padding:1px 6px;">OWNER</span>
+                                            <span style="font-size:0.65rem; color:#2d9fd4; font-weight:700; background:rgba(45,159,212,0.1); border-radius:20px; padding:1px 6px;">PROPRIETAIRE</span>
                                         @endif
                                     </div>
                                     <div style="font-size:0.72rem; color:var(--text-muted);">{{ $member->user->email }}</div>

@@ -24,33 +24,65 @@ class FamilleController extends Controller
     public function index(): View
     {
         $user = auth()->user();
+        $kek = SessionHelper::obtenirKek();
         $group = FamilyGroup::where('owner_id', $user->id)->with('members.user')->first();
-        $membership = FamilyMember::where('user_id', $user->id)->with('group.owner.familyGroup')->first();
+        $membership = FamilyMember::where('user_id', $user->id)
+            ->where('role', 'member')
+            ->with('group.owner')
+            ->first();
 
         $secretsPartages = collect();
+        $elementsFamiliaux = collect();
+
         if ($membership || $group) {
             $familyGroup = $group ?? $membership->group;
 
-            if ($familyGroup?->coffre_id) {
-                $secretsPartages = ShareCoffre::with(['coffre', 'proprietaire'])
-                    ->where('coffre_id', $familyGroup->coffre_id)
-                    ->where('statut', 'accepte')
-                    ->get();
+            if ($familyGroup?->coffre_id && $kek) {
+                $coffreFamille = Coffre::find($familyGroup->coffre_id);
+                if ($coffreFamille) {
+                    try {
+                        if ($group) {
+                            $dataKey = app(\App\Services\Coffre\CleManagementService::class)
+                                ->dechiffrerDataKeyCoffre($coffreFamille->data_key_encrypted, $kek);
+                        } else {
+                            $share = ShareCoffre::where('coffre_id', $coffreFamille->id)
+                                ->where('destinataire_id', $user->id)
+                                ->where('statut', 'accepte')
+                                ->first();
+                            $clePrivee = SessionHelper::obtenirClePrivee();
+                            $dataKey   = $share
+                                ? app(\App\Services\Crypto\RsaCryptoService::class)
+                                    ->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee)
+                                : null;
+                        }
 
-                if ($group) {
-                    $memberIds = $group->members->pluck('user_id')->toArray();
-                    $secretsSupplementaires = ShareCoffre::with(['coffre', 'proprietaire', 'destinataire'])
-                        ->where('proprietaire_id', $user->id)
-                        ->whereIn('destinataire_id', $memberIds)
-                        ->where('statut', 'accepte')
-                        ->whereNotIn('coffre_id', [$familyGroup->coffre_id])
-                        ->get();
-                    $secretsPartages = $secretsPartages->merge($secretsSupplementaires)->unique('id');
+                        if (isset($dataKey)) {
+                            $elementsFamiliaux = app(\App\Services\Coffre\CoffreService::class)
+                                ->listerElements($coffreFamille, $dataKey);
+                            sodium_memzero($dataKey);
+                        }
+                    } catch (\Exception $e) {
+                        \Log::warning('Échec déchiffrement coffre familial', [
+                            'user_id' => $user->id,
+                            'exception' => $e->getMessage(),
+                        ]);
+                    }
                 }
+            }
+
+            if ($group) {
+                $memberIds = $group->members->pluck('user_id')->toArray();
+                $secretsPartages = \App\Models\ShareCoffre::with(['coffre', 'proprietaire', 'destinataire'])
+                    ->where('proprietaire_id', $user->id)
+                    ->whereIn('destinataire_id', $memberIds)
+                    ->where('statut', 'accepte')
+                    ->whereNotIn('coffre_id', array_filter([$familyGroup->coffre_id]))
+                    ->get()
+                    ->unique('coffre_id');
             }
         }
 
-        return view('famille.index', compact('user', 'group', 'membership', 'secretsPartages'));
+        return view('famille.index', compact('user', 'group', 'membership', 'secretsPartages', 'elementsFamiliaux'));
     }
 
     /**
