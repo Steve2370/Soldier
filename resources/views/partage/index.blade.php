@@ -74,20 +74,23 @@
 
                         <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:10px;">Partager avec</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
-                            <button type="button" @click="modePartage='individuel'"
-                                    :style="modePartage==='individuel' ? 'background:rgba(45,159,212,0.15); border-color:rgba(45,159,212,0.5); color:#2d9fd4;' : 'background:var(--bg-elevated); border-color:var(--border); color:var(--text-muted);'"
-                                    style="flex:1; padding:9px; border-radius:8px; border:1px solid; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:'Audiowide',sans-serif; display:flex; align-items:center; justify-content:center; gap:6px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;" @click="modePartage='individuel'">
+                                <div :style="modePartage==='individuel' ? 'width:18px; height:18px; border-radius:50%; border:2px solid var(--accent); background:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;' : 'width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;'">
+                                    <div x-show="modePartage==='individuel'" style="width:8px; height:8px; border-radius:50%; background:#fff;"></div>
+                                </div>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                Un utilisateur
-                            </button>
-                            @if(auth()->user()->subscribed('famille') && isset($familyGroup) && $familyGroup && $familyGroup->members->where('role','member')->count() > 0)
-                                <button type="button" @click="modePartage='famille'"
-                                        :style="modePartage==='famille' ? 'background:rgba(45,159,212,0.15); border-color:rgba(45,159,212,0.5); color:#2d9fd4;' : 'background:var(--bg-elevated); border-color:var(--border); color:var(--text-muted);'"
-                                        style="flex:1; padding:9px; border-radius:8px; border:1px solid; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:'Audiowide',sans-serif; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Un utilisateur</span>
+                            </label>
+
+                        @if(auth()->user()->subscribed('famille') && isset($familyGroup) && $familyGroup && $familyGroup->members->where('role','member')->count() > 0)
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;" @click="modePartage='famille'">
+                                    <div :style="modePartage==='famille' ? 'width:18px; height:18px; border-radius:50%; border:2px solid var(--accent); background:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;' : 'width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;'">
+                                        <div x-show="modePartage==='famille'" style="width:8px; height:8px; border-radius:50%; background:#fff;"></div>
+                                    </div>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                    Groupe famille
+                                    <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Groupe famille</span>
                                     <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:1px 6px; font-size:0.65rem; font-weight:700;">{{ $familyGroup->members->where('role','member')->count() }} membres</span>
-                                </button>
+                                </label>
                             @endif
                         </div>
 
