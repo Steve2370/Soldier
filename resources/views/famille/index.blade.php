@@ -45,6 +45,7 @@
 
             @else
                 @php $currentGroup = $group ?? $membership->group; @endphp
+
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:24px; margin-bottom:20px;">
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
                         <div>
@@ -62,7 +63,7 @@
                         <div style="background:linear-gradient(90deg,#217eaa,#2d9fd4); height:100%; width:{{ ($currentGroup->members->count() / 6) * 100 }}%; border-radius:4px;"></div>
                     </div>
 
-                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:{{ $group && !$currentGroup->isFull() ? '20px' : '0' }};">
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:20px;">
                         @foreach($currentGroup->members as $member)
                             <div style="background:var(--bg-elevated); border:1px solid {{ $member->role === 'owner' ? 'rgba(45,159,212,0.25)' : 'rgba(255,255,255,0.05)' }}; border-radius:10px; padding:11px 14px; display:flex; align-items:center; gap:12px;">
                                 <div style="width:36px; height:36px; border-radius:50%; background:{{ $member->role === 'owner' ? 'var(--accent)' : 'var(--bg-card)' }}; border:1px solid {{ $member->role === 'owner' ? 'rgba(45,159,212,0.4)' : 'var(--border)' }}; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; flex-shrink:0; overflow:hidden;">
@@ -78,7 +79,7 @@
                                     <div style="display:flex; align-items:center; gap:6px;">
                                         <span style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $member->user->name }}</span>
                                         @if($member->role === 'owner')
-                                            <span style="font-size:0.65rem; color:#2d9fd4; font-weight:700; background:rgba(45,159,212,0.1); border-radius:20px; padding:1px 6px;">PROPRIETAIRE</span>
+                                            <span style="font-size:0.65rem; color:#2d9fd4; font-weight:700; background:rgba(45,159,212,0.1); border-radius:20px; padding:1px 6px;">OWNER</span>
                                         @endif
                                     </div>
                                     <div style="font-size:0.72rem; color:var(--text-muted);">{{ $member->user->email }}</div>
@@ -104,7 +105,6 @@
                                     Inviter →
                                 </button>
                             </form>
-                            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:6px;">L'utilisateur doit avoir un compte Soldier existant.</p>
                         </div>
                     @elseif($membership)
                         <div style="border-top:1px solid var(--border-primary); padding-top:14px; display:flex; align-items:center; justify-content:space-between;">
@@ -140,7 +140,8 @@
                                     Voir →
                                 </a>
                                 @if($group)
-                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" onsubmit="return confirm('Supprimer ce service ?')">                                        @csrf @method('DELETE')
+                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" onsubmit="return confirm('Supprimer ce service ?')">
+                                        @csrf @method('DELETE')
                                         <button type="submit" style="background:rgba(239,68,68,0.08); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; padding:4px 10px; font-size:0.75rem; cursor:pointer;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                                         </button>
@@ -156,33 +157,6 @@
                     @endforelse
                 </div>
 
-                @if($secretsPartages->count() > 0)
-                    <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:24px; margin-top:16px;">
-                        <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px; display:flex; align-items:center; gap:8px;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            Secrets partagés dans le groupe
-                        </h3>
-                    @forelse($secretsPartages as $share)
-                        <div style="background:var(--bg-elevated); border:1px solid var(--border-primary); border-radius:10px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px;">
-                            <div style="width:36px; height:36px; background:rgba(45,159,212,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            </div>
-                            <div style="flex:1;">
-                                <div style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $share->coffre->nom }}</div>
-                                <div style="font-size:0.72rem; color:var(--text-muted);">
-                                    Partagé par {{ $share->proprietaire->name }}
-                                    @if($share->accepte_le) · {{ $share->accepte_le->diffForHumans() }} @endif
-                                </div>
-                            </div>
-                            <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Actif</span>
-                        </div>
-                    @empty
-                        <div style="text-align:center; padding:24px; border:1px dashed rgba(45,159,212,0.2); border-radius:10px;">
-                            <p style="font-size:0.85rem; color:var(--text-muted);">Aucun secret partagé dans le groupe pour l'instant.</p>
-                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Partagez un coffre depuis la page <a href="{{ route('partage.index') }}" style="color:#2d9fd4;">Partage</a>.</p>
-                        </div>
-                    @endforelse
-                </div>
             @endif
         </div>
 
@@ -213,11 +187,11 @@
                             <div style="font-size:0.75rem; color:var(--text-muted);">/ 6 membres</div>
                         </div>
                         <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:16px 18px;">
-                            <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $group->members->count() }}</div>
+                            <div style="font-size:1.75rem; font-weight:800; color:#22c55e;">{{ 6 - $group->members->count() }}</div>
                             <div style="font-size:0.75rem; color:var(--text-muted);">places libres</div>
                         </div>
                         <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:16px 18px;">
-                            <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $group->members->count() }}</div>
+                            <div style="font-size:1.75rem; font-weight:800; color:#f59e0b;">{{ $group->members->where('role','member')->count() }}</div>
                             <div style="font-size:0.75rem; color:var(--text-muted);">invités</div>
                         </div>
                     </div>
@@ -282,7 +256,7 @@
                             </div>
                             <div style="flex:1;">
                                 <div style="font-size:0.875rem; font-weight:700; color:var(--text-primary); margin-bottom:2px;">Coffre "Famille" actif</div>
-                                <div style="font-size:0.75rem; color:var(--text-muted);">Tous les membres ont accès. Ajoutez vos services partagés depuis le dashboard.</div>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">Tous les membres ont accès. Ajoutez vos services depuis le dashboard.</div>
                             </div>
                             <a href="{{ route('dashboard') }}" style="background:rgba(45,159,212,0.1); color:#2d9fd4; border:1px solid rgba(45,159,212,0.3); border-radius:8px; padding:7px 14px; font-size:0.78rem; font-weight:700; text-decoration:none; font-family:'Audiowide',sans-serif;">
                                 Voir →
@@ -310,18 +284,16 @@
                     <p style="font-size:0.875rem; color:var(--text-muted); margin-bottom:12px; line-height:1.7; max-width:420px; margin-left:auto; margin-right:auto;">
                         Partagez Soldier avec votre famille. Un coffre commun créé automatiquement, accès immédiat pour tous les membres.
                     </p>
-
                     <div style="display:flex; justify-content:center; gap:20px; margin-bottom:32px; flex-wrap:wrap;">
-                        @foreach(['Coffre familial commun','Jusqu\'à 6 membres','Partage automatique','3,99$/mois'] as $feat)
+                        @foreach(['Coffre familial commun','Jusqu\'à 6 membres','Partage automatique','4,99$/mois'] as $feat)
                             <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--text-muted);">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                 {{ $feat }}
                             </div>
                         @endforeach
                     </div>
-
                     <a href="{{ route('pricing') }}" style="display:inline-block; background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border-radius:12px; padding:14px 40px; font-size:0.9rem; font-weight:700; text-decoration:none; font-family:'Audiowide',sans-serif;">
-                        Commencer — 3,99$/mois →
+                        Commencer — 4,99$/mois →
                     </a>
                     <p style="font-size:0.75rem; color:var(--text-muted); margin-top:12px;">Annulable à tout moment · Paiement sécurisé par Stripe</p>
                 </div>
