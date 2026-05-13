@@ -304,15 +304,13 @@
                 Partage
             </a>
 
-            @if(auth()->user()->subscribed('famille') || auth()->user()->familyMembership)
-                <a href="{{ route('famille.index') }}" class="nav-item {{ request()->routeIs('famille.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    Famille
-                    @if(!auth()->user()->subscribed('famille'))
-                        <span style="background:rgba(45,159,212,0.15); color:#2d9fd4; border-radius:20px; padding:1px 6px; font-size:0.6rem; font-weight:700; margin-left:auto;">NEW</span>
-                    @endif
-                </a>
-            @endif
+            <a href="{{ route('famille.index') }}" class="nav-item {{ request()->routeIs('famille.*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Famille
+                @if(!auth()->user()->subscribed('famille') && !auth()->user()->familyMembership)
+                    <span style="background:rgba(45,159,212,0.15); color:#2d9fd4; border-radius:20px; padding:1px 6px; font-size:0.6rem; font-weight:700; margin-left:auto;">NEW</span>
+                @endif
+            </a>
 
             @if(auth()->user()->is_admin)
                 <div class="nav-section-label">Administration</div>
