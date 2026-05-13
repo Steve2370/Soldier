@@ -140,8 +140,7 @@
                                     Voir →
                                 </a>
                                 @if($group)
-                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" onsubmit="return confirm('Supprimer {{ addslashes($element[\'label\']) }} ?')">
-                                        @csrf @method('DELETE')
+                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" onsubmit="return confirm('Supprimer ce service ?')">                                        @csrf @method('DELETE')
                                         <button type="submit" style="background:rgba(239,68,68,0.08); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; padding:4px 10px; font-size:0.75rem; cursor:pointer;">
                                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                                         </button>
