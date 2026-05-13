@@ -95,7 +95,7 @@ Route::post('/stripe/webhook', [
     WebhookController::class, 'handleWebhook'
 ])->name('cashier.webhook');
 
-Route::middleware(['auth', 'famille'])->prefix('famille')->name('famille.')->group(function () {
+Route::middleware(['auth'])->prefix('famille')->name('famille.')->group(function () {
     Route::get('/', [FamilleController::class, 'index'])->name('index');
     Route::post('/creer', [FamilleController::class, 'creerGroupe'])->name('creer');
     Route::post('/inviter', [FamilleController::class, 'inviter'])->name('inviter');

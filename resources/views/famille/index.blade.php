@@ -12,7 +12,7 @@
             <p style="font-size:0.85rem; color:var(--text-muted); margin-left:52px;">Gérez votre groupe et vos secrets partagés</p>
         </div>
 
-        <div style="display:flex; gap:16px; border-bottom:1px solid var(--border-primary); margin-bottom:28px;">
+        <div style="background:none; border:none; padding:10px 28px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:\'Audiowide\',sans-serif; display:flex; align-items:center; gap:6px;">
             <button @click="onglet='groupe'"
                     :style="onglet==='groupe' ? 'border-bottom:2px solid var(--accent); color:var(--accent-bright);' : 'color:var(--text-muted);'"
                     style="background:none; border:none; padding:10px 18px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:\'Audiowide\',sans-serif; display:flex; align-items:center; gap:6px;">
