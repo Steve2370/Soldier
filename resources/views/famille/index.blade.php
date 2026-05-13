@@ -120,8 +120,39 @@
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:24px; margin-top:16px;">
                     <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px; display:flex; align-items:center; gap:8px;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        Secrets partagés dans le groupe
+                        Secrets du coffre famille
                     </h3>
+                    @forelse($elementsFamiliaux ?? [] as $element)
+                        <div style="background:var(--bg-elevated); border:1px solid var(--border-primary); border-radius:10px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px;">
+                            <div style="width:36px; height:36px; background:rgba(45,159,212,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden;">
+                                @if($element['favicon_url'])
+                                    <img src="{{ $element['favicon_url'] }}" style="width:22px; height:22px; object-fit:contain;">
+                                @else
+                                    <span style="font-size:0.8rem; font-weight:700; color:#2d9fd4;">{{ strtoupper(substr($element['label'], 0, 1)) }}</span>
+                                @endif
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $element['label'] }}</div>
+                                <div style="font-size:0.72rem; color:var(--text-muted);">{{ ucfirst($element['type']) }}@if($element['url']) · {{ $element['url'] }}@endif</div>
+                            </div>
+                            <a href="{{ route('services.afficher', $element['id']) }}" style="background:rgba(45,159,212,0.1); color:#2d9fd4; border:1px solid rgba(45,159,212,0.3); border-radius:6px; padding:4px 10px; font-size:0.75rem; text-decoration:none; font-family:'Audiowide',sans-serif;">
+                                Voir →
+                            </a>
+                        </div>
+                    @empty
+                        <div style="text-align:center; padding:24px; border:1px dashed rgba(45,159,212,0.2); border-radius:10px;">
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Aucun secret dans le coffre famille pour l'instant.</p>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Ajoutez des services depuis le dashboard en choisissant le coffre <strong style="color:#2d9fd4;">Famille</strong>.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                @if($secretsPartages->count() > 0)
+                    <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:24px; margin-top:16px;">
+                        <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px; display:flex; align-items:center; gap:8px;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            Secrets partagés dans le groupe
+                        </h3>
                     @forelse($secretsPartages as $share)
                         <div style="background:var(--bg-elevated); border:1px solid var(--border-primary); border-radius:10px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px;">
                             <div style="width:36px; height:36px; background:rgba(45,159,212,0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
