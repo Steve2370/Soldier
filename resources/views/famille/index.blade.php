@@ -135,9 +135,7 @@
                                 <div style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $element['label'] }}</div>
                                 <div style="font-size:0.72rem; color:var(--text-muted);">{{ ucfirst($element['type']) }}@if($element['url']) · {{ $element['url'] }}@endif</div>
                             </div>
-                            <a href="{{ route('services.afficher', $element['id']) }}" style="background:rgba(45,159,212,0.1); color:#2d9fd4; border:1px solid rgba(45,159,212,0.3); border-radius:6px; padding:4px 10px; font-size:0.75rem; text-decoration:none; font-family:'Audiowide',sans-serif;">
-                                Voir →
-                            </a>
+                            Voir →
                         </div>
                     @empty
                         <div style="text-align:center; padding:24px; border:1px dashed rgba(45,159,212,0.2); border-radius:10px;">
@@ -172,9 +170,8 @@
                             <p style="font-size:0.85rem; color:var(--text-muted);">Aucun secret partagé dans le groupe pour l'instant.</p>
                             <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Partagez un coffre depuis la page <a href="{{ route('partage.index') }}" style="color:#2d9fd4;">Partage</a>.</p>
                         </div>
-                        @endforelse
-                    </div>
-                @endif
+                    @endforelse
+                </div>
             @endif
         </div>
 
@@ -276,20 +273,9 @@
                                 <div style="font-size:0.875rem; font-weight:700; color:var(--text-primary); margin-bottom:2px;">Coffre "Famille" actif</div>
                                 <div style="font-size:0.75rem; color:var(--text-muted);">Tous les membres ont accès. Ajoutez vos services partagés depuis le dashboard.</div>
                             </div>
-                            <div style="display:flex; gap:6px;">
-                                <a href="{{ route('services.afficher', $element['id']) }}" style="background:rgba(45,159,212,0.1); color:#2d9fd4; border:1px solid rgba(45,159,212,0.3); border-radius:6px; padding:4px 10px; font-size:0.75rem; text-decoration:none; font-family:'Audiowide',sans-serif;">
-                                    Voir →
-                                </a>
-                                @if($group)
-                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}"
-                                          onsubmit="return confirm('Supprimer « {{ $element['label'] }} » ?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" style="background:rgba(239,68,68,0.08); color:#ef4444; border:1px solid rgba(239,68,68,0.2); border-radius:6px; padding:4px 10px; font-size:0.75rem; cursor:pointer; font-family:'Audiowide',sans-serif;">
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
+                            <a href="{{ route('dashboard') }}" style="background:rgba(45,159,212,0.1); color:#2d9fd4; border:1px solid rgba(45,159,212,0.3); border-radius:8px; padding:7px 14px; font-size:0.78rem; font-weight:700; text-decoration:none; font-family:'Audiowide',sans-serif;">
+                                Voir →
+                            </a>
                         </div>
                     @endif
 
