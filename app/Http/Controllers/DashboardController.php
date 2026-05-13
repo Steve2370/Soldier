@@ -163,7 +163,7 @@ class DashboardController extends Controller
      */
     public function modifier(ElementCoffre $element): View
     {
-        $this->verifierAcces($element);
+        $this->verifierAcces($element, true);
         $user = auth()->user();
         $dataKey = $this->obtenirDataKey($element, $user);
         $donnees = $this->coffreService->lireElement($element, $dataKey);
@@ -176,7 +176,7 @@ class DashboardController extends Controller
      */
     public function mettreAJour(StoreElementRequest $request, ElementCoffre $element): RedirectResponse
     {
-        $this->verifierAcces($element);
+        $this->verifierAcces($element, true);
         $user = auth()->user();
         $dataKey = $this->obtenirDataKey($element, $user);
 
@@ -193,7 +193,7 @@ class DashboardController extends Controller
 
     public function supprimer(ElementCoffre $element): RedirectResponse
     {
-        $this->verifierAcces($element);
+        $this->verifierAcces($element, true);
         $label = $element->label;
         $this->coffreService->supprimerDefinitivement($element);
 
@@ -224,11 +224,20 @@ class DashboardController extends Controller
         return app(RsaCryptoService::class)->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
     }
 
-    private function verifierAcces(ElementCoffre $element): void
+    private function verifierAcces(ElementCoffre $element, bool $ecriture = false): void
     {
         $user = auth()->user();
         if ($element->coffre->user_id === $user->id) return;
-        $shareExiste = ShareCoffre::where('coffre_id', $element->coffre->id)->where('destinataire_id', $user->id)->where('statut', 'accepte')->exists();
-        if (!$shareExiste) abort(403, 'Accès non autorisé.');
+
+        $share = ShareCoffre::where('coffre_id', $element->coffre->id)
+            ->where('destinataire_id', $user->id)
+            ->where('statut', 'accepte')
+            ->first();
+
+        if (!$share) abort(403, 'Accès non autorisé.');
+
+        if ($ecriture && $share->permission === 'lecture') {
+            abort(403, 'Vous avez uniquement accès en lecture.');
+        }
     }
 }
