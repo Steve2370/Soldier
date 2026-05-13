@@ -201,6 +201,7 @@ class AuthController extends Controller
             ]);
     }
 
+
     public function showMfa(): View|RedirectResponse
     {
         if (!SessionHelper::obtenirMfaUserIdPending()) {
@@ -324,10 +325,15 @@ class AuthController extends Controller
                 'password' => Hash::make(Str::random(32)),
                 'oauth_provider' => $provider,
                 'oauth_id' => $oauthUser->getId(),
+                'avatar_url' => $oauthUser->getAvatar(),
             ]);
         }
 
         Auth::login($user);
+
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
 
         $extensionRedirect = request()->get('extension_redirect')
             ?? session('extension_redirect');

@@ -10,18 +10,19 @@ use App\Http\Controllers\PasskeyController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\WelcomeController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 
 Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
+
 Route::middleware('guest')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
-
     Route::get('/connexion', [AuthController::class, 'showConnexion'])->name('connexion');
     Route::post('/connexion', [AuthController::class, 'verifierEmail'])->name('connexion.post');
     Route::get('/connexion/password', [AuthController::class, 'showPassword'])->name('connexion.password');
     Route::post('/connexion/password', [AuthController::class, 'connecter'])->name('connexion.password.post');
-
     Route::get('/inscription', [AuthController::class, 'showInscription'])->name('inscription');
     Route::post('/inscription', [AuthController::class, 'inscrire'])->name('inscription.post');
 });
@@ -35,13 +36,38 @@ Route::get('/auth/google/redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth/google/callback', [AuthController::class, 'callbackGoogle'])->name('auth.google.callback');
 
 Route::get('/', fn() => auth()->check() ? redirect()->route('dashboard') : redirect()->route('welcome'));
-Route::middleware(['auth'])->group(function () {
 
+Route::middleware(['auth'])->group(function () {
     Route::get('/oauth/master-password', [AuthController::class, 'showOauthMasterPassword'])->name('oauth.master-password');
     Route::post('/oauth/master-password', [AuthController::class, 'configurerOauthMasterPassword'])->name('oauth.master-password.post');
+    Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
+
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('dashboard')->with('toast', [
+            'type' => 'success',
+            'titre' => 'Email vérifié !',
+            'message' => 'Votre compte est maintenant actif.',
+        ]);
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('toast', [
+            'type' => 'success',
+            'titre' => 'Email envoyé',
+            'message' => 'Un nouveau lien de vérification a été envoyé.',
+        ]);
+    })->middleware('throttle:6,1')->name('verification.send');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
     Route::get('/services/creer', [DashboardController::class, 'creer'])->name('services.creer');
     Route::post('/services', [DashboardController::class, 'stocker'])->name('services.stocker');
     Route::get('/services/{element}', [DashboardController::class, 'afficher'])->name('services.afficher');
@@ -80,8 +106,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/pricing/checkout', [PricingController::class, 'checkout'])->name('pricing.checkout');
     Route::get('/pricing/succes', [PricingController::class, 'succes'])->name('pricing.succes');
     Route::get('/pricing/portail', [PricingController::class, 'portail'])->name('pricing.portail');
-
-    Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -91,9 +115,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users/{user}', [AdminController::class, 'supprimerUser'])->name('users.supprimer');
 });
 
-Route::post('/stripe/webhook', [
-    WebhookController::class, 'handleWebhook'
-])->name('cashier.webhook');
+Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
 Route::middleware(['auth'])->prefix('famille')->name('famille.')->group(function () {
     Route::get('/', [FamilleController::class, 'index'])->name('index');

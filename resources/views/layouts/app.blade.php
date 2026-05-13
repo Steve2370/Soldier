@@ -333,6 +333,8 @@
                 <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; color: #fff; flex-shrink: 0;">
                     @if(auth()->user()->avatar)
                         <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    @elseif(auth()->user()->avatar_url)
+                        <img src="{{ auth()->user()->avatar_url }}" style="width: 100%; height: 100%; object-fit: cover;">
                     @else
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     @endif
