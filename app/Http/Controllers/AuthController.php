@@ -52,6 +52,7 @@ class AuthController extends Controller
 
         $this->cleManagement->initialiserClesUser($user, $request->validated('master_password'));
         Auth::login($user);
+        $user->sendEmailVerificationNotification();
         Mail::to($user->email)->send(new BienvenueMail($user));
         $cles = $this->cleManagement->deverouillerCles($user, $request->validated('master_password'));
         $request->session()->regenerate();
@@ -65,11 +66,11 @@ class AuthController extends Controller
         sodium_memzero($cles['kek']);
         ActivityLogService::log('inscription', 'Nouveau compte créé — ' . $user->email, $user->id);
 
-        return redirect()->route('dashboard')
+        return redirect()->route('verification.notice')
             ->with('toast', [
-                'type' => 'success',
-                'titre' => 'Inscription réussie!',
-                'message' => 'Votre compte a été créé avec succès.',
+                'type'    => 'info',
+                'titre' => 'Vérifiez votre email',
+                'message' => 'Un lien de vérification a été envoyé à ' . $user->email,
             ]);
     }
 

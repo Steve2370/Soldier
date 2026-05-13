@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Notifications\VerificationEmailNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
@@ -93,6 +94,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sharesRecus(): HasMany
     {
         return $this->hasMany(ShareCoffre::class, 'destinataire_id');
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerificationEmailNotification());
     }
 
     public function clesUser(): HasOne

@@ -51,15 +51,18 @@ class PartageController extends Controller
             ->get();
 
         $coffres = $user->coffres()->with('elements')->withCount('elements')->get();
-        $familyGroup = FamilyGroup::where('owner_id', $user->id)->with('members.user')->first();
+        $familyGroup = FamilyGroup::where('owner_id', $user->id)
+            ->with('members.user')
+            ->first();
         $familyMembers = $familyGroup ? $familyGroup->members->where('role', 'member') : collect();
 
         return view('partage.index', compact(
             'partagesEnvoyes',
             'partagesRecus',
             'invitationsEnAttente',
-            'familyGroup', 'familyMembers',
-            'coffres'
+            'coffres',
+            'familyGroup',
+            'familyMembers'
         ));
     }
 
@@ -70,22 +73,26 @@ class PartageController extends Controller
      */
     public function envoyer(Request $request): RedirectResponse
     {
-        $request->validate([
-            'coffre_id' => ['required', 'exists:coffres,id'],
-            'email' => ['required', 'email', 'max:255'],
-            'permission' => ['required', 'in:lecture,ecriture'],
-            'element_ids' => ['required', 'array', 'min:1'],
-            'element_ids.*' => ['integer', 'exists:elements_coffres,id'],
-        ]);
+        if ($request->partage_groupe == '1') {
+            $request->validate([
+                'coffre_id' => ['required', 'exists:coffres,id'],
+                'permission' => ['required', 'in:lecture,ecriture'],
+                'element_ids' => ['required', 'array', 'min:1'],
+                'element_ids.*' => ['integer', 'exists:elements_coffres,id'],
+            ]);
+        } else {
+            $request->validate([
+                'coffre_id' => ['required', 'exists:coffres,id'],
+                'email' => ['required', 'email', 'max:255'],
+                'permission' => ['required', 'in:lecture,ecriture'],
+                'element_ids' => ['required', 'array', 'min:1'],
+                'element_ids.*' => ['integer', 'exists:elements_coffres,id'],
+            ]);
+        }
 
         $user = auth()->user();
         $coffre = Coffre::findOrFail($request->coffre_id);
-
         if ($coffre->user_id !== $user->id) abort(403);
-
-        if ($request->email === $user->email) {
-            return back()->withErrors(['email' => 'Vous ne pouvez pas partager avec vous-même.']);
-        }
 
         $kek = SessionHelper::obtenirKek();
         $dataKey = $this->keyManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
@@ -95,6 +102,67 @@ class PartageController extends Controller
         if ($elements->isEmpty()) {
             sodium_memzero($dataKey);
             return back()->withErrors(['element_ids' => 'Aucun élément valide sélectionné.']);
+        }
+
+        if ($request->partage_groupe == '1') {
+            $familyGroup = FamilyGroup::where('owner_id', $user->id)
+                ->with('members.user.clesUser')
+                ->first();
+
+            if (!$familyGroup) {
+                sodium_memzero($dataKey);
+                return back()->withErrors(['email' => 'Aucun groupe famille trouvé.']);
+            }
+
+            $count = 0;
+
+            foreach ($familyGroup->members->where('role', 'member') as $membre) {
+                $destinataire = $membre->user;
+                $clePublique = $destinataire->clesUser?->public_key;
+                if (!$clePublique) continue;
+
+                $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique($dataKey, $clePublique);
+
+                if (ShareCoffre::where('coffre_id', $coffre->id)->where('destinataire_id', $destinataire->id)->exists()) continue;
+
+                $token = bin2hex(random_bytes(32));
+                $tokenHash = hash('sha256', $token);
+
+                InvitationPartage::create([
+                    'coffre_id' => $coffre->id,
+                    'expediteur_id' => $user->id,
+                    'email_destinataire' => $destinataire->email,
+                    'token_hash' => $tokenHash,
+                    'data_key_encrypted' => $dataKeyChiffree,
+                    'permission' => $request->permission,
+                    'statut' => 'en_attente',
+                    'expire_le' => now()->addHours(72),
+                    'element_ids' => json_encode($request->element_ids),
+                ]);
+
+                Mail::to($destinataire->email)->send(new InvitationPartageMail(
+                    $user,
+                    $destinataire->email,
+                    $coffre->nom,
+                    $request->permission,
+                    route('partage.accepter', $token)
+                ));
+                $count++;
+            }
+
+            sodium_memzero($dataKey);
+            ActivityLogService::log('partage_envoye', "Partage groupe famille — coffre : {$coffre->nom} — {$count} membres");
+
+            return redirect()->route('partage.index')->with('toast', [
+                'type' => 'success',
+                'titre' => 'Partage envoyé',
+                'message' => "Invitation envoyée à {$count} membre(s) de votre groupe famille.",
+            ]);
+        }
+
+        if ($request->email === $user->email) {
+            sodium_memzero($dataKey);
+            return back()->withErrors(['email' => 'Vous ne pouvez pas partager avec vous-même.']);
         }
 
         $destinataire = User::where('email', $request->email)->first();
@@ -134,26 +202,14 @@ class PartageController extends Controller
         ]);
 
         Mail::to($request->email)->send(new InvitationPartageMail(
-            $user, $request->email, $coffre->nom,
+            $user,
+            $request->email,
+            $coffre->nom,
             $request->permission,
             route('partage.accepter', $token)
         ));
 
         ActivityLogService::log('partage_envoye', "Partage envoyé à {$request->email} — coffre : {$coffre->nom}");
-
-        $familyGroup = FamilyGroup::where('owner_id', $user->id)->with('members.user')->first();
-        if ($familyGroup && $destinataire && $familyGroup->members->where('user_id', $destinataire->id)->count() > 0) {
-            foreach ($familyGroup->members as $membre) {
-                if ($membre->user_id !== $user->id) {
-                    Mail::to($membre->user->email)->send(new \App\Mail\PartageGroupeFamilleMail(
-                        $user,
-                        $destinataire,
-                        $coffre->nom,
-                        route('partage.accepter', $token)
-                    ));
-                }
-            }
-        }
 
         return redirect()->route('partage.index')->with('toast', [
             'type' => 'success',

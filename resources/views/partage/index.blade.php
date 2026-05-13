@@ -32,12 +32,70 @@
                                 style="cursor: pointer;"
                                 @change="coffreSelectionne = $event.target.value"
                         >
-                            <option value="">Sélectionner un coffre...</option>
-                            @foreach($coffres as $coffre)
-                                <option value="{{ $coffre->id }}" {{ old('coffre_id') == $coffre->id ? 'selected' : '' }}>
-                                    {{ $coffre->nom }} ({{ $coffre->elements_count }} entrée{{ $coffre->elements_count > 1 ? 's' : '' }})
-                                </option>
-                            @endforeach
+                            {{-- Toggle destinataire --}}
+                            <div style="margin-top:16px; margin-bottom:18px;" x-data="{ modePartage: 'individuel' }">
+
+                                {{-- Selector --}}
+                                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:10px;">Partager avec</label>
+                                <div style="display:flex; gap:8px; margin-bottom:16px;">
+                                    <button type="button" @click="modePartage='individuel'"
+                                            :style="modePartage==='individuel' ? 'background:rgba(45,159,212,0.15); border-color:rgba(45,159,212,0.5); color:#2d9fd4;' : 'background:var(--bg-elevated); border-color:var(--border); color:var(--text-muted);'"
+                                            style="flex:1; padding:9px; border-radius:8px; border:1px solid; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:'Audiowide',sans-serif; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        Un utilisateur
+                                    </button>
+                                    @if(auth()->user()->subscribed('famille') && isset($familyGroup) && $familyGroup)
+                                        <button type="button" @click="modePartage='famille'"
+                                                :style="modePartage==='famille' ? 'background:rgba(45,159,212,0.15); border-color:rgba(45,159,212,0.5); color:#2d9fd4;' : 'background:var(--bg-elevated); border-color:var(--border); color:var(--text-muted);'"
+                                                style="flex:1; padding:9px; border-radius:8px; border:1px solid; font-size:0.82rem; font-weight:600; cursor:pointer; font-family:'Audiowide',sans-serif; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                            Groupe famille
+                                            <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:1px 6px; font-size:0.65rem; font-weight:700;">{{ $familyGroup->members->count() }} membres</span>
+                                        </button>
+                                    @endif
+                                </div>
+
+                                {{-- Mode individuel --}}
+                                <div x-show="modePartage==='individuel'" x-transition>
+                                    <input type="hidden" name="partage_groupe" value="0" x-bind:disabled="modePartage==='famille'">
+                                    <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">Email du destinataire <span style="color:var(--danger);">*</span></label>
+                                    <input type="email" id="email" name="email"
+                                           class="input @error('email') input-error @enderror"
+                                           placeholder="destinataire@exemple.com"
+                                           value="{{ old('email') }}"
+                                           x-bind:required="modePartage==='individuel'">
+                                    @error('email') <p class="error-msg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> {{ $message }}</p> @enderror
+                                </div>
+
+                                {{-- Mode famille --}}
+                                @if(auth()->user()->subscribed('famille') && isset($familyGroup) && $familyGroup)
+                                    <div x-show="modePartage==='famille'" x-transition>
+                                        <input type="hidden" name="partage_groupe" value="1" x-bind:disabled="modePartage==='individuel'">
+                                        <div style="background:rgba(45,159,212,0.05); border:1px solid rgba(45,159,212,0.2); border-radius:10px; padding:14px;">
+                                            <div style="font-size:0.78rem; color:#2d9fd4; font-weight:700; margin-bottom:10px;">Membres qui recevront ce partage :</div>
+                                            <div style="display:flex; flex-direction:column; gap:6px;">
+                                                @foreach($familyGroup->members->where('role','member') as $membre)
+                                                    <div style="display:flex; align-items:center; gap:10px; padding:7px 10px; background:var(--bg-card); border-radius:8px;">
+                                                        <div style="width:28px; height:28px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; color:#fff; overflow:hidden; flex-shrink:0;">
+                                                            @if($membre->user->avatar)
+                                                                <img src="{{ Storage::url($membre->user->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
+                                                            @else
+                                                                {{ strtoupper(substr($membre->user->name, 0, 1)) }}
+                                                            @endif
+                                                        </div>
+                                                        <div>
+                                                            <div style="font-size:0.82rem; font-weight:600; color:var(--text-primary);">{{ $membre->user->name }}</div>
+                                                            <div style="font-size:0.7rem; color:var(--text-muted);">{{ $membre->user->email }}</div>
+                                                        </div>
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" style="margin-left:auto;"><polyline points="20 6 9 17 4 12"/></svg>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:10px;">Tous les membres du groupe recevront ce partage simultanément.</p>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </select>
                         @error('coffre_id') <p class="error-msg">...</p> @enderror
 

@@ -12,16 +12,16 @@
             <p style="font-size:0.85rem; color:var(--text-muted); margin-left:52px;">Gérez votre groupe et vos secrets partagés</p>
         </div>
 
-        <div style="background:none; border:none; padding:10px 28px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:\'Audiowide\',sans-serif; display:flex; align-items:center; gap:6px;">
+        <div style="display:flex; gap:24px; border-bottom:1px solid var(--border-primary); margin-bottom:28px;">
             <button @click="onglet='groupe'"
                     :style="onglet==='groupe' ? 'border-bottom:2px solid var(--accent); color:var(--accent-bright);' : 'color:var(--text-muted);'"
-                    style="background:none; border:none; padding:10px 18px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:\'Audiowide\',sans-serif; display:flex; align-items:center; gap:6px;">
+                    style="background:none; border:none; padding:10px 24px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:'Audiowide',sans-serif; display:flex; align-items:center; gap:6px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Groupe
             </button>
             <button @click="onglet='coffre'"
                     :style="onglet==='coffre' ? 'border-bottom:2px solid var(--accent); color:var(--accent-bright);' : 'color:var(--text-muted);'"
-                    style="background:none; border:none; padding:10px 18px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:\'Audiowide\',sans-serif; display:flex; align-items:center; gap:6px;">
+                    style="background:none; border:none; padding:10px 24px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:'Audiowide',sans-serif; display:flex; align-items:center; gap:6px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 Coffre famille
                 @if(auth()->user()->subscribed('famille'))
