@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FamilyGroup extends Model
 {
-    protected $fillable = ['owner_id', 'nom'];
+    protected $fillable = ['owner_id', 'nom', 'coffre_id'];
 
     public function owner()
     {

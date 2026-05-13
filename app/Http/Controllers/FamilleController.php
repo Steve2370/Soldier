@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SessionHelper;
 use App\Mail\MembreFamilleAjouteMail;
 use App\Mail\MembreInviteFamilleMail;
+use App\Models\Coffre;
 use App\Models\FamilyGroup;
 use App\Models\FamilyMember;
+use App\Models\ShareCoffre;
 use App\Models\User;
+use App\Services\Coffre\CleManagementService;
+use App\Services\Coffre\CoffreService;
+use App\Services\Crypto\RsaCryptoService;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,6 +30,9 @@ class FamilleController extends Controller
         return view('famille.index', compact('user', 'group', 'membership'));
     }
 
+    /**
+     * @throws \SodiumException
+     */
     public function creerGroupe(): RedirectResponse
     {
         $user = auth()->user();
@@ -32,7 +41,18 @@ class FamilleController extends Controller
             return back()->with('toast', ['type' => 'error', 'titre' => 'Erreur', 'message' => 'Vous avez déjà un groupe famille.']);
         }
 
-        $group = FamilyGroup::create(['owner_id' => $user->id, 'nom' => 'Ma famille']);
+        $kek = SessionHelper::obtenirKek();
+        $coffre = app(CoffreService::class)->creerCoffre($user, [
+            'nom' => 'Famille',
+            'couleur' => '#2d9fd4',
+        ], $kek);
+        sodium_memzero($kek);
+
+        $group = FamilyGroup::create([
+            'owner_id' => $user->id,
+            'nom' => 'Ma famille',
+            'coffre_id' => $coffre->id,
+        ]);
 
         FamilyMember::create([
             'family_group_id' => $group->id,
@@ -41,16 +61,19 @@ class FamilleController extends Controller
             'joined_at' => now(),
         ]);
 
-        ActivityLogService::log('famille_groupe_cree', 'Groupe famille créé');
+        ActivityLogService::log('famille_groupe_cree', 'Groupe famille créé avec coffre familial');
 
-        return back()->with('toast', ['type' => 'success', 'titre' => 'Groupe créé', 'message' => 'Invitez maintenant vos membres.']);
+        return back()->with('toast', ['type' => 'success', 'titre' => 'Groupe créé !', 'message' => 'Votre coffre familial est prêt. Invitez vos membres.']);
     }
 
+    /**
+     * @throws \SodiumException
+     */
     public function inviter(Request $request): RedirectResponse
     {
         $request->validate(['email' => ['required', 'email']]);
 
-        $user = auth()->user();
+        $user  = auth()->user();
         $group = FamilyGroup::where('owner_id', $user->id)->with('members')->firstOrFail();
 
         if ($group->isFull()) {
@@ -77,6 +100,36 @@ class FamilleController extends Controller
             'role' => 'member',
             'joined_at' => now(),
         ]);
+
+        if ($group->coffre_id) {
+            $coffre = Coffre::find($group->coffre_id);
+            $kek  = SessionHelper::obtenirKek();
+            $dataKey = app(CleManagementService::class)
+                ->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
+            sodium_memzero($kek);
+
+            $clePublique = $destinataire->clesUser?->public_key;
+            $dataKeyChiffree = null;
+
+            if ($clePublique) {
+                $dataKeyChiffree = app(RsaCryptoService::class)
+                    ->chiffrerAvecClePublique($dataKey, $clePublique);
+            }
+            sodium_memzero($dataKey);
+
+            if ($dataKeyChiffree) {
+                ShareCoffre::create([
+                    'coffre_id' => $coffre->id,
+                    'proprietaire_id' => $user->id,
+                    'destinataire_id' => $destinataire->id,
+                    'data_key_destinataire_encrypted' => $dataKeyChiffree,
+                    'permission' => 'ecriture',
+                    'statut' => 'accepte',
+                    'accepte_le' => now(),
+                    'element_ids' => null,
+                ]);
+            }
+        }
 
         Mail::to($user->email)->send(new MembreFamilleAjouteMail($user, $destinataire));
         Mail::to($destinataire->email)->send(new MembreInviteFamilleMail($user, $destinataire));
