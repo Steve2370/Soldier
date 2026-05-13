@@ -63,9 +63,17 @@ class FamilleController extends Controller
                         }
 
                         if (isset($dataKey)) {
-                            $elementsFamiliaux = app(\App\Services\Coffre\CoffreService::class)
+                            $elementsFamiliaux = app(CoffreService::class)
                                 ->listerElements($coffreFamille, $dataKey);
+                            \Log::info('Famille elements', [
+                                'count' => count($elementsFamiliaux),
+                                'elements' => $elementsFamiliaux,
+                            ]);
                             sodium_memzero($dataKey);
+                            \Log::info('Famille elements', [
+                                'count' => count($elementsFamiliaux),
+                                'elements' => $elementsFamiliaux,
+                            ]);
                         }
                     } catch (\Exception $e) {
                         \Log::warning('Échec déchiffrement coffre familial', [
