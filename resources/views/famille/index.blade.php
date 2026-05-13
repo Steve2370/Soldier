@@ -68,6 +68,8 @@
                                 <div style="width:36px; height:36px; border-radius:50%; background:{{ $member->role === 'owner' ? 'var(--accent)' : 'var(--bg-card)' }}; border:1px solid {{ $member->role === 'owner' ? 'rgba(45,159,212,0.4)' : 'var(--border)' }}; display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; flex-shrink:0; overflow:hidden;">
                                     @if($member->user->avatar)
                                         <img src="{{ Storage::url($member->user->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
+                                    @elseif($member->user->avatar_url)
+                                        <img src="{{ $member->user->avatar_url }}" style="width:100%; height:100%; object-fit:cover;">
                                     @else
                                         {{ strtoupper(substr($member->user->name, 0, 1)) }}
                                     @endif
@@ -115,7 +117,7 @@
                     @endif
                 </div>
 
-                <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:24px;">
+                <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:24px; margin-top:16px;">
                     <h3 style="font-size:0.9rem; font-weight:700; color:var(--text-primary); margin-bottom:16px; display:flex; align-items:center; gap:8px;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         Secrets partagés dans le groupe
@@ -127,14 +129,17 @@
                             </div>
                             <div style="flex:1;">
                                 <div style="font-size:0.875rem; font-weight:600; color:var(--text-primary);">{{ $share->coffre->nom }}</div>
-                                <div style="font-size:0.72rem; color:var(--text-muted);">Partagé par {{ $share->proprietaire->name }} · {{ $share->accepte_le?->diffForHumans() }}</div>
+                                <div style="font-size:0.72rem; color:var(--text-muted);">
+                                    Partagé par {{ $share->proprietaire->name }}
+                                    @if($share->accepte_le) · {{ $share->accepte_le->diffForHumans() }} @endif
+                                </div>
                             </div>
                             <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Actif</span>
                         </div>
                     @empty
-                        <div style="text-align:center; padding:32px; border:1px dashed rgba(45,159,212,0.2); border-radius:10px;">
+                        <div style="text-align:center; padding:24px; border:1px dashed rgba(45,159,212,0.2); border-radius:10px;">
                             <p style="font-size:0.85rem; color:var(--text-muted);">Aucun secret partagé dans le groupe pour l'instant.</p>
-                            <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Ajoutez des services dans le coffre "Famille" pour les partager.</p>
+                            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Partagez un coffre depuis la page <a href="{{ route('partage.index') }}" style="color:#2d9fd4;">Partage</a>.</p>
                         </div>
                     @endforelse
                 </div>
