@@ -25,9 +25,21 @@ class FamilleController extends Controller
     {
         $user = auth()->user();
         $group = FamilyGroup::where('owner_id', $user->id)->with('members.user')->first();
-        $membership = FamilyMember::where('user_id', $user->id)->with('group.owner')->first();
+        $membership = FamilyMember::where('user_id', $user->id)->with('group.owner.familyGroup')->first();
 
-        return view('famille.index', compact('user', 'group', 'membership'));
+        $secretsPartages = collect();
+        if ($membership || $group) {
+            $familyGroup = $group ?? $membership->group;
+
+            if ($familyGroup?->coffre_id) {
+                $secretsPartages = ShareCoffre::with(['coffre', 'proprietaire'])
+                    ->where('coffre_id', $familyGroup->coffre_id)
+                    ->where('statut', 'accepte')
+                    ->get();
+            }
+        }
+
+        return view('famille.index', compact('user', 'group', 'membership', 'secretsPartages'));
     }
 
     /**
