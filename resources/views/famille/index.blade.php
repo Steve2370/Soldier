@@ -187,11 +187,11 @@
                             <div style="font-size:0.75rem; color:var(--text-muted);">/ 6 membres</div>
                         </div>
                         <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:16px 18px;">
-                            <div style="font-size:1.75rem; font-weight:800; color:#22c55e;">{{ 6 - $group->members->count() }}</div>
+                            <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $group->members->count() }}</div>
                             <div style="font-size:0.75rem; color:var(--text-muted);">places libres</div>
                         </div>
                         <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; padding:16px 18px;">
-                            <div style="font-size:1.75rem; font-weight:800; color:#f59e0b;">{{ $group->members->where('role','member')->count() }}</div>
+                            <div style="font-size:1.75rem; font-weight:800; color:#2d9fd4;">{{ $group->members->count() }}</div>
                             <div style="font-size:0.75rem; color:var(--text-muted);">invités</div>
                         </div>
                     </div>
