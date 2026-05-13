@@ -83,6 +83,8 @@ class AuthApiController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : null,
+                'avatar_url' => $user->avatar_url ?: null,
             ],
             'kdf' => [
                 'sel' => $cleUser->kdf_salt,
@@ -118,6 +120,7 @@ class AuthApiController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : null,
+                'avatar_url' => $user->avatar_url ?: null,
             ],
             'kdf' => [
                 'sel' => $cleUser->kdf_salt,
