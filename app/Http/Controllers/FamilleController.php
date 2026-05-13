@@ -36,6 +36,17 @@ class FamilleController extends Controller
                     ->where('coffre_id', $familyGroup->coffre_id)
                     ->where('statut', 'accepte')
                     ->get();
+
+                if ($group) {
+                    $memberIds = $group->members->pluck('user_id')->toArray();
+                    $secretsSupplementaires = ShareCoffre::with(['coffre', 'proprietaire', 'destinataire'])
+                        ->where('proprietaire_id', $user->id)
+                        ->whereIn('destinataire_id', $memberIds)
+                        ->where('statut', 'accepte')
+                        ->whereNotIn('coffre_id', [$familyGroup->coffre_id])
+                        ->get();
+                    $secretsPartages = $secretsPartages->merge($secretsSupplementaires)->unique('id');
+                }
             }
         }
 

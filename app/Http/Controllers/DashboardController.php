@@ -6,6 +6,7 @@ use App\Helpers\SessionHelper;
 use App\Http\Requests\StoreElementRequest;
 use App\Models\Coffre;
 use App\Models\ElementCoffre;
+use App\Models\FamilyGroup;
 use App\Models\ShareCoffre;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
@@ -59,8 +60,13 @@ class DashboardController extends Controller
             }
         })->filter();
 
+        $familyCoffreIds = FamilyGroup::whereHas('members', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->pluck('coffre_id')->filter()->toArray();
+
         $partages = $user->sharesRecus()
             ->where('statut', 'accepte')
+            ->when(!empty($familyCoffreIds), fn($q) => $q->whereNotIn('coffre_id', $familyCoffreIds))
             ->with('coffre')
             ->get();
 
