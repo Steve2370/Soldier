@@ -21,22 +21,22 @@
                 @if(isset($coffres) && $coffres->count() > 1)
                     <div style="margin-bottom:20px;" x-data="{ coffreChoisi: '{{ $coffres->first()?->id }}' }">
                         <label>Enregistrer dans</label>
-                        <div style="display:flex; gap:8px; margin-top:8px;">
+                        <div style="display:flex; gap:16px; margin-top:8px;">
                             @foreach($coffres as $coffre)
-                                <label style="flex:1; cursor:pointer;" @click="coffreChoisi = '{{ $coffre->id }}'">
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;" @click="coffreChoisi = '{{ $coffre->id }}'">
                                     <input type="radio" name="coffre_id" value="{{ $coffre->id }}"
                                            {{ $loop->first ? 'checked' : '' }}
                                            x-model="coffreChoisi"
                                            style="display:none;">
-                                    <div :style="coffreChoisi === '{{ $coffre->id }}' ? 'background:rgba(45,159,212,0.15); border-color:rgba(45,159,212,0.5); color:#2d9fd4;' : 'background:var(--bg-elevated); border-color:var(--border); color:var(--text-muted);'"
-                                         style="padding:10px 14px; border-radius:9px; border:1px solid; font-size:0.82rem; font-weight:600; text-align:center; transition:all 0.15s; display:flex; align-items:center; justify-content:center; gap:6px;">
-                                        @if($coffre->id === $familyCoffreId)
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                        @else
-                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                        @endif
-                                        {{ $coffre->nom }}
+                                    <div :style="coffreChoisi === '{{ $coffre->id }}' ? 'width:18px; height:18px; border-radius:50%; border:2px solid var(--accent); background:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;' : 'width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;'">
+                                        <div x-show="coffreChoisi === '{{ $coffre->id }}'" style="width:8px; height:8px; border-radius:50%; background:#fff;"></div>
                                     </div>
+                                    @if($coffre->id === $familyCoffreId)
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    @else
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                    @endif
+                                    <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">{{ $coffre->nom }}</span>
                                 </label>
                             @endforeach
                         </div>
