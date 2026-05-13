@@ -172,8 +172,9 @@
                             <p style="font-size:0.85rem; color:var(--text-muted);">Aucun secret partagé dans le groupe pour l'instant.</p>
                             <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Partagez un coffre depuis la page <a href="{{ route('partage.index') }}" style="color:#2d9fd4;">Partage</a>.</p>
                         </div>
-                    @endforelse
-                </div>
+                        @endforelse
+                    </div>
+                @endif
             @endif
         </div>
 
