@@ -293,7 +293,7 @@
                         @endforeach
                     </div>
                     <a href="{{ route('pricing') }}" style="display:inline-block; background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border-radius:12px; padding:14px 40px; font-size:0.9rem; font-weight:700; text-decoration:none; font-family:'Audiowide',sans-serif;">
-                        Commencer — 4,99$/mois →
+                        Commencer — 3,99$/mois →
                     </a>
                     <p style="font-size:0.75rem; color:var(--text-muted); margin-top:12px;">Annulable à tout moment · Paiement sécurisé par Stripe</p>
                 </div>
