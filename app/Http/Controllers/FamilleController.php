@@ -38,6 +38,12 @@ class FamilleController extends Controller
             $familyGroup = $group ?? $membership->group;
 
             if ($familyGroup?->coffre_id && $kek) {
+                \Log::info('Famille debug', [
+                    'coffre_id' => $familyGroup->coffre_id,
+                    'kek_null' => $kek === null,
+                    'coffre_exists' => \App\Models\Coffre::find($familyGroup->coffre_id) !== null,
+                    'is_owner' => $group !== null,
+                ]);
                 $coffreFamille = Coffre::find($familyGroup->coffre_id);
                 if ($coffreFamille) {
                     try {
