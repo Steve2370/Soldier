@@ -32,7 +32,9 @@ class PricingController extends Controller
             return redirect()->route('pricing.portail');
         }
 
-        return $user->newSubscription('famille', env('STRIPE_PRICE_FAMILLE'))
+        $priceId = config('services.stripe.price_famille') ?: 'price_1TWMJ6GrnmI16jOZdgmPn0bo';
+
+        return $user->newSubscription('famille', $priceId)
             ->checkout([
                 'success_url' => route('pricing.succes') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url'  => route('pricing'),
