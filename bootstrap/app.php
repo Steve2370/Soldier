@@ -39,5 +39,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() === 403) {
+                return redirect()->back()->with('toast', [
+                    'type' => 'error',
+                    'titre' => 'Accès refusé',
+                    'message' => $e->getMessage() ?: 'Vous n\'avez pas les permissions nécessaires.',
+                ]);
+            }
+        });
     })->create();
