@@ -201,6 +201,8 @@
                                     <div style="width:34px; height:34px; border-radius:50%; background:{{ $member->role === 'owner' ? 'var(--accent)' : 'var(--bg-card)' }}; display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; color:#fff; flex-shrink:0; overflow:hidden;">
                                         @if($member->user->avatar)
                                             <img src="{{ Storage::url($member->user->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
+                                        @elseif($member->user->avatar_url)
+                                            <img src="{{ $member->user->avatar_url }}" style="width:100%; height:100%; object-fit:cover;">
                                         @else
                                             {{ strtoupper(substr($member->user->name, 0, 1)) }}
                                         @endif

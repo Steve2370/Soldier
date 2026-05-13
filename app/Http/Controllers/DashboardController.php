@@ -99,7 +99,10 @@ class DashboardController extends Controller
 
     public function creer(): View
     {
-        return view('dashboard.creer');
+        $user = auth()->user();
+        $familyCoffreId = FamilyGroup::where('owner_id', $user->id)->value('coffre_id');
+        $coffres = $user->coffres()->get(['id', 'nom']);
+        return view('dashboard.creer', compact('coffres', 'familyCoffreId'));
     }
 
     /**
@@ -112,10 +115,14 @@ class DashboardController extends Controller
 
         $familyCoffreId = FamilyGroup::where('owner_id', $user->id)->value('coffre_id');
 
-        $coffre = $user->coffres()
-            ->when($familyCoffreId, fn($q) => $q->where('id', '!=', $familyCoffreId))
-            ->first()
-            ?? $this->coffreService->creerCoffre($user, ['nom' => 'Mon coffre', 'couleur' => '#03A63C'], $kek);
+        if ($request->coffre_id) {
+            $coffre = $user->coffres()->findOrFail($request->coffre_id);
+        } else {
+            $coffre = $user->coffres()
+                ->when($familyCoffreId, fn($q) => $q->where('id', '!=', $familyCoffreId))
+                ->first()
+                ?? $this->coffreService->creerCoffre($user, ['nom' => 'Mon coffre', 'couleur' => '#03A63C'], $kek);
+        }
 
         $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
         $faviconUrl = $this->coffreService->resoudreFavicon($request->validated('url') ?? '', $request->validated('label') ?? '');
@@ -126,6 +133,12 @@ class DashboardController extends Controller
         sodium_memzero($kek);
 
         ActivityLogService::log('service_cree', 'Service créé : ' . $request->validated('label'));
+
+        if ($familyCoffreId && $coffre->id == $familyCoffreId) {
+            return redirect()->route('famille.index')->with('toast', [
+                'type' => 'success', 'titre' => 'Service ajouté', 'message' => "« {$request->validated('label')} » ajouté au coffre Famille.",
+            ]);
+        }
 
         return redirect()->route('dashboard')->with('toast', [
             'type' => 'success', 'titre' => 'Service ajouté', 'message' => "« {$request->validated('label')} » a été enregistré.",
