@@ -217,9 +217,7 @@
             </div>
         </div>
 
-    </div>
-
-    <div x-show="tab==='famille'" style="padding: 0 12px 28px;">
+        <div x-show="tab==='famille'" style="padding: 0 12px 28px;">
         <p style="color:white;">DEBUG: {{ $familyGroups->count() }} groupes</p>
         <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden; overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; min-width:600px;">
@@ -272,7 +270,7 @@
             </table>
         </div>
     </div>
-
+    </div>
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script>
