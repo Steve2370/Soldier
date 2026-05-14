@@ -166,8 +166,14 @@
                                     @if($u->avatar)
                                         <img src="{{ Storage::url($u->avatar) }}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
                                     @else
-                                        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:#fff;">
-                                            {{ strtoupper(substr($u->name,0,1)) }}
+                                        <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; overflow:hidden; flex-shrink:0;">
+                                            @if($group->owner->avatar)
+                                                <img src="{{ Storage::url($group->owner->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
+                                            @elseif($group->owner->avatar_url)
+                                                <img src="{{ $group->owner->avatar_url }}" style="width:100%; height:100%; object-fit:cover;">
+                                            @else
+                                                {{ strtoupper(substr($group->owner->name, 0, 1)) }}
+                                            @endif
                                         </div>
                                     @endif
                                     <span style="font-size:0.85rem; color:var(--text-primary); font-weight:600;">{{ $u->name }}</span>
@@ -240,7 +246,15 @@
                                     @elseif($group->owner->avatar_url)
                                         <img src="{{ $group->owner->avatar_url }}" style="width:100%; height:100%; object-fit:cover;">
                                     @else
-                                        {{ strtoupper(substr($group->owner->name, 0, 1)) }}
+                                        <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; overflow:hidden; flex-shrink:0;">
+                                            @if($group->owner->avatar)
+                                                <img src="{{ Storage::url($group->owner->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
+                                            @elseif($group->owner->avatar_url)
+                                                <img src="{{ $group->owner->avatar_url }}" style="width:100%; height:100%; object-fit:cover;">
+                                            @else
+                                                {{ strtoupper(substr($group->owner->name, 0, 1)) }}
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                                 <div>
