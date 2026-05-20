@@ -1,12 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Mail\AdminMailMasse;
 use App\Models\ActivityLog;
 use App\Models\FamilyGroup;
 use App\Models\User;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Response;
 
 class AdminController extends Controller
@@ -115,6 +117,38 @@ class AdminController extends Controller
             'type' => 'warning',
             'titre' => 'Utilisateur supprimé',
             'message' => "{$nom} a été supprimé définitivement.",
+        ]);
+    }
+
+    public function envoyerMail(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'sujet' => ['required', 'string', 'max:255'],
+            'contenu' => ['required', 'string'],
+            'destinataire' => ['required', 'in:tous,abonnes,user'],
+            'user_id' => ['nullable', 'exists:users,id'],
+        ]);
+
+        $users = match($request->destinataire) {
+            'tous' => User::whereNull('deleted_at')->get(),
+            'abonnes' => User::whereHas('subscriptions', fn($q) => $q->where('stripe_status', 'active'))->get(),
+            'user' => User::where('id', $request->user_id)->get(),
+        };
+
+        foreach ($users as $user) {
+            Mail::to($user->email)->send(new AdminMailMasse(
+                $request->sujet,
+                $request->contenu,
+                $user->name,
+            ));
+        }
+
+        ActivityLogService::log('admin_mail_masse', "Mail envoyé à {$users->count()} utilisateur(s) — sujet: {$request->sujet}");
+
+        return back()->with('toast', [
+            'type' => 'success',
+            'titre' => 'Emails envoyés',
+            'message' => "{$users->count()} email(s) envoyé(s) avec succès.",
         ]);
     }
 }

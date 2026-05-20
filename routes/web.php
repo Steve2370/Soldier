@@ -113,6 +113,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
     Route::get('/logs/export', [AdminController::class, 'exportLogs'])->name('logs.export');
     Route::delete('/users/{user}', [AdminController::class, 'supprimerUser'])->name('users.supprimer');
+    Route::post('/mail', [AdminController::class, 'envoyerMail'])->name('mail.envoyer');
 });
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
