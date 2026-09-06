@@ -16,11 +16,18 @@ use App\Services\Crypto\RsaCryptoService;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class FamilleController extends Controller
 {
+    public function __construct(
+        private readonly CleManagementService $cleManagement,
+        private readonly CoffreService $coffreService,
+        private readonly RsaCryptoService $asymmetric,
+    ) {}
+
     public function index(): View
     {
         $user = auth()->user();
@@ -38,17 +45,11 @@ class FamilleController extends Controller
             $familyGroup = $group ?? $membership->group;
 
             if ($familyGroup?->coffre_id && $kek) {
-                \Log::info('Famille debug', [
-                    'coffre_id' => $familyGroup->coffre_id,
-                    'kek_null' => $kek === null,
-                    'coffre_exists' => \App\Models\Coffre::find($familyGroup->coffre_id) !== null,
-                    'is_owner' => $group !== null,
-                ]);
                 $coffreFamille = Coffre::find($familyGroup->coffre_id);
                 if ($coffreFamille) {
                     try {
                         if ($group) {
-                            $dataKey = app(\App\Services\Coffre\CleManagementService::class)
+                            $dataKey = $this->cleManagement
                                 ->dechiffrerDataKeyCoffre($coffreFamille->data_key_encrypted, $kek);
                         } else {
                             $share = ShareCoffre::where('coffre_id', $coffreFamille->id)
@@ -57,27 +58,20 @@ class FamilleController extends Controller
                                 ->first();
                             $clePrivee = SessionHelper::obtenirClePrivee();
                             $dataKey   = $share
-                                ? app(\App\Services\Crypto\RsaCryptoService::class)
-                                    ->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee)
+                                ? $this->asymmetric->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee)
                                 : null;
                         }
 
                         if (isset($dataKey)) {
-                            $elementsFamiliaux = app(CoffreService::class)
-                                ->listerElements($coffreFamille, $dataKey);
-                            \Log::info('Famille elements', [
-                                'count' => count($elementsFamiliaux),
-                                'elements' => $elementsFamiliaux,
-                            ]);
+                            $elementsFamiliaux = $this->coffreService->listerElements($coffreFamille, $dataKey);
                             sodium_memzero($dataKey);
-                            \Log::info('Famille elements', [
-                                'count' => count($elementsFamiliaux),
-                                'elements' => $elementsFamiliaux,
-                            ]);
                         }
                     } catch (\Exception $e) {
-                        \Log::warning('Échec déchiffrement coffre familial', [
+                        // Ne jamais journaliser $dataKey, $kek ou le contenu déchiffré ici :
+                        // seul le fait de l'échec et l'utilisateur concerné sont utiles pour l'audit.
+                        Log::warning('Échec déchiffrement coffre familial — possible manipulation de données', [
                             'user_id' => $user->id,
+                            'coffre_id' => $coffreFamille->id,
                             'exception' => $e->getMessage(),
                         ]);
                     }
@@ -86,7 +80,7 @@ class FamilleController extends Controller
 
             if ($group) {
                 $memberIds = $group->members->pluck('user_id')->toArray();
-                $secretsPartages = \App\Models\ShareCoffre::with(['coffre', 'proprietaire', 'destinataire'])
+                $secretsPartages = ShareCoffre::with(['coffre', 'proprietaire', 'destinataire'])
                     ->where('proprietaire_id', $user->id)
                     ->whereIn('destinataire_id', $memberIds)
                     ->where('statut', 'accepte')
@@ -94,6 +88,10 @@ class FamilleController extends Controller
                     ->get()
                     ->unique('coffre_id');
             }
+        }
+
+        if ($kek) {
+            sodium_memzero($kek);
         }
 
         return view('famille.index', compact('user', 'group', 'membership', 'secretsPartages', 'elementsFamiliaux'));
@@ -111,7 +109,7 @@ class FamilleController extends Controller
         }
 
         $kek = SessionHelper::obtenirKek();
-        $coffre = app(CoffreService::class)->creerCoffre($user, [
+        $coffre = $this->coffreService->creerCoffre($user, [
             'nom' => 'Famille',
             'couleur' => '#2d9fd4',
         ], $kek);
@@ -173,16 +171,14 @@ class FamilleController extends Controller
         if ($group->coffre_id) {
             $coffre = Coffre::find($group->coffre_id);
             $kek  = SessionHelper::obtenirKek();
-            $dataKey = app(CleManagementService::class)
-                ->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
+            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
             sodium_memzero($kek);
 
             $clePublique = $destinataire->clesUser?->public_key;
             $dataKeyChiffree = null;
 
             if ($clePublique) {
-                $dataKeyChiffree = app(RsaCryptoService::class)
-                    ->chiffrerAvecClePublique($dataKey, $clePublique);
+                $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique($dataKey, $clePublique);
             }
             sodium_memzero($dataKey);
 

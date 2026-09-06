@@ -29,13 +29,6 @@ readonly class CleManagementService
             'parametres' => $parametres,
         ] = $this->cleDerivation->deriver($masterPassword);
 
-        \Log::info('initialiserClesUser', [
-            'password_len' => strlen($masterPassword),
-            'password_bytes' => bin2hex(substr($masterPassword, 0, 4)),
-            'salt' => $salt,
-            'masterCle_hex' => bin2hex(substr($masterCle, 0, 8)),
-        ]);
-
         $kek = $this->encryption->genererCle(32);
         $kekChiffree = $this->encryption->encrypt($kek, $masterCle);
 
@@ -46,11 +39,6 @@ readonly class CleManagementService
 
         $clePriveeChiffree = $this->encryption->encrypt($clePrivee, $kek);
         $verification = $this->creerVerification($masterCle);
-
-        \Log::info('masterCle init check', [
-            'strlen' => strlen($masterCle),
-            'masterCle_hex' => bin2hex($masterCle),
-        ]);
 
         sodium_memzero($masterCle);
         sodium_memzero($kek);
@@ -85,20 +73,6 @@ readonly class CleManagementService
             $cleUser->kdf_salt,
             $cleUser->kdf_params
         );
-
-        \Log::info('deverouillerCles', [
-            'password_len' => strlen($masterPassword),
-            'password_bytes' => bin2hex(substr($masterPassword, 0, 4)),
-            'salt_db' => $cleUser->kdf_salt,
-            'masterCle_hex' => bin2hex(substr($masterCle, 0, 8)),
-            'verification' => $cleUser->verification_master_key,
-        ]);
-
-        \Log::info('masterCle check', [
-            'strlen' => strlen($masterCle),
-            'is_binary' => !ctype_print($masterCle),
-            'masterCle_hex' => bin2hex($masterCle),
-        ]);
 
         if (!$this->verifierMasterKey($masterCle, $cleUser->verification_master_key)) {
             sodium_memzero($masterCle);
@@ -205,16 +179,16 @@ readonly class CleManagementService
         );
     }
 
+    /**
+     * Vérifie que la clé maîtresse dérivée correspond bien au vérificateur stocké.
+     *
+     * Ne journalise jamais la clé, le mot de passe ni aucun matériel cryptographique :
+     * un échec de déchiffrement ici est un mot de passe maître incorrect, pas une
+     * anomalie système — voir InvalidMasterPasswordException chez l'appelant.
+     */
     private function verifierMasterKey(string $masterCle, array $verification): bool
     {
         try {
-            \Log::info('verifierMasterKey', [
-                'masterCle_hex' => bin2hex(substr($masterCle, 0, 8)),
-                'ciphertext' => substr($verification['ciphertext'], 0, 20),
-                'iv' => $verification['iv'],
-                'tag' => $verification['tag'],
-            ]);
-
             $texte = $this->encryption->decrypt(
                 $verification['ciphertext'],
                 $masterCle,
@@ -226,12 +200,7 @@ readonly class CleManagementService
                 'soldier-password-manager-verificateur-v1',
                 $texte,
             );
-        } catch (\Throwable $e) {
-            \Log::error('verifierMasterKey decrypt failed', [
-                'exception' => get_class($e),
-                'message' => $e->getMessage(),
-                'openssl' => openssl_error_string(),
-            ]);
+        } catch (\Throwable) {
             return false;
         }
     }

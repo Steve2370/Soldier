@@ -99,21 +99,39 @@
                     @if(!$mfaTotp?->actif)
                         <button @click="configurerTotp('{{ route('settings.totp.configurer') }}')" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0;">Configurer</button>
                     @else
-                        <form method="POST" action="{{ route('settings.totp.desactiver') }}">
-                            @csrf
-                            <button type="submit" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0; color: var(--danger); border-color: rgba(239,68,68,0.3);">
-                                Désactiver
-                            </button>
-                        </form>
+                        <button type="button" @click="showDesactiverTotp = true" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0; color: var(--danger); border-color: rgba(239,68,68,0.3);">
+                            Désactiver
+                        </button>
                     @endif
                 </div>
+
+                @if($mfaTotp?->actif)
+                    <div x-show="showDesactiverTotp" x-transition style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                        <form method="POST" action="{{ route('settings.totp.desactiver') }}">
+                            @csrf
+                            <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                Confirmez avec votre master password pour désactiver l'Authenticator.
+                            </p>
+                            <div style="display: flex; gap: 8px; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <input type="password" name="master_password"
+                                           class="input @error('master_password') input-error @enderror"
+                                           placeholder="Master password" autocomplete="off">
+                                    @error('master_password') <p class="error-msg" style="margin-top: 4px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p> @enderror
+                                </div>
+                                <button type="submit" class="btn-danger" style="padding: 10px 14px; white-space: nowrap;">Confirmer</button>
+                                <button type="button" @click="showDesactiverTotp = false" class="btn-secondary" style="padding: 10px 14px;">Annuler</button>
+                            </div>
+                        </form>
+                    </div>
+                @endif
 
                 <div x-show="showTotpSetup" x-transition style="margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border);">
                     <div style="display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start;">
                         <div>
                             <div style="width: 160px; height: 160px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid var(--border-bright);">
-                                <img x-show="totpQrUrl" :src="totpQrUrl" style="width: 150px; height: 150px;">
-                                <div x-show="!totpQrUrl" style="color: var(--text-muted); font-size: 0.75rem; text-align: center; padding: 10px;">Chargement...</div>
+                                <canvas x-ref="totpQrCanvas" x-show="totpSecret" style="width: 150px; height: 150px;"></canvas>
+                                <div x-show="!totpSecret" style="color: var(--text-muted); font-size: 0.75rem; text-align: center; padding: 10px;">Chargement...</div>
                             </div>
                             <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; text-align: center; max-width: 160px;">Scannez avec votre app authenticator</p>
                         </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\Auth\ExtensionHandoffService;
 use App\Services\Coffre\CleManagementService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,30 @@ class AuthApiController extends Controller
 {
     public function __construct(
         private readonly CleManagementService $cleManagement,
+        private readonly ExtensionHandoffService $extensionHandoff,
     ) {}
+
+    /**
+     * Échange le code opaque à usage unique (reçu par l'extension via l'URL de
+     * redirection OAuth) contre un vrai jeton Sanctum. Le jeton n'est créé qu'ici,
+     * jamais transmis par URL — voir ExtensionHandoffService.
+     */
+    public function echangerCodeExtension(Request $request): JsonResponse
+    {
+        $request->validate([
+            'code' => ['required', 'string'],
+        ]);
+
+        $user = $this->extensionHandoff->resoudreCode($request->input('code'));
+
+        if (!$user) {
+            return response()->json(['error' => 'Code invalide ou expiré.'], 422);
+        }
+
+        $token = $user->createToken('extension-chrome', ['read:services'])->plainTextToken;
+
+        return response()->json(['token' => $token]);
+    }
 
     /**
      * @throws \SodiumException

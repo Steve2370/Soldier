@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilleController;
+use App\Http\Controllers\FaviconController;
 use App\Http\Controllers\GenerateurController;
 use App\Http\Controllers\PartageController;
 use App\Http\Controllers\PasskeyController;
@@ -20,15 +21,15 @@ Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
 Route::middleware('guest')->group(function () {
     Route::get('/welcome', [WelcomeController::class, 'index'])->name('welcome');
     Route::get('/connexion', [AuthController::class, 'showConnexion'])->name('connexion');
-    Route::post('/connexion', [AuthController::class, 'verifierEmail'])->name('connexion.post');
+    Route::post('/connexion', [AuthController::class, 'verifierEmail'])->middleware('throttle:connexion')->name('connexion.post');
     Route::get('/connexion/password', [AuthController::class, 'showPassword'])->name('connexion.password');
-    Route::post('/connexion/password', [AuthController::class, 'connecter'])->name('connexion.password.post');
+    Route::post('/connexion/password', [AuthController::class, 'connecter'])->middleware('throttle:connexion')->name('connexion.password.post');
     Route::get('/inscription', [AuthController::class, 'showInscription'])->name('inscription');
-    Route::post('/inscription', [AuthController::class, 'inscrire'])->name('inscription.post');
+    Route::post('/inscription', [AuthController::class, 'inscrire'])->middleware('throttle:inscription')->name('inscription.post');
 });
 
 Route::get('/verification-mfa', [AuthController::class, 'showMfa'])->name('mfa.verify');
-Route::post('/verification-mfa', [AuthController::class, 'verifierMfa'])->name('mfa.verify.post');
+Route::post('/verification-mfa', [AuthController::class, 'verifierMfa'])->middleware('throttle:mfa')->name('mfa.verify.post');
 
 Route::get('/auth/github/redirect', [AuthController::class, 'redirectGithub'])->name('auth.github.redirect');
 Route::get('/auth/github/callback', [AuthController::class, 'callbackGithub'])->name('auth.github.callback');
@@ -76,10 +77,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/services/{element}', [DashboardController::class, 'supprimer'])->name('services.supprimer');
     Route::patch('/services/{element}/favori', [DashboardController::class, 'toggleFavori'])->name('services.favori');
 
+    Route::get('/favicon', [FaviconController::class, 'afficher'])->name('favicon');
+
     Route::get('/generateur', [GenerateurController::class, 'index'])->name('generateur');
 
     Route::get('/partage', [PartageController::class, 'index'])->name('partage.index');
-    Route::post('/partage', [PartageController::class, 'envoyer'])->name('partage.envoyer');
+    Route::post('/partage', [PartageController::class, 'envoyer'])->middleware('throttle:10,1')->name('partage.envoyer');
     Route::delete('/partage/{share}', [PartageController::class, 'revoquer'])->name('partage.revoquer');
     Route::patch('/partage/{invitation}/annuler', [PartageController::class, 'annulerInvitation'])->name('partage.annuler');
 
@@ -121,7 +124,7 @@ Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->nam
 Route::middleware(['auth'])->prefix('famille')->name('famille.')->group(function () {
     Route::get('/', [FamilleController::class, 'index'])->name('index');
     Route::post('/creer', [FamilleController::class, 'creerGroupe'])->name('creer');
-    Route::post('/inviter', [FamilleController::class, 'inviter'])->name('inviter');
+    Route::post('/inviter', [FamilleController::class, 'inviter'])->middleware('throttle:10,1')->name('inviter');
     Route::delete('/membres/{member}', [FamilleController::class, 'retirer'])->name('retirer');
     Route::delete('/quitter', [FamilleController::class, 'quitter'])->name('quitter');
 });

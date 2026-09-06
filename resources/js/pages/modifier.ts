@@ -40,16 +40,19 @@ export function modifierService(initialLabel: string, initialUrl: string, initia
         },
 
         mettreAJourFavicon(): void {
+            // Passe par notre propre proxy (/favicon) plutôt que d'appeler Google
+            // directement depuis le navigateur : sinon, chaque frappe révélerait
+            // à Google le domaine en cours de saisie (voir M3 de l'audit sécurité).
             if (this.url) {
                 try {
                     const domain = new URL(this.url).hostname
-                    this.faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`
+                    this.faviconUrl = `/favicon?domain=${encodeURIComponent(domain)}`
                     return
                 } catch {}
             }
             if (this.label && this.label.length > 1) {
                 const nom = this.label.toLowerCase().replace(/\s+/g, '')
-                this.faviconUrl = `https://www.google.com/s2/favicons?domain=${nom}.com&sz=128`
+                this.faviconUrl = `/favicon?domain=${encodeURIComponent(nom + '.com')}`
             } else {
                 this.faviconUrl = ''
             }

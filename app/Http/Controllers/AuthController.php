@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\InscriptionRequest;
 use App\Mail\BienvenueMail;
 use App\Mail\NouvelleConnexionMail;
 use App\Models\User;
+use App\Services\Auth\ExtensionHandoffService;
 use App\Services\Auth\MfaService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
@@ -27,7 +28,8 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly CleManagementService $cleManagement,
-        private readonly CoffreService $coffreService
+        private readonly CoffreService $coffreService,
+        private readonly ExtensionHandoffService $extensionHandoff,
     ) {}
 
     public function showInscription(): View|RedirectResponse
@@ -348,10 +350,14 @@ class AuthController extends Controller
                     ]));
             }
 
-            $token = $user->createToken('extension-chrome', ['read:services'])->plainTextToken;
+            // Le jeton Sanctum n'est plus jamais transmis dans l'URL (historique
+            // navigateur, logs serveur/proxy) : seul un code opaque à usage unique
+            // et de très courte durée de vie y transite. L'extension l'échange
+            // contre le vrai jeton via POST /api/auth/extension/echanger-code.
+            $code = $this->extensionHandoff->genererCode($user);
 
             return redirect($extensionRedirect . '?' . http_build_query([
-                    'extension_token' => $token,
+                    'code' => $code,
                     'email' => $user->email,
                     'name' => $user->name,
                     'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : '',

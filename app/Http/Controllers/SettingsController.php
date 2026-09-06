@@ -68,11 +68,13 @@ class SettingsController extends Controller
 
         $user = auth()->user();
         try {
-            $this->cleManagement->deverouillerCles($user, $request->master_password);
+            $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
         } catch (InvalidMasterPasswordException) {
             return back()->withErrors(['master_password' => 'Le master mot de passe est incorrect.'])
                 ->with('tab', 'securite');
         }
+        sodium_memzero($cles['kek']);
+        sodium_memzero($cles['cle_privee']);
 
         $user->mfa()->where('type', 'email')->update(['actif' => false]);
         Mail::to($user->email)->send(new TotpDesactiveMail($user));
@@ -93,8 +95,9 @@ class SettingsController extends Controller
         $donnees = $this->mfaService->genererSecretTotp($user);
         session(['totp_secret_pending' => $donnees['secret']]);
 
+        // Le QR code est généré côté client (JS) à partir de otpauth_url — le secret
+        // TOTP ne doit jamais transiter par un service tiers de génération de QR code.
         return response()->json([
-            'qr_url' => $donnees['qr_url'],
             'secret' => $donnees['secret'],
             'otpauth_url' => $donnees['otpauth_url'],
         ]);
@@ -230,9 +233,23 @@ class SettingsController extends Controller
         ]);
     }
 
-    public function desactiverTotp(): RedirectResponse
+    public function desactiverTotp(Request $request): RedirectResponse
     {
+        $request->validate([
+            'master_password' => ['required', 'string'],
+        ]);
+
         $user = auth()->user();
+
+        try {
+            $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
+        } catch (InvalidMasterPasswordException) {
+            return back()->withErrors(['master_password' => 'Le master mot de passe est incorrect.'])
+                ->with('tab', 'securite');
+        }
+        sodium_memzero($cles['kek']);
+        sodium_memzero($cles['cle_privee']);
+
         $user->mfa()->where('type', 'totp')->update(['actif' => false]);
         Mail::to($user->email)->send(new TotpDesactiveMail($user));
 

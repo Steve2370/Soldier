@@ -20,6 +20,13 @@ class User extends Authenticatable implements MustVerifyEmail
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes, MassPrunable, Billable;
 
+    /**
+     * Champs assignables en masse. is_admin est délibérément exclu :
+     * un champ de privilège ne doit jamais pouvoir être positionné via
+     * un tableau de requête (protection contre le mass assignment).
+     * Pour promouvoir un utilisateur, utiliser forceFill()/update() explicite
+     * depuis un contexte de confiance (ex. commande artisan dédiée).
+     */
     protected $fillable = [
         'name',
         'email',
@@ -33,7 +40,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'oauth_id',
         'has_master_password',
         'avatar_url',
-        'is_admin',
     ];
 
     protected $hidden = [

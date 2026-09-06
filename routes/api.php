@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\ServicesApiController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [AuthApiController::class, 'login']);
+Route::post('/auth/extension/echanger-code', [AuthApiController::class, 'echangerCodeExtension'])
+    ->middleware('throttle:60,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profil', [AuthApiController::class, 'profil']);

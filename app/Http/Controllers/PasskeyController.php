@@ -3,67 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\Passkey;
+use App\Services\Auth\PasskeyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Random\RandomException;
-use Webauthn\PublicKeyCredentialCreationOptions;
-use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialUserEntity;
-use Webauthn\AuthenticatorSelectionCriteria;
-use Webauthn\PublicKeyCredentialParameters;
-use Webauthn\AuthenticatorAttestationResponse;
-use Webauthn\AuthenticatorAssertionResponse;
+use Throwable;
+use Webauthn\Exception\WebauthnException;
 
+/**
+ * Ne fait plus aucune vérification cryptographique elle-même : toute la logique
+ * d'enregistrement/vérification WebAuthn (parsing CBOR, vérification de signature,
+ * anti-rejeu du compteur) est déléguée à PasskeyService (SRP + DIP).
+ */
 class PasskeyController extends Controller
 {
-    private string $rpId;
-    private string $rpName;
-    private string $origin;
-
-    public function __construct()
-    {
-        $this->rpId = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
-        $this->rpName = config('app.name', 'Soldier');
-        $this->origin = config('app.url');
-    }
+    public function __construct(
+        private readonly PasskeyService $passkeyService,
+    ) {}
 
     /**
      * @throws RandomException
      */
     public function optionsInscription(Request $request): JsonResponse
     {
-        $user = auth()->user();
-        $rpEntity = PublicKeyCredentialRpEntity::create(
-            name: $this->rpName,
-            id: $this->rpId,
-        );
+        $options = $this->passkeyService->optionsInscription(auth()->user());
 
-        $userEntity = PublicKeyCredentialUserEntity::create(
-            name: $user->email,
-            id: (string) $user->id,
-            displayName: $user->name,
-        );
+        session(['passkey_challenge' => $options['challenge']]);
 
-        $challenge = random_bytes(32);
-        $options = PublicKeyCredentialCreationOptions::create(
-            rp: $rpEntity,
-            user: $userEntity,
-            challenge: $challenge,
-            pubKeyCredParams: [
-                PublicKeyCredentialParameters::create('public-key', -7),
-                PublicKeyCredentialParameters::create('public-key', -257),
-            ],
-            authenticatorSelection: AuthenticatorSelectionCriteria::create(
-                userVerification: AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-                residentKey: AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
-            ),
-            timeout: 60000,
-        );
-        session(['passkey_challenge' => base64_encode($challenge)]);
-        return response()->json($options);
+        return response($options['json'], 200)->header('Content-Type', 'application/json');
     }
 
     public function inscrire(Request $request): JsonResponse
@@ -74,46 +44,49 @@ class PasskeyController extends Controller
         ]);
 
         $user = auth()->user();
-        $challenge = base64_decode(session('passkey_challenge'));
+        $challenge = session('passkey_challenge');
 
         if (!$challenge) {
             return response()->json(['error' => 'Challenge expiré.'], 422);
         }
 
         try {
-            $credential = $request->input('credential');
-            $clientDataJSON = base64_decode($credential['response']['clientDataJSON']);
-            $attestationObject = base64_decode($credential['response']['attestationObject']);
-            $credentialId = $credential['id'];
-            $clientData = json_decode($clientDataJSON, true);
-            $receivedChallenge = base64_decode(strtr($clientData['challenge'], '-_', '+/'));
+            $source = $this->passkeyService->verifierInscription(
+                json_encode($request->input('credential')),
+                $challenge,
+                $user,
+            );
 
-            if (!hash_equals($challenge, $receivedChallenge)) {
-                return response()->json(['error' => 'Challenge invalide.'], 422);
-            }
-
-            if ($clientData['origin'] !== $this->origin) {
-                return response()->json(['error' => 'Origine invalide.'], 422);
-            }
-
-            $attestation = $this->parseAttestationObject($attestationObject);
             $nom = $request->input('nom') ?: $this->detecterNomAppareil($request);
 
-            PassKey::create([
+            Passkey::create([
                 'user_id' => $user->id,
                 'nom' => $nom,
-                'credential_id' => $credentialId,
-                'cle_publique' => json_encode($attestation['publicKey']),
-                'compteur' => $attestation['signCount'] ?? 0,
-                'type_authenticator' => $attestation['fmt'] ?? 'none',
-                'algorithme_cose' => $attestation['alg'] ?? -7,
+                'credential_id' => $this->passkeyService->credentialIdString($source),
+                'cle_publique' => $this->passkeyService->serialiserSource($source),
+                'compteur' => $source->counter,
+                'type_authenticator' => $source->attestationType,
+                'algorithme_cose' => null,
                 'derniere_utilisation' => now(),
             ]);
 
             session()->forget('passkey_challenge');
+
             return response()->json(['success' => true, 'nom' => $nom]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erreur : ' . $e->getMessage()], 422);
+        } catch (WebauthnException $e) {
+            Log::warning('Échec de vérification WebAuthn à l\'enregistrement d\'une passkey', [
+                'user_id' => $user->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'La vérification de la passkey a échoué.'], 422);
+        } catch (Throwable $e) {
+            Log::error('Erreur inattendue lors de l\'enregistrement d\'une passkey', [
+                'user_id' => $user->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'Une erreur est survenue.'], 422);
         }
     }
 
@@ -122,22 +95,19 @@ class PasskeyController extends Controller
      */
     public function optionsConnexion(Request $request): JsonResponse
     {
-        $challenge = random_bytes(32);
-        $options = PublicKeyCredentialRequestOptions::create(
-           challenge: $challenge,
-            rpId: $this->rpId,
-            userVerification: PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_REQUIRED,
-            timeout: 60000,
-        );
-        session()->put('passkey_challenge_auth', base64_encode($challenge));
+        $options = $this->passkeyService->optionsConnexion();
+
+        session()->put('passkey_challenge_auth', $options['challenge']);
         session()->save();
-        return response()->json($options);
+
+        return response($options['json'], 200)->header('Content-Type', 'application/json');
     }
 
     public function connecter(Request $request): JsonResponse
     {
         session()->start();
-        $challenge = base64_decode(session('passkey_challenge_auth'));
+        $challenge = session('passkey_challenge_auth');
+
         $request->validate([
             'credential' => ['required', 'array'],
         ]);
@@ -146,30 +116,28 @@ class PasskeyController extends Controller
             return response()->json(['error' => 'Challenge expiré.'], 422);
         }
 
+        $credentialId = $request->input('credential.id');
+        $passkey = Passkey::where('credential_id', $credentialId)->first();
+
+        if (!$passkey) {
+            return response()->json(['error' => 'Passkey non reconnu.'], 422);
+        }
+
         try {
-            $credential = $request->input('credential');
-            $credentialId = $credential['id'];
-            $passkey = Passkey::where('credential_id', $credentialId)->first();
+            $sourceStockee = $this->passkeyService->desserialiserSource($passkey->cle_publique);
 
-            if (!$passkey) {
-                return response()->json(['error' => 'Passkey non reconnu.'], 422);
-            }
-            $clientDataJSON = base64_decode($credential['response']['clientDataJSON']);
-            $clientData = json_decode($clientDataJSON, true);
-            $receivedChallenge = base64_decode(strtr($clientData['challenge'], '-_', '+/'));
-
-            if (!hash_equals($challenge, $receivedChallenge)) {
-                return response()->json(['error' => 'Challenge invalide.'], 422);
-            }
-
-            if ($clientData['origin'] !== $this->origin) {
-                return response()->json(['error' => 'Origine invalide.'], 422);
-            }
+            $sourceMiseAJour = $this->passkeyService->verifierConnexion(
+                json_encode($request->input('credential')),
+                $challenge,
+                $sourceStockee,
+            );
 
             $passkey->update([
-                'compteur' => $passkey->compteur + 1,
+                'cle_publique' => $this->passkeyService->serialiserSource($sourceMiseAJour),
+                'compteur' => $sourceMiseAJour->counter,
                 'derniere_utilisation' => now(),
             ]);
+
             session()->forget('passkey_challenge_auth');
 
             $user = $passkey->user;
@@ -182,8 +150,20 @@ class PasskeyController extends Controller
                 'success' => true,
                 'redirect' => route('oauth.master-password'),
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erreur : ' . $e->getMessage()], 422);
+        } catch (WebauthnException $e) {
+            Log::warning('Échec de vérification WebAuthn à la connexion par passkey', [
+                'passkey_id' => $passkey->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'Authentification par passkey refusée.'], 422);
+        } catch (Throwable $e) {
+            Log::error('Erreur inattendue lors de l\'authentification par passkey', [
+                'passkey_id' => $passkey->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return response()->json(['error' => 'Une erreur est survenue.'], 422);
         }
     }
 
@@ -216,15 +196,5 @@ class PasskeyController extends Controller
         if (str_contains($ua, 'Linux')) return 'Linux';
         if (str_contains($ua, 'CrOS')) return 'Chrome OS';
         return 'Appareil inconnu';
-    }
-
-    private function parseAttestationObject(string $attestationObject): array
-    {
-        return [
-            'fmt' => 'none',
-            'publicKey' => base64_encode($attestationObject),
-            'signCount' => 0,
-            'alg' => -7,
-        ];
     }
 }

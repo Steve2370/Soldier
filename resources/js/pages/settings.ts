@@ -1,14 +1,34 @@
+import QRCode from 'qrcode'
 import { showToast } from '../toast'
 
-export function settings(initialOnglet: string, hasErrors: boolean) {
-    return {
-        onglet: initialOnglet as string,
-        showDesactiverEmail: hasErrors as boolean,
-        showTotpSetup: false as boolean,
-        totpQrUrl: '' as string,
-        totpSecret: '' as string,
+interface SettingsData {
+    onglet: string
+    showDesactiverEmail: boolean
+    showDesactiverTotp: boolean
+    showTotpSetup: boolean
+    totpSecret: string
+    configurerTotp(url: string): Promise<void>
+    copierTotp(): Promise<void>
+}
 
-        async configurerTotp(url: string): Promise<void> {
+/**
+ * Propriétés magiques injectées par Alpine sur le composant à l'exécution
+ * (non déclarées par @types/alpinejs, qui ne type que l'objet global Alpine).
+ */
+interface AlpineComponentThis extends SettingsData {
+    $nextTick(): Promise<void>
+    $refs: Record<string, HTMLElement>
+}
+
+export function settings(initialOnglet: string, hasErrors: boolean): SettingsData {
+    return {
+        onglet: initialOnglet,
+        showDesactiverEmail: hasErrors,
+        showDesactiverTotp: false,
+        showTotpSetup: false,
+        totpSecret: '',
+
+        async configurerTotp(this: AlpineComponentThis, url: string): Promise<void> {
             this.showTotpSetup = true
             try {
                 const res = await fetch(url, {
@@ -18,8 +38,15 @@ export function settings(initialOnglet: string, hasErrors: boolean) {
                     },
                 })
                 const data = await res.json()
-                this.totpQrUrl = data.qr_url
                 this.totpSecret = data.secret
+
+                // Le QR code est généré entièrement côté client à partir de l'otpauth_url :
+                // aucune donnée du secret TOTP ne transite plus vers un service tiers.
+                await this.$nextTick()
+                const canvas = this.$refs.totpQrCanvas as HTMLCanvasElement | undefined
+                if (canvas && data.otpauth_url) {
+                    await QRCode.toCanvas(canvas, data.otpauth_url, { width: 150, margin: 1 })
+                }
             } catch {
                 showToast('error', 'Erreur', 'Impossible de générer le QR code.')
             }

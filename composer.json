@@ -9,13 +9,14 @@
         "php": "^8.3",
         "ext-openssl": "*",
         "ext-sodium": "*",
-        "laravel/framework": "^13.0",
+        "laravel/cashier": "^16.5",
+        "laravel/framework": "^13.10",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.26",
         "laravel/tinker": "^3.0",
         "pragmarx/google2fa": "^9.0",
         "resend/resend-laravel": "^1.3",
-        "web-auth/webauthn-lib": "^4.9"
+        "web-auth/webauthn-lib": "^5.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -93,7 +93,6 @@ class MfaService
         return [
             'secret' => $secret,
             'otpauth_url' => $otpauthUrl,
-            'qr_url' => 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($otpauthUrl),
         ];
     }
 
@@ -126,18 +125,13 @@ class MfaService
         sodium_memzero($kek);
 
         $google2fa = new Google2FA();
-        \Log::info('totp verify', [
-            'secret_len' => strlen($secret),
-            'secret' => $secret,
-            'code' => $code,
-        ]);
         try {
             return $google2fa->verifyKey($secret, $code, 1);
-        } catch (IncompatibleWithGoogleAuthenticatorException $e) {
+        } catch (IncompatibleWithGoogleAuthenticatorException) {
             return false;
-        } catch (InvalidCharactersException $e) {
+        } catch (InvalidCharactersException) {
             return false;
-        } catch (SecretKeyTooShortException $e) {
+        } catch (SecretKeyTooShortException) {
             return false;
         }
     }

@@ -101,8 +101,6 @@ readonly class CoffreService
         $payload = $this->construirePayload($donneesMergees);
         $chiffre = $this->encryption->encrypt(json_encode($payload), $dataKey);
 
-        \Log::info('ancien payload', $ancienPayload);
-        \Log::info('donnees mergees', $donneesMergees);
         $element->update([
             'label' => $donnees['label'],
             'url' => $donnees['url'] ?? $element->url,
@@ -131,18 +129,24 @@ readonly class CoffreService
         $element->forceDelete();
     }
 
+    /**
+     * Renvoie une URL vers NOTRE proxy de favicon (FaviconController), jamais
+     * directement vers Google : sinon, chaque affichage d'un élément du coffre
+     * révélerait à Google le domaine associé (fuite de métadonnées vers un tiers
+     * — voir M3 de l'audit sécurité).
+     */
     public function resoudreFavicon(string $url, string $label = ''): string
     {
         if (!empty($url)) {
             $domain = parse_url($url, PHP_URL_HOST);
             if ($domain) {
-                return "https://www.google.com/s2/favicons?domain={$domain}&sz=128";
+                return route('favicon', ['domain' => $domain]);
             }
         }
 
         if (!empty($label)) {
             $slug = strtolower(preg_replace('/\s+/', '', $label));
-            return "https://www.google.com/s2/favicons?domain={$slug}.com&sz=128";
+            return route('favicon', ['domain' => $slug . '.com']);
         }
 
         return '';
