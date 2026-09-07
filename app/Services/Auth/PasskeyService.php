@@ -14,6 +14,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
+use Webauthn\CredentialRecord;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\Exception\WebauthnException;
 use Webauthn\PublicKeyCredential;
@@ -22,7 +23,6 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
-use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
@@ -100,7 +100,7 @@ readonly class PasskeyService
      *
      * @throws WebauthnException
      */
-    public function verifierInscription(string $credentialJson, string $challengeAttendu, User $user): PublicKeyCredentialSource
+    public function verifierInscription(string $credentialJson, string $challengeAttendu, User $user): CredentialRecord
     {
         $publicKeyCredential = $this->serializer()->deserialize($credentialJson, PublicKeyCredential::class, 'json');
 
@@ -165,8 +165,8 @@ readonly class PasskeyService
     public function verifierConnexion(
         string $credentialJson,
         string $challengeAttendu,
-        PublicKeyCredentialSource $sourceStockee,
-    ): PublicKeyCredentialSource {
+        CredentialRecord $sourceStockee,
+    ): CredentialRecord {
         $publicKeyCredential = $this->serializer()->deserialize($credentialJson, PublicKeyCredential::class, 'json');
 
         if (! $publicKeyCredential->response instanceof AuthenticatorAssertionResponse) {
@@ -198,14 +198,14 @@ readonly class PasskeyService
         );
     }
 
-    public function serialiserSource(PublicKeyCredentialSource $source): string
+    public function serialiserSource(CredentialRecord $source): string
     {
         return $this->serializer()->serialize($source, 'json');
     }
 
-    public function desserialiserSource(string $json): PublicKeyCredentialSource
+    public function desserialiserSource(string $json): CredentialRecord
     {
-        return $this->serializer()->deserialize($json, PublicKeyCredentialSource::class, 'json');
+        return $this->serializer()->deserialize($json, CredentialRecord::class, 'json');
     }
 
     /**
@@ -214,7 +214,7 @@ readonly class PasskeyService
      * cette chaîne qui est stockée dans la colonne `credential_id` pour permettre la
      * recherche directe lors de la connexion.
      */
-    public function credentialIdString(PublicKeyCredentialSource $source): string
+    public function credentialIdString(CredentialRecord $source): string
     {
         return Base64UrlSafe::encodeUnpadded($source->publicKeyCredentialId);
     }
