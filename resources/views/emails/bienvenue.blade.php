@@ -14,7 +14,7 @@
         <ul>
             <li><strong>Chiffrement AES-256-GCM</strong> — données illisibles sans votre clé</li>
             <li><strong>Argon2id</strong> — dérivation de clé résistante aux attaques</li>
-            <li><strong>Architecture Zero-knowledge</strong> — nous ne pouvons jamais lire vos données</li>
+            <li><strong>Chiffrement AES-256-GCM</strong> — vos données sensibles sont protégées au repos</li>
         </ul>
     </div>
 

@@ -8,12 +8,14 @@ use App\Models\Coffre;
 use App\Models\ElementCoffre;
 use App\Models\FamilyGroup;
 use App\Models\ShareCoffre;
+use App\Models\User;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
-use App\Services\Crypto\RsaCryptoService;
+use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -21,6 +23,7 @@ class DashboardController extends Controller
     public function __construct(
         private readonly CoffreService $coffreService,
         private readonly CleManagementService $cleManagement,
+        private readonly CryptoAsymmetricInterface $asymmetric,
     ) {}
 
     /**
@@ -62,7 +65,7 @@ class DashboardController extends Controller
         })->filter();
 
         $partages = $user->sharesRecus()
-            ->where('statut', 'accepte')
+            ->actifs()
             ->when(!empty($familyCoffreIdsRecus), fn($q) => $q->whereNotIn('coffre_id', $familyCoffreIdsRecus))
             ->when($familyCoffreId, fn($q) => $q->where('coffre_id', '!=', $familyCoffreId))
             ->with('coffre')
@@ -71,8 +74,8 @@ class DashboardController extends Controller
         $servicesPartages = $partages->map(function ($share) use ($kek, $user) {
             try {
                 $clePrivee = SessionHelper::obtenirClePrivee();
-                $dataKey = app(RsaCryptoService::class)->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
-                $elementIds = $share->element_ids ? json_decode($share->element_ids, true) : null;
+                $dataKey = $this->asymmetric->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
+                $elementIds = $share->element_ids;
                 $elements = $this->coffreService->listerElements($share->coffre, $dataKey, $elementIds);
                 sodium_memzero($dataKey);
                 return [
@@ -206,12 +209,12 @@ class DashboardController extends Controller
 
     public function toggleFavori(ElementCoffre $element): JsonResponse
     {
-        $this->verifierAcces($element);
+        $this->verifierAcces($element, true);
         $favori = $this->coffreService->toggleFavori($element);
         return response()->json(['favori' => $favori]);
     }
 
-    private function obtenirDataKey(ElementCoffre $element, $user): string
+    private function obtenirDataKey(ElementCoffre $element, User $user): string
     {
         if ($element->coffre->user_id === $user->id) {
             $kek = SessionHelper::obtenirKek();
@@ -219,25 +222,16 @@ class DashboardController extends Controller
             sodium_memzero($kek);
             return $dataKey;
         }
-        $share = ShareCoffre::where('coffre_id', $element->coffre->id)->where('destinataire_id', $user->id)->where('statut', 'accepte')->firstOrFail();
+        $share = ShareCoffre::where('coffre_id', $element->coffre->id)
+            ->where('destinataire_id', $user->id)
+            ->actifs()
+            ->firstOrFail();
         $clePrivee = SessionHelper::obtenirClePrivee();
-        return app(RsaCryptoService::class)->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
+        return $this->asymmetric->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
     }
 
     private function verifierAcces(ElementCoffre $element, bool $ecriture = false): void
     {
-        $user = auth()->user();
-        if ($element->coffre->user_id === $user->id) return;
-
-        $share = ShareCoffre::where('coffre_id', $element->coffre->id)
-            ->where('destinataire_id', $user->id)
-            ->where('statut', 'accepte')
-            ->first();
-
-        if (!$share) abort(403, 'Accès non autorisé.');
-
-        if ($ecriture && $share->permission === 'lecture') {
-            abort(403, 'Vous avez uniquement accès en lecture.');
-        }
+        Gate::authorize($ecriture ? 'update' : 'view', $element);
     }
 }

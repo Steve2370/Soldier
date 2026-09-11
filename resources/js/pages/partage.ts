@@ -31,7 +31,7 @@ export function partage(hasErrors: boolean, initialPermission: string) {
                 <div style="background:#202020;border:1px solid rgba(239,68,68,0.35);border-radius:16px;padding:28px;max-width:400px;width:calc(100% - 40px);">
                     <h3 style="font-size:1rem;font-weight:700;color:#ffffff;margin-bottom:10px;">Révoquer l'accès</h3>
                     <p style="color:#e0e0e0;font-size:0.875rem;margin-bottom:22px;line-height:1.6;">
-                        <strong style="color:#ffffff;">${nom}</strong> n'aura plus accès à ce coffre immédiatement.
+                        <strong class="revocation-name" style="color:#ffffff;"></strong> n'aura plus accès à ce coffre immédiatement.
                     </p>
                     <div style="display:flex;gap:10px;justify-content:flex-end;">
                         <button id="rev-annuler" style="background:#404040;color:#e0e0e0;border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:10px 20px;font-size:0.85rem;cursor:pointer;font-family:Audiowide,sans-serif;">
@@ -45,6 +45,8 @@ export function partage(hasErrors: boolean, initialPermission: string) {
             `
 
             document.body.appendChild(modal)
+            const nameElement = modal.querySelector('.revocation-name') as HTMLElement
+            nameElement.textContent = nom
 
             const close = () => modal.remove()
             document.getElementById('rev-annuler')?.addEventListener('click', close)

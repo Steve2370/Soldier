@@ -228,7 +228,7 @@
         <div class="header">
             <img src="https://soldierkey.com/assets/Soldier-Logo.png" alt="Soldier" width="72" height="72">
             <div class="header-brand">Soldier</div>
-            <div class="header-tagline">Gestionnaire de mots de passe · Zero-knowledge</div>
+            <div class="header-tagline">Gestionnaire de mots de passe · Chiffrement AES-256-GCM</div>
         </div>
 
         <div class="card">
@@ -243,7 +243,7 @@
                 <span class="badge">AES-256-GCM</span>
                 <span class="badge">ARGON2ID</span>
                 <span class="badge">RSA-4096</span>
-                <span class="badge">ZERO-KNOWLEDGE</span>
+                <span class="badge">CHIFFREMENT SÉCURISÉ</span>
             </div>
             <p>
                 Cet email a été envoyé par <strong style="color:#505050;">Soldier</strong> — <a href="https://soldierkey.com">soldierkey.com</a><br>

@@ -2,7 +2,7 @@
 @section('title', 'Modifier — ' . $donnees['label'])
 
 @section('content')
-    <div x-data="modifierService('{{ addslashes($donnees['label']) }}', '{{ addslashes($donnees['url'] ?? '') }}', '{{ $donnees['favicon_url'] ?? '' }}')">
+    <div x-data='modifierService(@js($donnees["label"]), @js($donnees["url"] ?? ""), @js($donnees["favicon_url"] ?? ""))'>
 
         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
             <a href="{{ route('services.afficher', $element->id) }}" class="btn-secondary" style="padding: 9px 12px; flex-shrink: 0;">

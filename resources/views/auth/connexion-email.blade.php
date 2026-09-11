@@ -92,7 +92,7 @@
             </div>
 
             <p style="text-align: center; margin-top: 22px; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;">
-                AES-256-GCM · Argon2id · Zero-knowledge
+                AES-256-GCM · Argon2id · Session sécurisée
             </p>
         </div>
     </div>

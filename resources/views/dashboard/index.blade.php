@@ -59,7 +59,7 @@
                     @foreach($groupe['elements'] as $element)
                         <div
                             class="service-card"
-                            x-show="filtrerElement('{{ strtolower($element['label']) }}', '{{ strtolower($element['url'] ?? '') }}', {{ $element['favori'] ? 'true' : 'false' }})"
+                            x-show='filtrerElement(@js(strtolower($element["label"])), @js(strtolower($element["url"] ?? "")), {{ $element["favori"] ? "true" : "false" }})'
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95"
                             x-transition:enter-end="opacity-100 scale-100"
@@ -122,7 +122,7 @@
 
                             <div style="display: flex; gap: 6px;">
                                 <button
-                                    @click="copierMdp('{{ addslashes($element['donnees']['mot_de_passe'] ?? '') }}')"
+                                    @click='copierMdp(@js($element["donnees"]["mot_de_passe"] ?? ""))'
                                     class="action-chip"
                                     style="flex: 1;"
                                     title="Copier le mot de passe"
@@ -139,7 +139,7 @@
                                     </a>
                                 @endif
                                 @if(!($groupe['partage'] ?? false))
-                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" @submit.prevent="confirmerSuppression">
+                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" @submit.prevent='confirmerSuppression($event, @js($element["label"]))'>
                                         @csrf @method('DELETE')
                                         <button type="submit" class="action-chip action-chip-danger" title="Supprimer">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -161,7 +161,7 @@
                 </div>
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;">Coffre vide</h2>
                 <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; max-width: 300px; margin-left: auto; margin-right: auto;">
-                    Commencez par ajouter votre premier service. Tout sera chiffré localement.
+                    Commencez par ajouter votre premier service. Les données seront chiffrées avant leur stockage.
                 </p>
                 <a href="{{ route('services.creer') }}" class="btn-primary">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -358,7 +358,7 @@
                 </div>
                 <div>
                     <div style="font-weight:700;color:#fff;font-size:1rem;">Supprimer le service ?</div>
-                    <div style="font-size:0.8rem;color:#808080;margin-top:2px;">« ${label} »</div>
+                    <div class="modal-service-label" style="font-size:0.8rem;color:#808080;margin-top:2px;"></div>
                 </div>
             </div>
             <p style="font-size:0.875rem;color:#e0e0e0;margin-bottom:22px;line-height:1.6;">Cette action est irréversible. Le service sera déplacé dans la corbeille.</p>
@@ -369,6 +369,7 @@
         </div>
     `;
                         document.body.appendChild(modal);
+                        modal.querySelector('.modal-service-label').textContent = `« ${label} »`;
                         document.getElementById('modal-annuler').onclick = () => modal.remove();
                         modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
                         document.getElementById('modal-supprimer').onclick = () => {

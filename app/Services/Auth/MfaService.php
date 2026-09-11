@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Services\Crypto\Contracts\EncryptionServiceInterface;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 use PragmaRX\Google2FA\Exceptions\IncompatibleWithGoogleAuthenticatorException;
 use PragmaRX\Google2FA\Exceptions\InvalidCharactersException;
 use PragmaRX\Google2FA\Exceptions\SecretKeyTooShortException;
@@ -19,6 +20,11 @@ class MfaService
     private const int CODE_LONGUEUR  = 6;
     private const int CODE_EXPIRATION = 10;
     private const int MAX_TENTATIVES = 5;
+
+    public function __construct(
+        private readonly EncryptionServiceInterface $encryption,
+        private readonly Google2FA $totp,
+    ) {}
 
     /**
      * @throws RandomException
@@ -47,26 +53,37 @@ class MfaService
      */
     public function verifierCode(User $user, string $codeSaisi): bool
     {
-        $mfa = $user->mfa()->where('actif', true)->first();
+        $limite = 'mfa-verification:' . $user->id;
+        if (RateLimiter::tooManyAttempts($limite, self::MAX_TENTATIVES)) {
+            return false;
+        }
+
+        $type = SessionHelper::typeMfaPending() ?? 'email';
+        $mfa = $user->mfa()->where('type', $type)->where('actif', true)->first();
 
         if (!$mfa) {
             return false;
         }
 
         if ($mfa->type === 'totp') {
-            return $this->verifierTotp($user, $codeSaisi);
+            $valide = $this->verifierTotp($user, $codeSaisi);
+            if (!$valide) RateLimiter::hit($limite, 600);
+            else RateLimiter::clear($limite);
+            return $valide;
         }
 
         if ($mfa->tentatives >= self::MAX_TENTATIVES) {
             return false;
         }
 
-        if ($mfa->code_expire_le < now()) {
+        if (!$mfa->code_expire_le || $mfa->code_expire_le->isPast()) {
+            RateLimiter::hit($limite, 600);
             return false;
         }
 
         if (!Hash::check($codeSaisi, $mfa->code_hash)) {
             $mfa->increment('tentatives');
+            RateLimiter::hit($limite, 600);
             return false;
         }
 
@@ -75,6 +92,8 @@ class MfaService
             'code_expire_le' => null,
             'tentatives' => 0,
         ]);
+
+        RateLimiter::clear($limite);
 
         return true;
     }
@@ -109,14 +128,13 @@ class MfaService
 
         $kek = SessionHelper::obtenirKek();
         if (!$kek) {
-            $kekPending = session('mfa_pending_kek');
-            if (!$kekPending) return false;
-            $kek = base64_decode($kekPending);
+            $clesPendantes = SessionHelper::obtenirMfaPendante();
+            if (!$clesPendantes) return false;
+            $kek = $clesPendantes['kek'];
         }
 
         $secretChiffre = json_decode($mfa->totp_secret_chiffre, true);
-        $secret = app(EncryptionServiceInterface::class)
-            ->decrypt(
+        $secret = $this->encryption->decrypt(
                 $secretChiffre['ciphertext'],
                 $kek,
                 $secretChiffre['iv'],
@@ -124,15 +142,16 @@ class MfaService
             );
         sodium_memzero($kek);
 
-        $google2fa = new Google2FA();
         try {
-            return $google2fa->verifyKey($secret, $code, 1);
+            return $this->totp->verifyKey($secret, $code, 1);
         } catch (IncompatibleWithGoogleAuthenticatorException) {
             return false;
         } catch (InvalidCharactersException) {
             return false;
         } catch (SecretKeyTooShortException) {
             return false;
+        } finally {
+            sodium_memzero($secret);
         }
     }
 
@@ -150,7 +169,7 @@ class MfaService
             $codesHashes[] = Hash::make($code);
         }
 
-        $mfa = $user->mfa()->where('actif', true)->first();
+        $mfa = $user->mfa()->where('type', 'totp')->where('actif', true)->first();
         if ($mfa) {
             $mfa->update(['codes_recuperation' => $codesHashes]);
         }
@@ -191,7 +210,6 @@ class MfaService
      */
     private function genererSecretBase32(): string
     {
-        $google2fa = new Google2FA();
-        return $google2fa->generateSecretKey(16);
+        return $this->totp->generateSecretKey(16);
     }
 }

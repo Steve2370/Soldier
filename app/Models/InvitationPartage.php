@@ -30,6 +30,7 @@ class InvitationPartage extends Model
     protected $casts = [
         'expire_le' => 'datetime',
         'traitee_le' => 'datetime',
+        'element_ids' => 'array',
     ];
 
     public function coffre(): BelongsTo

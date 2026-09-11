@@ -11,7 +11,7 @@ class VaultUnlocked
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!SessionHelper::havecleKek()) {
+        if (!SessionHelper::havecleKek() || !SessionHelper::haveClePrivee()) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => 'vault_locked',
@@ -27,6 +27,11 @@ class VaultUnlocked
                 ]);
         }
 
-        return $next($request);
+        /** @var Response $response */
+        $response = $next($request);
+        $response->headers->set('Cache-Control', 'private, no-store, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+
+        return $response;
     }
 }

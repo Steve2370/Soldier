@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Auth\ExtensionHandoffService;
 use App\Services\Coffre\CleManagementService;
+use App\Services\Coffre\CoffreService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,7 @@ class AuthApiController extends Controller
     public function __construct(
         private readonly CleManagementService $cleManagement,
         private readonly ExtensionHandoffService $extensionHandoff,
+        private readonly CoffreService $coffreService,
     ) {}
 
     /**
@@ -88,10 +90,17 @@ class AuthApiController extends Controller
             return response()->json(['error' => 'Coffre non initialisé.'], 422);
         }
 
+        if ($user->mfa()->where('actif', true)->exists()) {
+            return response()->json([
+                'error' => 'mfa_required',
+                'message' => 'L’authentification MFA doit être terminée avant d’utiliser l’API.',
+            ], 428);
+        }
+
         $coffre = $user->coffres()->first();
         if (!$coffre) {
             $clesTemp = $this->cleManagement->deverouillerCles($user, $request->master_password);
-            $coffre = app(\App\Services\Coffre\CoffreService::class)->creerCoffre($user, [
+            $coffre = $this->coffreService->creerCoffre($user, [
                 'nom'    => 'Mon coffre',
                 'couleur' => '#217eaa',
             ], $clesTemp['kek']);

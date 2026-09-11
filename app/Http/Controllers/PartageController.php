@@ -39,7 +39,7 @@ class PartageController extends Controller
 
         $partagesRecus = ShareCoffre::with(['coffre', 'proprietaire'])
             ->where('destinataire_id', $user->id)
-            ->where('statut', 'accepte')
+            ->actifs()
             ->orderByDesc('created_at')
             ->get();
 
@@ -98,10 +98,11 @@ class PartageController extends Controller
         $dataKey = $this->keyManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
         sodium_memzero($kek);
 
-        $elements = $coffre->elements()->whereIn('id', $request->element_ids)->get();
-        if ($elements->isEmpty()) {
+        $elementIds = collect($request->element_ids)->map(fn ($id) => (int) $id)->unique()->values();
+        $elements = $coffre->elements()->whereIn('id', $elementIds)->get();
+        if ($elements->count() !== $elementIds->count()) {
             sodium_memzero($dataKey);
-            return back()->withErrors(['element_ids' => 'Aucun élément valide sélectionné.']);
+            return back()->withErrors(['element_ids' => 'Un ou plusieurs éléments ne correspondent pas à ce coffre.']);
         }
 
         if ($request->partage_groupe == '1') {
@@ -137,7 +138,7 @@ class PartageController extends Controller
                     'permission' => $request->permission,
                     'statut' => 'en_attente',
                     'expire_le' => now()->addHours(72),
-                    'element_ids' => json_encode($request->element_ids),
+                    'element_ids' => $elementIds->all(),
                 ]);
 
                 Mail::to($destinataire->email)->send(new InvitationPartageMail(
@@ -198,7 +199,7 @@ class PartageController extends Controller
             'permission' => $request->permission,
             'statut' => 'en_attente',
             'expire_le' => now()->addHours(72),
-            'element_ids' => json_encode($request->element_ids),
+            'element_ids' => $elementIds->all(),
         ]);
 
         Mail::to($request->email)->send(new InvitationPartageMail(
@@ -240,16 +241,26 @@ class PartageController extends Controller
             return redirect()->route('dashboard')->with('toast', ['type' => 'warning', 'titre' => 'Invitation en attente', 'message' => 'Demandez à ' . $invitation->expediteur->name . ' de vous renvoyer une invitation.']);
         }
 
-        ShareCoffre::create([
+        $share = ShareCoffre::firstOrCreate([
+            'coffre_id' => $coffre->id,
+            'destinataire_id' => $user->id,
+        ], [
             'coffre_id' => $coffre->id,
             'proprietaire_id' => $invitation->expediteur_id,
             'destinataire_id' => $user->id,
             'data_key_destinataire_encrypted' => $dataKeyChiffree,
             'permission' => $invitation->permission,
+            'expire_le' => $invitation->expire_le,
             'statut' => 'accepte',
             'accepte_le' => now(),
             'element_ids' => $invitation->element_ids,
         ]);
+
+        if (!$share->wasRecentlyCreated) {
+            return redirect()->route('dashboard')->with('toast', [
+                'type' => 'info', 'titre' => 'Invitation déjà traitée', 'message' => 'Cet accès existe déjà pour votre compte.',
+            ]);
+        }
 
         $invitation->update(['statut' => 'acceptee', 'traitee_le' => now()]);
 

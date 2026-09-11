@@ -33,7 +33,13 @@ class ExtensionHandoffService
      */
     public function resoudreCode(string $code): ?User
     {
-        $userId = Cache::pull(self::PREFIXE_CACHE . $code);
+        $lock = Cache::lock('oauth_extension_consume_lock:' . hash('sha256', $code), 5);
+
+        try {
+            $userId = $lock->get(fn () => Cache::pull(self::PREFIXE_CACHE . $code));
+        } finally {
+            optional($lock)->release();
+        }
 
         if (!$userId) {
             return null;

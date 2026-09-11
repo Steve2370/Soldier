@@ -57,9 +57,7 @@ class Coffre extends Model
             return true;
         }
 
-        return $this->partages()->where('destinataire_id', $user->id)
-            ->where('statut', 'accepte')->where(fn($q) => $q->whereNull('expire_le')
-                ->orWhere('expire_le', '>', now()))->exists();
+        return $this->partages()->actifs()->where('destinataire_id', $user->id)->exists();
     }
 
     public function nombreElements(): int

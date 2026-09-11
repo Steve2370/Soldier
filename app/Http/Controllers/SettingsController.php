@@ -26,6 +26,8 @@ class SettingsController extends Controller
     public function __construct(
         private readonly CleManagementService $cleManagement,
         private readonly MfaService $mfaService,
+        private readonly EncryptionServiceInterface $encryption,
+        private readonly Google2FA $totp,
     ) {}
 
     public function index(): View
@@ -118,9 +120,8 @@ class SettingsController extends Controller
             return back()->withErrors(['code' => 'Session expirée. Recommencez.']);
         }
 
-        $google2fa = new Google2FA();
         try {
-            $valide = $google2fa->verifyKey($secret, $request->input('code'), 1);
+            $valide = $this->totp->verifyKey($secret, $request->input('code'), 1);
         } catch (\Exception $e) {
             $valide = false;
         }
@@ -130,7 +131,7 @@ class SettingsController extends Controller
         }
 
         $kek = SessionHelper::obtenirKek();
-        $secretChiffre = app(EncryptionServiceInterface::class)->encrypt($secret, $kek);
+        $secretChiffre = $this->encryption->encrypt($secret, $kek);
         sodium_memzero($kek);
 
         $user->mfa()->updateOrCreate(
@@ -140,6 +141,7 @@ class SettingsController extends Controller
                 'totp_secret_chiffre' => json_encode($secretChiffre),
                 'active_le' => now(),
             ]);
+        sodium_memzero($secret);
         Mail::to($user->email)->send(new TotpActiveMail($user));
         session()->forget('totp_secret_pending');
         $codes = $this->mfaService->genererCodesRecuperation($user);

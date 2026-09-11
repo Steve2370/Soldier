@@ -76,7 +76,7 @@ export function dashboard() {
                         </div>
                         <div>
                             <div style="font-weight:700;color:#ffffff;font-size:1rem;margin-bottom:3px;">Supprimer le service ?</div>
-                            <div style="font-size:0.8rem;color:#808080;">« ${label} »</div>
+                            <div class="modal-service-label" style="font-size:0.8rem;color:#808080;"></div>
                         </div>
                     </div>
                     <p style="font-size:0.875rem;color:#e0e0e0;margin-bottom:24px;line-height:1.65;">
@@ -93,6 +93,9 @@ export function dashboard() {
                 </div>`
 
             document.body.appendChild(modal)
+
+            const labelElement = modal.querySelector('.modal-service-label') as HTMLElement
+            labelElement.textContent = `« ${label} »`
 
             const annulerBtn = document.getElementById('modal-annuler') as HTMLButtonElement
             const supprimerBtn = document.getElementById('modal-supprimer') as HTMLButtonElement

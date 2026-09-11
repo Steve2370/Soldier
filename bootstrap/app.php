@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\HasFamilySubscription;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\VaultUnlocked;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,10 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(SecurityHeaders::class);
         $middleware->redirectGuestsTo(fn () => route('connexion'));
         $middleware->alias([
             'vault.unlocked' => VaultUnlocked::class,
             'admin' => IsAdmin::class,
+            'famille' => HasFamilySubscription::class,
         ]);
         $middleware->trimStrings(except:[
             'password',
@@ -32,11 +35,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'stripe/webhook',
         ]);
 
-        $middleware->alias([
-            'vault.unlocked' => VaultUnlocked::class,
-            'admin' => IsAdmin::class,
-            'famille' => HasFamilySubscription::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {

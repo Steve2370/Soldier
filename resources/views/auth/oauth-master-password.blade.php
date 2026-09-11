@@ -113,7 +113,7 @@
                     <div style="background: rgba(33,126,170,0.08); border: 1px solid rgba(45,159,212,0.18); border-radius: 9px; padding: 11px 14px; margin-bottom: 22px; display: flex; gap: 9px; align-items: flex-start;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         <p style="font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">
-                            Le master password <strong style="color: var(--text-primary);">n'est jamais envoyé</strong> à nos serveurs. Il chiffre localement votre coffre.
+                            Le master password sert à déverrouiller votre coffre. Il n'est pas conservé en clair après la requête.
                         </p>
                     </div>
 
@@ -138,7 +138,7 @@
             </div>
 
             <p style="text-align: center; margin-top: 22px; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;">
-                AES-256-GCM · Argon2id · Zero-knowledge
+                AES-256-GCM · Argon2id · Session sécurisée
             </p>
         </div>
     </div>

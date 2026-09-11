@@ -7,7 +7,7 @@
     <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px;">
             <div>
                 <h1 style="font-size: 1.625rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">Partage</h1>
-                <p style="color: var(--text-muted); font-size: 0.875rem;">Zero-knowledge — le serveur ne voit jamais vos clés</p>
+                <p style="color: var(--text-muted); font-size: 0.875rem;">Partage chiffré avec enveloppe RSA-4096</p>
             </div>
             <button @click="showFormulaire = !showFormulaire" class="btn-primary">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -171,7 +171,7 @@
                     <div style="background:var(--accent-dim); border:1px solid var(--border-bright); border-radius:9px; padding:10px 14px; margin-bottom:18px; display:flex; gap:8px; align-items:flex-start;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         <p style="font-size:0.78rem; color:var(--text-secondary); margin:0; line-height:1.5;">
-                            La Data Key du coffre sera chiffrée avec la clé publique RSA du destinataire. <strong style="color:var(--text-primary);">Le serveur ne voit jamais vos données en clair.</strong>
+                            La Data Key du coffre sera chiffrée avec la clé publique RSA du destinataire. Le serveur conserve les enveloppes chiffrées et orchestre le déverrouillage web.
                         </p>
                     </div>
 
@@ -233,7 +233,7 @@
                         <span class="badge {{ $share->permission === 'ecriture' ? 'badge-warning' : 'badge-info' }}">
                     {{ ucfirst($share->permission) }}
                 </span>
-                        <form method="POST" action="{{ route('partage.revoquer', $share->id) }}" @submit.prevent="confirmerRevocation($event, '{{ addslashes($share->destinataire->name) }}')">
+                        <form method="POST" action="{{ route('partage.revoquer', $share->id) }}" @submit.prevent='confirmerRevocation($event, @js($share->destinataire->name))'>
                             @csrf @method('DELETE')
                             <button type="submit" class="btn-danger" style="padding: 6px 12px; font-size: 0.78rem;">Révoquer</button>
                         </form>

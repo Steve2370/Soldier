@@ -30,6 +30,7 @@ class ShareCoffre extends Model
         return [
             'expire_le' => 'datetime',
             'accepte_le' => 'datetime',
+            'element_ids' => 'array',
         ];
     }
 
@@ -50,13 +51,13 @@ class ShareCoffre extends Model
 
     public function scopeActifs($query)
     {
-        return $query->where('statut', 'accepte')->where(fn($q) =>$q->whereNull('expire_le')
-        ->orWhere('expire_le', '>', now()));
+        return $query->where('statut', 'accepte')
+            ->where(fn ($q) => $q->whereNull('expire_le')->orWhere('expire_le', '>', now()));
     }
 
     public function scopeEnAttente($query)
     {
-        return $query->where('statut', 'en attente');
+        return $query->where('statut', 'en_entente');
     }
 
     public function isValide(): bool
@@ -73,6 +74,6 @@ class ShareCoffre extends Model
 
     public function peuEcrire(): bool
     {
-        return $this->isValide() && $this->permission === 'ecrire';
+        return $this->isValide() && $this->permission === 'ecriture';
     }
 }

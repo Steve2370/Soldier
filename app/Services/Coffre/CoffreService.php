@@ -211,7 +211,7 @@ readonly class CoffreService
                 'notes' => $donnees['notes'] ?? null,
             ],
 
-            'cle_ssh' => [
+            'cles' => [
                 'serveur' => $donnees['serveur'] ?? '',
                 'port' => $donnees['port'] ?? 22,
                 'username' => $donnees['username'] ?? '',

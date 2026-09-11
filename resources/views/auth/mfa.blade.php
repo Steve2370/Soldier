@@ -16,7 +16,7 @@
                     Vérification
                 </h1>
                 <p style="color: var(--text-muted); font-size: 0.875rem; line-height: 1.6;">
-                    @if(session('mfa_type') === 'totp')
+                    @if(session('auth.mfa_type') === 'totp')
                         Entrez le code affiché dans votre application authenticator
                     @else
                         Entrez le code à 6 chiffres envoyé à votre adresse email
@@ -63,7 +63,7 @@
 
                     <div class="divider"></div>
 
-                    @if(session('mfa_type') !== 'totp')
+                    @if(session('auth.mfa_type') !== 'totp')
                         <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
                             Vous n'avez pas reçu le code ?
                             <a href="{{ route('mfa.verify') }}" style="color: var(--accent-bright); text-decoration: none; font-weight: 600;">Renvoyer →</a>
@@ -79,7 +79,7 @@
             </div>
 
             <p style="text-align: center; margin-top: 20px; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;">
-                AES-256-GCM · Argon2id · Zero-knowledge
+                AES-256-GCM · Argon2id · Session sécurisée
             </p>
         </div>
     </div>

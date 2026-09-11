@@ -54,13 +54,21 @@ class AesEncryptionService implements EncryptionServiceInterface
     ): string {
         $this->validerCle($key);
 
+        $ciphertextBinaire = $this->decoderBase64($ciphertext, 'ciphertext');
+        $ivBinaire = $this->decoderBase64($iv, 'iv');
+        $tagBinaire = $this->decoderBase64($tag, 'tag');
+
+        if (strlen($ivBinaire) !== self::IV_BYTES || strlen($tagBinaire) !== self::TAG_BYTES) {
+            throw new DecryptionException();
+        }
+
         $plaintext = openssl_decrypt(
-            base64_decode($ciphertext),
+            $ciphertextBinaire,
             self::CIPHER,
             $key,
             OPENSSL_RAW_DATA,
-            base64_decode($iv),
-            base64_decode($tag)
+            $ivBinaire,
+            $tagBinaire
         );
 
         if ($plaintext === false) {
@@ -89,5 +97,16 @@ class AesEncryptionService implements EncryptionServiceInterface
                 )
             );
         }
+    }
+
+    private function decoderBase64(string $valeur, string $champ): string
+    {
+        $decode = base64_decode($valeur, true);
+
+        if ($decode === false || ($champ === 'ciphertext' && $decode === '')) {
+            throw new DecryptionException();
+        }
+
+        return $decode;
     }
 }

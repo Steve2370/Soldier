@@ -37,6 +37,10 @@ return [
         'redirect' => env('GOOGLE_REDIRECT'),
     ],
 
+    'extension' => [
+        'redirect_urls' => env('EXTENSION_REDIRECT_URLS', ''),
+    ],
+
     'stripe' => [
         'model' => User::class,
         'key' => env('STRIPE_KEY'),

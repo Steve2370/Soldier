@@ -54,7 +54,7 @@ class FamilleController extends Controller
                         } else {
                             $share = ShareCoffre::where('coffre_id', $coffreFamille->id)
                                 ->where('destinataire_id', $user->id)
-                                ->where('statut', 'accepte')
+                                ->actifs()
                                 ->first();
                             $clePrivee = SessionHelper::obtenirClePrivee();
                             $dataKey   = $share
@@ -83,7 +83,7 @@ class FamilleController extends Controller
                 $secretsPartages = ShareCoffre::with(['coffre', 'proprietaire', 'destinataire'])
                     ->where('proprietaire_id', $user->id)
                     ->whereIn('destinataire_id', $memberIds)
-                    ->where('statut', 'accepte')
+                    ->actifs()
                     ->whereNotIn('coffre_id', array_filter([$familyGroup->coffre_id]))
                     ->get()
                     ->unique('coffre_id');

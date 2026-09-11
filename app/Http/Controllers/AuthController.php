@@ -30,6 +30,7 @@ class AuthController extends Controller
         private readonly CleManagementService $cleManagement,
         private readonly CoffreService $coffreService,
         private readonly ExtensionHandoffService $extensionHandoff,
+        private readonly MfaService $mfaService,
     ) {}
 
     public function showInscription(): View|RedirectResponse
@@ -91,14 +92,7 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user) {
-            return back()->withErrors([
-                'email' => 'Ces identifiants ne correspondent à aucun compte.',
-            ]);
-        }
-
-        session(['login_email' => $request->email]);
+        session(['login_email' => strtolower(trim((string) $request->email))]);
         return redirect()->route('connexion.password');
     }
 
@@ -165,20 +159,21 @@ class AuthController extends Controller
         $mfaActif = $user->mfa()->where('actif', true)->exists();
 
         if ($mfaActif) {
-            session([
-                'mfa_pending_kek' => base64_encode($cles['kek']),
-                'mfa_pending_cle_privee' => $cles['cle_privee'],
-            ]);
+            $mfaType = $user->mfa()->where('type', 'email')->where('actif', true)->exists()
+                ? 'email'
+                : 'totp';
+            SessionHelper::stockerMfaPendante($cles['kek'], $cles['cle_privee'], $mfaType);
 
             SessionHelper::mfaUserIdPending($user->id);
 
             $mfaEmail = $user->mfa()->where('type', 'email')->where('actif', true)->first();
             if ($mfaEmail) {
-                app(MfaService::class)->envoyerCodeEmail($user);
+                $this->mfaService->envoyerCodeEmail($user);
             }
 
             Auth::logout();
             sodium_memzero($cles['kek']);
+            sodium_memzero($cles['cle_privee']);
 
             return redirect()->route('mfa.verify');
         }
@@ -231,23 +226,32 @@ class AuthController extends Controller
         }
 
         $user = User::findOrFail($userId);
-        $mafService = app(MfaService::class);
-
-        if (!$mafService->verifierCode($user, $request->input('code'))) {
+        if (!$this->mfaService->verifierCode($user, $request->input('code'))) {
             return back()->withErrors(['code' => 'Code incorrect ou expiré.']);
         }
 
-        $kek = base64_decode(session('mfa_pending_kek'));
-        $clePrivee = session('mfa_pending_cle_privee');
+        $clesPendantes = SessionHelper::obtenirMfaPendante();
+        if (!$clesPendantes) {
+            SessionHelper::effacerMfaPendante();
+            return redirect()->route('connexion')
+                ->withErrors(['code' => 'Session expirée. Reconnectez-vous.']);
+        }
 
-        session()->forget(['mfa_pending_kek', 'mfa_pending_cle_privee']);
+        $kek = $clesPendantes['kek'];
+        $clePrivee = $clesPendantes['cle_privee'];
+        SessionHelper::effacerMfaPendante();
 
         Auth::loginUsingId($userId);
         $request->session()->regenerate();
         SessionHelper::deverouiller($kek, $clePrivee);
         SessionHelper::marquerMfaVerifie();
         sodium_memzero($kek);
+        sodium_memzero($clePrivee);
         ActivityLogService::log('connexion_mfa', 'Connexion avec MFA validé', $userId);
+
+        if (session()->has('extension_redirect')) {
+            return $this->redirectionExtension($request, $user);
+        }
 
         return redirect()->route('dashboard')
             ->with('toast', [
@@ -277,6 +281,8 @@ class AuthController extends Controller
 
     public function redirectGithub(): RedirectResponse
     {
+        $this->memoriserRedirectionExtension(request);
+
         return Socialite::driver('github')->redirect();
     }
 
@@ -287,9 +293,8 @@ class AuthController extends Controller
 
     public function redirectGoogle(): RedirectResponse
     {
-        if (request()->has('extension_redirect')) {
-            session(['extension_redirect' => request()->get('extension_redirect')]);
-        }
+        $this->memoriserRedirectionExtension(request);
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -311,17 +316,31 @@ class AuthController extends Controller
             ->where('oauth_id', $oauthUser->getId())
             ->first();
 
-        if (!$user) {
-            $user = User::where('email', $oauthUser->getEmail())->first();
-            if ($user) {
-                $user->update([
-                    'oauth_provider' => $provider,
-                    'oauth_id' => $oauthUser->getId(),
+        $oauthEmail = $oauthUser->getEmail();
+        $oauthRaw = $oauthUser->getRaw();
+        if (($provider === 'google' && array_key_exists('email_verified', $oauthRaw) && !$oauthRaw['email_verified'])
+            || ($provider === 'github' && array_key_exists('verified', $oauthRaw) && !$oauthRaw['verified'])) {
+            return redirect()->route('connexion')->withErrors([
+                'email' => 'L’adresse email du fournisseur OAuth n’est pas vérifiée.',
+            ]);
+        }
+
+        if (!$user && $oauthEmail) {
+            $existingUser = User::where('email', $oauthEmail)->first();
+            if ($existingUser) {
+                return redirect()->route('connexion')->withErrors([
+                    'email' => 'Un compte existe déjà avec cette adresse. Connectez-vous avec ses identifiants avant de lier ce fournisseur.',
                 ]);
             }
         }
 
         if (!$user) {
+            if (!$oauthEmail) {
+                return redirect()->route('connexion')->withErrors([
+                    'email' => 'Le fournisseur OAuth n’a pas fourni une adresse email vérifiable.',
+                ]);
+            }
+
             $user = User::create([
                 'name' => $oauthUser->getName() ?? $oauthUser->getNickname() ?? 'Utilisateur',
                 'email' => $oauthUser->getEmail(),
@@ -338,31 +357,6 @@ class AuthController extends Controller
             $user->markEmailAsVerified();
         }
 
-        $extensionRedirect = request()->get('extension_redirect')
-            ?? session('extension_redirect');
-
-        if ($extensionRedirect) {
-            session()->forget('extension_redirect');
-
-            if (!$user->coffres()->exists()) {
-                return redirect($extensionRedirect . '?' . http_build_query([
-                        'error' => 'Créez d\'abord un compte sur soldierkey.com',
-                    ]));
-            }
-
-            // Le jeton Sanctum n'est plus jamais transmis dans l'URL (historique
-            // navigateur, logs serveur/proxy) : seul un code opaque à usage unique
-            // et de très courte durée de vie y transite. L'extension l'échange
-            // contre le vrai jeton via POST /api/auth/extension/echanger-code.
-            $code = $this->extensionHandoff->genererCode($user);
-
-            return redirect($extensionRedirect . '?' . http_build_query([
-                    'code' => $code,
-                    'email' => $user->email,
-                    'name' => $user->name,
-                    'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : '',
-                ]));
-        }
         ActivityLogService::log('connexion_oauth', 'Connexion via ' . ucfirst($provider), $user->id);
 
         $coffreExiste = $user->coffres()->exists();
@@ -417,6 +411,10 @@ class AuthController extends Controller
 
                 ActivityLogService::log('inscription', 'Compte créé via OAuth', $user->id);
 
+                if (session()->has('extension_redirect')) {
+                    return $this->redirectionExtension($request, $user);
+                }
+
                 return redirect()->route('dashboard')->with('toast', [
                     'type' => 'success',
                     'titre' => 'Coffre créé !',
@@ -430,12 +428,24 @@ class AuthController extends Controller
         try {
             $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
             session()->forget('oauth_login');
+
+            if ($user->mfa()->where('actif', true)->exists()) {
+                $mfaType = $user->mfa()->where('type', 'email')->where('actif', true)->exists()
+                    ? 'email'
+                    : 'totp';
+                SessionHelper::stockerMfaPendante($cles['kek'], $cles['cle_privee'], $mfaType);
+                SessionHelper::mfaUserIdPending($user->id);
+                Auth::logout();
+                sodium_memzero($cles['kek']);
+                sodium_memzero($cles['cle_privee']);
+                return redirect()->route('mfa.verify');
+            }
+
             SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
             sodium_memzero($cles['kek']);
 
-            if ($user->mfa()->where('actif', true)->exists()) {
-                session(['mfa_pending_kek' => base64_encode($cles['kek'])]);
-                return redirect()->route('mfa.verify');
+            if (session()->has('extension_redirect')) {
+                return $this->redirectionExtension($request, $user);
             }
 
             return redirect()->route('dashboard')->with('toast', [
@@ -446,5 +456,37 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['master_password' => 'Master password incorrect.']);
         }
+    }
+
+    private function redirectionExtension(Request $request, User $user): RedirectResponse
+    {
+        $redirect = session()->pull('extension_redirect');
+        $code = $this->extensionHandoff->genererCode($user);
+
+        Auth::logout();
+        SessionHelper::effacerCles();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect($redirect . '?' . http_build_query(['code' => $code]));
+    }
+
+    private function memoriserRedirectionExtension(Request $request): void
+    {
+        if (!$request->filled('extension_redirect')) {
+            return;
+        }
+
+        $redirect = (string) $request->input('extension_redirect');
+        $autorisees = array_values(array_filter(array_map(
+            static fn (string $url): string => rtrim(trim($url), '/'),
+            explode(',', (string) config('services.extension.redirect_urls', ''))
+        )));
+
+        if (!in_array(rtrim($redirect, '/'), $autorisees, true)) {
+            abort(400, 'Destination d’extension non autorisée.');
+        }
+
+        session(['extension_redirect' => rtrim($redirect, '/')]);
     }
 }

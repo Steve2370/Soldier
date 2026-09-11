@@ -129,7 +129,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getClePublique(): ?string
     {
-        return $this->clesUser?->cle_publique;
+        return $this->clesUser?->public_key;
     }
 
     public function isCleInitialise(): bool

@@ -72,8 +72,8 @@ export function showToast(
                 ${ICONS[type]}
             </div>
             <div style="flex:1;">
-                <div style="font-weight:700;font-size:0.875rem;color:#ffffff;">${titre}</div>
-                ${message ? `<div style="font-size:0.8rem;color:#e0e0e0;margin-top:3px;">${message}</div>` : ''}
+                <div class="toast-title" style="font-weight:700;font-size:0.875rem;color:#ffffff;"></div>
+                <div class="toast-message" style="font-size:0.8rem;color:#e0e0e0;margin-top:3px;"></div>
             </div>
             <button class="toast-close-btn" style="background:none;border:none;color:#808080;cursor:pointer;padding:2px;display:flex;align-items:center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -85,6 +85,12 @@ export function showToast(
     `
 
     c.appendChild(toast)
+
+    const titleElement = toast.querySelector('.toast-title') as HTMLElement
+    const messageElement = toast.querySelector('.toast-message') as HTMLElement
+    titleElement.textContent = titre
+    messageElement.textContent = message
+    messageElement.hidden = !message
 
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {

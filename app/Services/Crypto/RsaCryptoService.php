@@ -44,7 +44,12 @@ class RsaCryptoService implements CryptoAsymmetricInterface
             ->withHash('sha256')
             ->withMGFHash('sha256');
 
-        $plaintext = $key->decrypt(base64_decode($donneesCryptees));
+        $ciphertext = base64_decode($donneesCryptees, true);
+        if ($ciphertext === false || $ciphertext === '') {
+            throw new DecryptionException();
+        }
+
+        $plaintext = $key->decrypt($ciphertext);
 
         if ($plaintext === false) {
             throw new DecryptionException();

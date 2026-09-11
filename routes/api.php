@@ -12,6 +12,8 @@ Route::post('/auth/extension/echanger-code', [AuthApiController::class, 'echange
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profil', [AuthApiController::class, 'profil']);
     Route::post('/auth/logout', [AuthApiController::class, 'logout']);
-    Route::get('/auth/oauth-data', [AuthApiController::class, 'oauthData']);
-    Route::get('/services', [ServicesApiController::class, 'index']);
+    Route::get('/auth/oauth-data', [AuthApiController::class, 'oauthData'])
+        ->middleware('abilities:read:services');
+    Route::get('/services', [ServicesApiController::class, 'index'])
+        ->middleware('abilities:read:services');
 });

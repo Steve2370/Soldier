@@ -38,14 +38,14 @@ class ServicesApiController extends Controller
 
         $partages = ShareCoffre::with(['coffre.elements'])
             ->where('destinataire_id', $user->id)
-            ->where('statut', 'accepte')
+            ->actifs()
             ->get();
 
         foreach ($partages as $share) {
             $coffre = $share->coffre;
             if (!$coffre) continue;
 
-            $elementIds = $share->element_ids ? json_decode($share->element_ids, true) : null;
+            $elementIds = $share->element_ids;
             $elements = $elementIds ? $coffre->elements->whereIn('id', $elementIds)
                 : $coffre->elements;
 
@@ -60,7 +60,7 @@ class ServicesApiController extends Controller
                     'payload_encrypted' => $element->payload_encrypted,
                     'iv' => $element->iv,
                     'auth_tag' => $element->auth_tag,
-                    'partage' => 'true',
+                    'partage' => true,
                     'proprietaire' => $share->proprietaire->name ?? '-',
                     'coffre' => [
                         'id' => $coffre->id,

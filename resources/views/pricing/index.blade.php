@@ -44,7 +44,7 @@
                         'MFA Triple (TOTP, Passkeys, Email)',
                         'Partage sécurisé RSA-4096',
                         'Générateur de mots de passe',
-                        'Zero-Knowledge complet',
+                        'Chiffrement AES-256-GCM',
                         'Open Source',
                     ] as $feature)
                     <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
@@ -138,7 +138,7 @@
 
             @foreach([
                 ['Q' => 'Le plan gratuit est-il vraiment gratuit ?', 'R' => 'Oui, complètement gratuit et sans limite. Aucune carte de crédit, aucune fonctionnalité cachée derrière un paywall. Soldier est open source et restera gratuit pour toujours.'],
-                ['Q' => 'Mes données sont-elles en sécurité avec Soldier ?', 'R' => 'Absolument. Soldier utilise un chiffrement AES-256-GCM et une architecture Zero-Knowledge. Même nous ne pouvons pas lire vos mots de passe — c\'est mathématiquement impossible.'],
+                ['Q' => 'Mes données sont-elles en sécurité avec Soldier ?', 'R' => 'Soldier chiffre les données sensibles avec AES-256-GCM et protège les clés avec Argon2id. L\'implémentation web actuelle déverrouille le coffre côté serveur ; une architecture zero-knowledge complète est encore en cours de réalisation.'],
                 ['Q' => 'Comment fonctionne le plan Famille ?', 'R' => 'Vous invitez jusqu\'à 5 autres membres. Chacun a son propre compte sécurisé et vous pouvez partager des accès entre membres de façon contrôlée.'],
                 ['Q' => 'Puis-je annuler mon abonnement Famille ?', 'R' => 'Oui, à tout moment depuis votre espace de gestion. L\'annulation prend effet à la fin de la période de facturation en cours. Vos données restent accessibles.'],
                 ['Q' => 'Le bouton "Offrez-moi un café" est-il obligatoire ?', 'R' => 'Non, c\'est complètement optionnel. Si vous aimez Soldier et voulez encourager le projet, vous pouvez contribuer. Mais rien n\'est requis.'],
@@ -176,7 +176,7 @@
     <footer style="padding:24px 40px; border-top:1px solid rgba(33,126,170,0.1); text-align:center;">
         <a href="{{ route('privacy') }}" style="color:var(--text-muted); font-size:0.75rem; text-decoration:none;">Politique de confidentialité</a>
         <p style="color:var(--text-muted); font-size:0.75rem; letter-spacing:0.04em; margin-top:8px;">
-            Soldier Password Manager · AES-256-GCM · Argon2id · RSA-4096 · Zero-Knowledge
+            Soldier Password Manager · AES-256-GCM · Argon2id · RSA-4096
         </p>
     </footer>
 

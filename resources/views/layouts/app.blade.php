@@ -8,10 +8,6 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=999">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=999">
     <link rel="apple-touch-icon" href="{{ asset('assets/Soldier-Logotype.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
     <style>
         :root {

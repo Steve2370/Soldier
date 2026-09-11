@@ -418,7 +418,7 @@
         <div class="toc-title">Sommaire</div>
         <ol>
             <li><a href="#s1">Qui sommes-nous</a></li>
-            <li><a href="#s2">Architecture Zero-Knowledge</a></li>
+            <li><a href="#s2">Architecture de chiffrement</a></li>
             <li><a href="#s3">Données collectées</a></li>
             <li><a href="#s4">Extension Chrome</a></li>
             <li><a href="#s5">Cookies et stockage local</a></li>
@@ -442,11 +442,11 @@
     <div class="section" id="s2">
         <div class="section-header">
             <div class="section-num"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg></div>
-            <h2>Architecture Zero-Knowledge</h2>
+            <h2>Architecture de chiffrement</h2>
         </div>
         <p>Soldier est conçu selon un principe fondamental : <strong style="color:var(--white)">le serveur ne peut jamais lire vos données sensibles</strong>.</p>
         <div class="highlight">
-            <p><span class="highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Vos mots de passe et données de coffre sont chiffrés localement sur votre appareil à l'aide d'<strong style="color:var(--cyan)">AES-256</strong>, avant d'être envoyés au serveur. La clé de chiffrement est dérivée de votre mot de passe maître via <strong style="color:var(--cyan)">Argon2id</strong> — elle ne quitte jamais votre appareil.</p>
+            <p><span class="highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>Vos mots de passe et données de coffre sont chiffrés avec <strong style="color:var(--cyan)">AES-256-GCM</strong> avant leur stockage. La clé de chiffrement est protégée par <strong style="color:var(--cyan)">Argon2id</strong>. Dans la version web actuelle, le serveur participe au déverrouillage ; le zero-knowledge complet n'est pas encore garanti.</p>
         </div>
         <p>En conséquence :</p>
         <ul>
@@ -530,7 +530,7 @@
             <div class="section-num"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
             <h2>Extension Chrome</h2>
         </div>
-        <p>L'extension Chrome de Soldier respecte les mêmes principes Zero-Knowledge que l'application web.</p>
+        <p>L'extension Chrome de Soldier utilise les mêmes formats chiffrés. La garantie zero-knowledge complète dépendra du déplacement de tout le déchiffrement côté client.</p>
         <ul>
             <li><strong style="color:var(--white)">Permission <code>storage</code> :</strong> utilisée uniquement pour persister votre token de session chiffré et l'URL de votre instance. Aucun mot de passe n'est stocké dans le stockage du navigateur.</li>
             <li><strong style="color:var(--white)">Permission <code>activeTab</code> :</strong> utilisée pour détecter le domaine de la page active et suggérer les identifiants correspondants. Activée uniquement sur action explicite de l'utilisateur.</li>

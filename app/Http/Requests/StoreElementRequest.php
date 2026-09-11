@@ -8,7 +8,7 @@ class StoreElementRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     public function rules(): array
@@ -16,7 +16,7 @@ class StoreElementRequest extends FormRequest
         return [
             'type' => ['required', 'string', 'in:login,carte,note,identite,cles,autre'],
             'label' => ['required', 'string', 'max:200'],
-            'url' => ['nullable', 'url', 'max:500'],
+            'url' => ['nullable', 'url:http,https', 'max:500'],
             'identifiant' => ['nullable', 'string', 'max:255'],
             'mot_de_passe' => ['nullable', 'string', 'max:1000'],
             'passphrase_ssh' => ['nullable', 'string', 'max:1000'],

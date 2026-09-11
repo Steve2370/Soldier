@@ -4,9 +4,12 @@ namespace App\Providers;
 
 use Laravel\Cashier\Events\WebhookReceived;
 use App\Listeners\StripeEventListener;
+use App\Models\ElementCoffre;
+use App\Policies\ElementCoffrePolicy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::listen(WebhookReceived::class, StripeEventListener::class);
+        Gate::policy(ElementCoffre::class, ElementCoffrePolicy::class);
 
         $this->registerRateLimiters();
     }

@@ -36,7 +36,9 @@ Route::get('/auth/github/callback', [AuthController::class, 'callbackGithub'])->
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'callbackGoogle'])->name('auth.google.callback');
 
-Route::get('/', fn() => auth()->check() ? redirect()->route('dashboard') : redirect()->route('welcome'));
+Route::get('/', fn () => auth()->check()
+    ? redirect()->route('dashboard')
+    : app(WelcomeController::class)->index());
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/oauth/master-password', [AuthController::class, 'showOauthMasterPassword'])->name('oauth.master-password');
@@ -66,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     })->middleware('throttle:6,1')->name('verification.send');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'vault.unlocked'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/services/creer', [DashboardController::class, 'creer'])->name('services.creer');
@@ -116,12 +118,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
     Route::get('/logs/export', [AdminController::class, 'exportLogs'])->name('logs.export');
     Route::delete('/users/{user}', [AdminController::class, 'supprimerUser'])->name('users.supprimer');
-    Route::post('/mail', [AdminController::class, 'envoyerMail'])->name('mail.envoyer');
+    Route::post('/mail', [AdminController::class, 'envoyerMail'])->middleware('throttle:10,1')->name('mail.envoyer');
 });
 
 Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
-Route::middleware(['auth'])->prefix('famille')->name('famille.')->group(function () {
+Route::middleware(['auth', 'famille', 'vault.unlocked'])->prefix('famille')->name('famille.')->group(function () {
     Route::get('/', [FamilleController::class, 'index'])->name('index');
     Route::post('/creer', [FamilleController::class, 'creerGroupe'])->name('creer');
     Route::post('/inviter', [FamilleController::class, 'inviter'])->middleware('throttle:10,1')->name('inviter');

@@ -291,8 +291,39 @@
 </div>
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+        const inscriptions = @js($inscriptionsParJour->map(fn ($item) => [
+            'label' => date('d/m', strtotime($item->date)),
+            'value' => (int) $item->total,
+        ])->values());
+        const actions = @js($actionsParType->map(fn ($item) => [
+            'label' => $item->action,
+            'value' => (int) $item->total,
+        ])->values());
+
+        function dessinerBarres(canvas, donnees, couleur) {
+            if (!canvas || !donnees.length) return;
+            const ctx = canvas.getContext('2d');
+            const largeur = canvas.width = canvas.clientWidth * devicePixelRatio;
+            const hauteur = canvas.height = canvas.clientHeight * devicePixelRatio;
+            ctx.scale(devicePixelRatio, devicePixelRatio);
+            const max = Math.max(...donnees.map((item) => item.value), 1);
+            const zoneLargeur = canvas.clientWidth / donnees.length;
+            const zoneHauteur = canvas.clientHeight - 30;
+
+            donnees.forEach((item, index) => {
+                const barreHauteur = (item.value / max) * zoneHauteur;
+                const x = index * zoneLargeur + zoneLargeur * 0.2;
+                const y = zoneHauteur - barreHauteur + 5;
+                ctx.fillStyle = couleur;
+                ctx.fillRect(x, y, zoneLargeur * 0.6, barreHauteur);
+                ctx.fillStyle = '#808080';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.label, x + zoneLargeur * 0.3, canvas.clientHeight - 8);
+            });
+        }
+
         document.addEventListener('alpine:init', () => {
             Alpine.data('adminDashboard', () => ({
                 tab: 'overview',
@@ -300,53 +331,8 @@
                     this.$nextTick(() => this.initCharts());
                 },
                 initCharts() {
-                    const inscCtx = document.getElementById('inscriptionsChart');
-                    if (inscCtx) {
-                        new Chart(inscCtx, {
-                            type: 'line',
-                            data: {
-                                labels: [{!! $inscriptionsParJour->pluck('date')->map(fn($d) => '"'.date('d/m', strtotime($d)).'"')->join(',') !!}],
-                                datasets: [{
-                                    label: 'Inscriptions',
-                                    data: [{!! $inscriptionsParJour->pluck('total')->join(',') !!}],
-                                    borderColor: '#2d9fd4',
-                                    backgroundColor: 'rgba(45,159,212,0.1)',
-                                    borderWidth: 2,
-                                    fill: true,
-                                    tension: 0.4,
-                                    pointRadius: 3,
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: { legend: { display: false } },
-                                scales: {
-                                    x: { ticks: { color: '#606060', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                                    y: { ticks: { color: '#606060', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
-                                }
-                            }
-                        });
-                    }
-                    const actCtx = document.getElementById('actionsChart');
-                    if (actCtx) {
-                        new Chart(actCtx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: [{!! $actionsParType->pluck('action')->map(fn($a) => '"'.$a.'"')->join(',') !!}],
-                                datasets: [{
-                                    data: [{!! $actionsParType->pluck('total')->join(',') !!}],
-                                    backgroundColor: ['#2d9fd4','#22c55e','#f59e0b','#8b5cf6','#ec4899','#ef4444'],
-                                    borderWidth: 0,
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: { position: 'bottom', labels: { color: '#808080', font: { size: 10 }, boxWidth: 12 } }
-                                }
-                            }
-                        });
-                    }
+                    dessinerBarres(document.getElementById('inscriptionsChart'), inscriptions, '#2d9fd4');
+                    dessinerBarres(document.getElementById('actionsChart'), actions, '#22c55e');
                 }
             }));
         });

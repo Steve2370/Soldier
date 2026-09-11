@@ -303,9 +303,9 @@
         <script>
             function creerService() {
                 return {
-                    type: '{{ old("type", "login") }}',
-                    label: '{{ old("label", "") }}',
-                    url: '{{ old("url", "") }}',
+                    type: @js(old('type', 'login')),
+                    label: @js(old('label', '')),
+                    url: @js(old('url', '')),
                     motDePasse: '',
                     showMdp: false,
                     faviconUrl: '',
@@ -330,13 +330,13 @@
                         if (this.url) {
                             try {
                                 const domaine = new URL(this.url).hostname;
-                                this.faviconUrl = `https://www.google.com/s2/favicons?domain=${domaine}&sz=128`;
+                                this.faviconUrl = `/favicon?domain=${encodeURIComponent(domaine)}`;
                                 return;
                             } catch {}
                         }
                         if (this.label && this.label.length > 1) {
                             const nom = this.label.toLowerCase().replace(/\s+/g, '');
-                            this.faviconUrl = `https://www.google.com/s2/favicons?domain=${nom}.com&sz=128`;
+                            this.faviconUrl = `/favicon?domain=${encodeURIComponent(nom + '.com')}`;
                         } else {
                             this.faviconUrl = '';
                         }

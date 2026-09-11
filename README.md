@@ -1,14 +1,14 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel&logoColor=white" alt="Laravel 13.x">
   <img src="https://img.shields.io/badge/PHP-8.5-777BB4?logo=php&logoColor=white" alt="PHP 8.5">
-  <img src="https://img.shields.io/badge/Zero--Knowledge-Encryption-0A2540" alt="Zero-Knowledge">
+  <img src="https://img.shields.io/badge/Encrypted--Storage-AES--256--GCM-0A2540" alt="Encrypted storage">
   <img src="https://img.shields.io/badge/License-MIT-green" alt="License MIT">
 </p>
 
 <h1 align="center"> Soldier</h1>
 
 <p align="center">
-  <strong>Un gestionnaire de mots de passe auto-hébergé, zero-knowledge, open source.</strong><br>
+  <strong>Un gestionnaire de mots de passe auto-hébergé, chiffré et open source.</strong><br>
   <a href="https://soldierkey.com">soldierkey.com</a>
 </p>
 
@@ -16,14 +16,14 @@
 
 ## À propos
 
-**Soldier** est un gestionnaire de mots de passe conçu autour d'un principe simple : **votre mot de passe maître ne quitte jamais votre appareil.** Le serveur ne stocke et ne manipule que des données déjà chiffrées côté client — un déchiffrement côté serveur est architecturalement impossible.
+**Soldier** est un gestionnaire de mots de passe auto-hébergé. Les données sensibles sont chiffrées avec AES-256-GCM et les clés sont protégées par Argon2id. Dans l'implémentation web actuelle, le serveur réalise le déverrouillage pour servir les vues : cette version ne doit donc pas être présentée comme « zero-knowledge » tant que le déchiffrement n'est pas entièrement déplacé côté client.
 
 Le projet est développé avec Laravel en suivant les principes SOLID, et distribué gratuitement avec un soutien volontaire (don) plutôt qu'un modèle payant, pour rester accessible au plus grand nombre.
 
 ## - Fonctionnalités
 
-- **Chiffrement zero-knowledge de bout en bout**
-    - Dérivation de clé locale via **Argon2id**
+- **Chiffrement des données au repos**
+    - Dérivation de clé via **Argon2id**
     - Chiffrement des coffres via **AES-256-GCM**
     - Partage sécurisé de coffres via **RSA-4096**
 - **Partage de coffres** avec gestion des permissions (lecture seule, édition)
@@ -39,18 +39,18 @@ Le projet est développé avec Laravel en suivant les principes SOLID, et distri
 Le projet suit une architecture en couches strictes, pensée pour la testabilité et l'inversion de dépendance :
 
 ```
-Controller → Service → Repository → Model / Base de données
+Controller → Request / Policy → Service → Model / Base de données
 ```
 
-- **Repository** : gère l'accès aux données (comment).
-- **Service** : gère la logique métier — vérifications de permissions, orchestration du chiffrement, dispatch d'événements (pourquoi/quoi).
+- **Request / Policy** : valide les entrées et centralise les autorisations.
+- **Service** : gère la logique métier — orchestration du chiffrement et des flux applicatifs.
 - **Interface** : définit le contrat ; les Services dépendent de l'interface via injection de dépendance, jamais de l'implémentation concrète, ce qui garantit le respect du principe d'inversion de dépendance (DIP).
 - Un **ServiceProvider** central gère le binding des interfaces vers leurs implémentations.
 
 ## - Chaîne cryptographique
 
 ```
-Mot de passe maître (client uniquement)
+Mot de passe maître
         │
         ▼
    Argon2id  ──────────►  Clé de chiffrement locale (KEK)
@@ -62,11 +62,7 @@ Mot de passe maître (client uniquement)
    RSA-4096  ────────────►  Partage sécurisé entre utilisateurs
 ```
 
-Le serveur ne stocke que :
-- des blobs chiffrés (coffres, entrées),
-- des clés publiques RSA.
-
-Le mot de passe maître et les clés privées ne sont jamais transmis au serveur.
+Le serveur stocke les blobs chiffrés, les enveloppes de clés et une session de déverrouillage chiffrée. La migration vers une architecture zero-knowledge complète reste un chantier distinct : les clés de déverrouillage ne doivent alors plus être traitées par le backend.
 
 ## - Stack technique
 
@@ -113,7 +109,7 @@ bash /var/www/deploy.sh
 
 ## - Extension Chrome
 
-L'extension permet le remplissage automatique des identifiants directement dans le navigateur, tout en conservant les garanties zero-knowledge grâce à une implémentation WASM d'Argon2id exécutée localement.
+L'extension permet le remplissage automatique des identifiants directement dans le navigateur. L'implémentation zero-knowledge complète devra être validée après déplacement de tout le déchiffrement côté client.
 
 Disponible sur le Chrome Web Store.
 

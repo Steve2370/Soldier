@@ -125,7 +125,7 @@
                     <div style="background: rgba(33,126,170,0.07); border: 1px solid rgba(45,159,212,0.2); border-radius: 9px; padding: 12px 14px; margin-bottom: 22px; display: flex; gap: 10px; align-items: flex-start;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                         <p style="font-size: 0.78rem; color: var(--text-secondary); margin: 0; line-height: 1.55;">
-                            Le master password <strong style="color: var(--text-primary);">n'est jamais stocké</strong> sur nos serveurs. Si vous le perdez, vos données sont <strong style="color: var(--text-primary);">irrécupérables</strong>.
+                            Le master password n'est pas stocké en clair. Il protège les clés de votre coffre ; si vous le perdez, les données sont irrécupérables.
                         </p>
                     </div>
 
@@ -178,7 +178,7 @@
             </div>
 
             <p style="text-align: center; margin-top: 22px; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;">
-                AES-256-GCM · Argon2id · RSA-4096 · Zero-knowledge
+                AES-256-GCM · Argon2id · RSA-4096 · Session sécurisée
             </p>
         </div>
     </div>

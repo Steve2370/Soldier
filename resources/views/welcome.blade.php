@@ -53,7 +53,7 @@
                 ],
                 [
                     'video' => 'zero-knowledge.mp4',
-                    'titre' => 'Architecture Zero-Knowledge',
+                    'titre' => 'Architecture de chiffrement',
                     'badge' => 'Serveur aveugle',
                     'desc' => 'Tes informations restent privés. Tout se passe sur ton appareil, par sur nos serveur.',
                     'points' => ['Tes données ne quittent jamais ton appareil en clair', 'Personne ne peut voir tes mots de passe, même pas nous', 'Même en cas de fraude, tes données restent protégées'],
@@ -165,7 +165,7 @@
         <footer style="padding: 24px 40px; border-top: 1px solid rgba(33,126,170,0.1); text-align: center;">
             <a href="{{ route('privacy') }}">Politique de confidentialité</a>
             <p style="color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.04em;">
-                Soldier Password Manager · AES-256-GCM · Argon2id · RSA-4096 · Zero-Knowledge
+                Soldier Password Manager · AES-256-GCM · Argon2id · RSA-4096
             </p>
         </footer>
 
