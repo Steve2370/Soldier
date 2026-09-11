@@ -279,9 +279,9 @@ class AuthController extends Controller
             ]);
     }
 
-    public function redirectGithub(): RedirectResponse
+    public function redirectGithub(Request $request): RedirectResponse
     {
-        $this->memoriserRedirectionExtension(request);
+        $this->memoriserRedirectionExtension($request);
 
         return Socialite::driver('github')->redirect();
     }
@@ -291,9 +291,9 @@ class AuthController extends Controller
         return $this->handleOauthCallback('github');
     }
 
-    public function redirectGoogle(): RedirectResponse
+    public function redirectGoogle(Request $request): RedirectResponse
     {
-        $this->memoriserRedirectionExtension(request);
+        $this->memoriserRedirectionExtension($request);
 
         return Socialite::driver('google')->redirect();
     }
