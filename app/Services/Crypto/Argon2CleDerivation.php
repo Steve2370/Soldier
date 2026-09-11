@@ -93,9 +93,9 @@ class Argon2CleDerivation implements CleDerivationInterface
         if ($parametres['algorithme'] !== 'argon2id'
             || $parametres['version'] !== '1.3'
             || (int) $parametres['longueur'] !== self::LONGUEUR_CLE
-            || (int) $parametres['memoire'] < SODIUM_CRYPTO_PWHASH_MEMLIMIT_MIN
+            || (int) $parametres['memoire'] < SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
             || (int) $parametres['memoire'] > 268_435_456
-            || (int) $parametres['iterations'] < SODIUM_CRYPTO_PWHASH_OPSLIMIT_MIN
+            || (int) $parametres['iterations'] < SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE
             || (int) $parametres['iterations'] > 10
         ) {
             throw new \InvalidArgumentException('Paramètres Argon2id non autorisés.');
