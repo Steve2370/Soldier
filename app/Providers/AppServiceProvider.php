@@ -6,6 +6,8 @@ use Laravel\Cashier\Events\WebhookReceived;
 use App\Listeners\StripeEventListener;
 use App\Models\ElementCoffre;
 use App\Policies\ElementCoffrePolicy;
+use App\Services\Auth\Contracts\UserRegistrationNotificationInterface;
+use App\Services\Auth\UserRegistrationNotificationService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
@@ -21,7 +23,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            UserRegistrationNotificationInterface::class,
+            UserRegistrationNotificationService::class,
+        );
     }
 
     /**

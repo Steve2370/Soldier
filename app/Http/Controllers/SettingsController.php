@@ -178,6 +178,7 @@ class SettingsController extends Controller
         $cles = $this->cleManagement->deverouillerCles($user, $request->validated('nouveau_master_password'));
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
         sodium_memzero($cles['kek']);
+        sodium_memzero($cles['cle_privee']);
 
         return redirect()->route('settings')
             ->with('toast', [

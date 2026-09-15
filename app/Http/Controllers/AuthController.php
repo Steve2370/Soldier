@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidMasterPasswordException;
+use App\Exceptions\UninitializedKeysException;
 use App\Helpers\SessionHelper;
 use App\Http\Requests\Auth\ConnexionRequest;
 use App\Http\Requests\Auth\InscriptionRequest;
@@ -11,6 +12,8 @@ use App\Mail\NouvelleConnexionMail;
 use App\Models\User;
 use App\Services\Auth\ExtensionHandoffService;
 use App\Services\Auth\MfaService;
+use App\Services\Auth\Contracts\UserRegistrationNotificationInterface;
+use App\Services\Auth\UserRegistrationService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
 use App\Services\Logs\ActivityLogService;
@@ -31,6 +34,8 @@ class AuthController extends Controller
         private readonly CoffreService $coffreService,
         private readonly ExtensionHandoffService $extensionHandoff,
         private readonly MfaService $mfaService,
+        private readonly UserRegistrationService $userRegistration,
+        private readonly UserRegistrationNotificationInterface $registrationNotifications,
     ) {}
 
     public function showInscription(): View|RedirectResponse
@@ -47,33 +52,36 @@ class AuthController extends Controller
      */
     public function inscrire(InscriptionRequest $request): RedirectResponse
     {
-        $user = User::create([
-            'name' => $request->validated('name'),
-            'email' => $request->validated('email'),
-            'password' => $request->validated('password'),
-        ]);
+        try {
+            ['user' => $user, 'cles' => $cles] = $this->userRegistration->inscrire($request->validated());
+        } catch (\Throwable $exception) {
+            \Log::error('Échec de la création d’un compte.', [
+                'exception' => $exception::class,
+            ]);
 
-        $this->cleManagement->initialiserClesUser($user, $request->validated('master_password'));
+            return back()
+                ->withInput($request->safe()->only(['name', 'email']))
+                ->withErrors([
+                    'email' => 'La création du compte est momentanément indisponible. Réessayez plus tard.',
+                ]);
+        }
+
         Auth::login($user);
-        $user->sendEmailVerificationNotification();
-        Mail::to($user->email)->send(new BienvenueMail($user));
-        $cles = $this->cleManagement->deverouillerCles($user, $request->validated('master_password'));
         $request->session()->regenerate();
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
 
-        $this->coffreService->creerCoffre($user, [
-            'nom' => 'Mon coffre',
-            'couleur' => '#217eaa',
-        ], $cles['kek']);
-
+        $notificationEnvoyee = $this->registrationNotifications->envoyer($user);
         sodium_memzero($cles['kek']);
+        sodium_memzero($cles['cle_privee']);
         ActivityLogService::log('inscription', 'Nouveau compte créé — ' . $user->email, $user->id);
 
         return redirect()->route('verification.notice')
             ->with('toast', [
-                'type'    => 'info',
+                'type' => $notificationEnvoyee ? 'info' : 'warning',
                 'titre' => 'Vérifiez votre email',
-                'message' => 'Un lien de vérification a été envoyé à ' . $user->email,
+                'message' => $notificationEnvoyee
+                    ? 'Un lien de vérification a été envoyé à ' . $user->email
+                    : 'Votre compte est créé. L’envoi de l’email a échoué ; demandez un nouveau lien.',
             ]);
     }
 
@@ -154,6 +162,17 @@ class AuthController extends Controller
             return back()->withErrors([
                 'master_password' => 'Master password incorrect.',
             ]);
+        } catch (UninitializedKeysException $e) {
+            // Compte créé avant les correctifs de septembre 2026, ou dont
+            // l'inscription a échoué avant la mise en place de la transaction
+            // atomique dans inscrire() : aucune clé n'a jamais été générée.
+            // En zero-knowledge, rien n'est récupérable — le compte doit être recréé.
+            \Log::error($e->getMessage(), ['user_id' => $user->id]);
+            Auth::logout();
+
+            return redirect()->route('connexion')->withErrors([
+                'email' => "Ce compte n'a pas pu terminer sa création et ne peut pas être utilisé. Contactez le support ou créez un nouveau compte.",
+            ]);
         }
 
         $mfaActif = $user->mfa()->where('actif', true)->exists();
@@ -182,6 +201,7 @@ class AuthController extends Controller
         $request->session()->regenerate();
         SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
         sodium_memzero($cles['kek']);
+        sodium_memzero($cles['cle_privee']);
         ActivityLogService::log('connexion', 'Connexion par email/mot de passe', $user->id);
 
         Mail::to($user->email)->send(new NouvelleConnexionMail(
@@ -307,7 +327,12 @@ class AuthController extends Controller
     {
         try {
             $oauthUser = Socialite::driver($provider)->user();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Log::warning('Échec de récupération du profil OAuth.', [
+                'provider' => $provider,
+                'exception' => $e::class,
+            ]);
+
             return redirect()->route('connexion')
                 ->withErrors(['email' => 'Authentification OAuth échouée. Réessayez.']);
         }
@@ -392,21 +417,29 @@ class AuthController extends Controller
             ]);
 
             try {
-                if (!$user->clesUser()->exists()) {
-                    $this->cleManagement->initialiserClesUser($user, $request->master_password);
-                }
-                $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
+                // Même unité de travail atomique que inscrire() : si l'une de ces
+                // étapes échoue, on ne laisse pas un compte OAuth avec des clés
+                // à moitié initialisées (cf. UninitializedKeysException).
+                $cles = \DB::transaction(function () use ($user, $request) {
+                    if (!$user->clesUser()->exists()) {
+                        $this->cleManagement->initialiserClesUser($user, $request->master_password);
+                    }
+                    $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
+
+                    if (!$user->coffres()->exists()) {
+                        $this->coffreService->creerCoffre($user, [
+                            'nom' => 'Mon coffre',
+                            'couleur' => '#217eaa',
+                        ], $cles['kek']);
+                    }
+
+                    return $cles;
+                });
+
                 session()->forget('oauth_new_user');
                 SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
-                $kek = SessionHelper::obtenirKek();
-                if (!$user->coffres()->exists()) {
-                    $this->coffreService->creerCoffre($user, [
-                        'nom' => 'Mon coffre',
-                        'couleur' => '#217eaa',
-                    ], $kek);
-                }
-                sodium_memzero($kek);
                 sodium_memzero($cles['kek']);
+                sodium_memzero($cles['cle_privee']);
                 Mail::to($user->email)->send(new BienvenueMail($user));
 
                 ActivityLogService::log('inscription', 'Compte créé via OAuth', $user->id);
@@ -420,8 +453,13 @@ class AuthController extends Controller
                     'titre' => 'Coffre créé !',
                     'message' => 'Bienvenue ' . $user->name . ', votre coffre est prêt.',
                 ]);
-            } catch (\Exception $e) {
-                return back()->withErrors(['master_password' => 'Erreur : ' . $e->getMessage()]);
+            } catch (\Throwable $e) {
+                \Log::error('Échec de la configuration OAuth.', [
+                    'user_id' => $user->id ?? null,
+                    'exception' => $e::class,
+                ]);
+
+                return back()->withErrors(['master_password' => 'Impossible de configurer le coffre. Réessayez plus tard.']);
             }
         }
 
@@ -443,6 +481,7 @@ class AuthController extends Controller
 
             SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
             sodium_memzero($cles['kek']);
+            sodium_memzero($cles['cle_privee']);
 
             if (session()->has('extension_redirect')) {
                 return $this->redirectionExtension($request, $user);
@@ -453,7 +492,12 @@ class AuthController extends Controller
                 'titre' => 'Bon retour !',
                 'message' => 'Coffre déverrouillé, ' . $user->name . '.',
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Log::warning('Échec du déverrouillage OAuth.', [
+                'user_id' => $user->id ?? null,
+                'exception' => $e::class,
+            ]);
+
             return back()->withErrors(['master_password' => 'Master password incorrect.']);
         }
     }

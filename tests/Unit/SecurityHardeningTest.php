@@ -4,7 +4,9 @@ namespace Tests\Unit;
 
 use App\Exceptions\DecryptionException;
 use App\Models\ShareCoffre;
+use App\Services\Crypto\Argon2CleDerivation;
 use App\Services\Crypto\AesEncryptionService;
+use App\Services\Crypto\RsaCryptoService;
 use Tests\TestCase;
 
 class SecurityHardeningTest extends TestCase
@@ -57,5 +59,29 @@ class SecurityHardeningTest extends TestCase
         $response->assertHeader('X-Content-Type-Options', 'nosniff');
         $response->assertHeader('X-Frame-Options', 'SAMEORIGIN');
         $response->assertHeader('Referrer-Policy', 'no-referrer');
+    }
+
+    public function test_argon2id_can_recalculate_with_persisted_parameters(): void
+    {
+        $service = new Argon2CleDerivation();
+        $derived = $service->deriver('master-password-secure');
+
+        self::assertSame(
+            $derived['cle'],
+            $service->recalculer(
+                'master-password-secure',
+                $derived['sel'],
+                $derived['parametres'],
+            ),
+        );
+    }
+
+    public function test_rsa_encryption_round_trip_uses_the_configured_key_pair(): void
+    {
+        $service = new RsaCryptoService();
+        $keys = $service->genererPaireCles();
+        $encrypted = $service->chiffrerAvecClePublique('secret', $keys['cle_publique']);
+
+        self::assertSame('secret', $service->decrypterAvecClePrivee($encrypted, $keys['cle_privee']));
     }
 }

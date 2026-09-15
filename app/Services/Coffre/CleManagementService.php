@@ -3,12 +3,12 @@
 namespace App\Services\Coffre;
 
 use App\Exceptions\InvalidMasterPasswordException;
+use App\Exceptions\UninitializedKeysException;
 use App\Models\CleUser;
 use App\Models\User;
 use App\Services\Crypto\Contracts\CleDerivationInterface;
 use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
 use App\Services\Crypto\Contracts\EncryptionServiceInterface;
-use RuntimeException;
 
 readonly class CleManagementService
 {
@@ -65,7 +65,7 @@ readonly class CleManagementService
         $cleUser = $user->clesUser;
 
         if (!$cleUser) {
-            throw new RuntimeException("L'utilisateur {$user->id} n'a pas de clés initialisées.");
+            throw new UninitializedKeysException($user->id);
         }
 
         $masterCle = $this->cleDerivation->recalculer(
