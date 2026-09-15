@@ -3,8 +3,8 @@ namespace App\Services\Crypto;
 
 use App\Exceptions\DecryptionException;
 use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
-use phpseclib3\Crypt\RSA;
-use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib4\Crypt\RSA;
+use phpseclib4\Crypt\PublicKeyLoader;
 
 class RsaCryptoService implements CryptoAsymmetricInterface
 {
