@@ -2,19 +2,24 @@
 
 namespace App\Providers;
 
-use Laravel\Cashier\Events\WebhookReceived;
 use App\Listeners\StripeEventListener;
 use App\Models\ElementCoffre;
 use App\Policies\ElementCoffrePolicy;
 use App\Services\Auth\Contracts\UserRegistrationNotificationInterface;
+use App\Services\Auth\Contracts\VerificationEmailInterface;
 use App\Services\Auth\UserRegistrationNotificationService;
+use App\Services\Auth\VerificationEmailService;
+use App\Services\Coffre\Contracts\ElementPayloadInterface;
+use App\Services\Coffre\ElementPayload;
+use App\Services\Notifications\Contracts\MailDeliveryInterface;
+use App\Services\Notifications\MailDelivery;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
-
+use Laravel\Cashier\Events\WebhookReceived;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(VerificationEmailInterface::class,
+            VerificationEmailService::class);
+        $this->app->bind(MailDeliveryInterface::class,
+            MailDelivery::class);
+        $this->app->bind(ElementPayloadInterface::class,
+            fn ($app) => new ElementPayload($app['config']->get('vault.payloads')));
         $this->app->bind(
             UserRegistrationNotificationInterface::class,
             UserRegistrationNotificationService::class,
@@ -52,7 +63,7 @@ class AppServiceProvider extends ServiceProvider
             // L'email est dans le corps de la requête à l'étape 1 (/connexion) et
             // uniquement en session à l'étape 2 (/connexion/password).
             $email = $request->input('email') ?? session('login_email');
-            $cle = strtolower((string) $email) . '|' . $request->ip();
+            $cle = strtolower((string) $email).'|'.$request->ip();
 
             return Limit::perMinute(5)->by($cle);
         });
@@ -62,7 +73,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('mfa', function (Request $request) {
-            $cle = ($request->user()?->id ?? 'invite') . '|' . $request->ip();
+            $cle = ($request->user()?->id ?? 'invite').'|'.$request->ip();
 
             return Limit::perMinute(5)->by($cle);
         });

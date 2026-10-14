@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/phpunit.xml" tests="208" assertions="628" errors="0" failures="0" skipped="0" time="24.711638">
+    <testsuite name="Unit" tests="34" assertions="43" errors="0" failures="0" skipped="0" time="1.164762">
+      <testsuite name="Tests\Unit\CryptoBoundaryTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" tests="27" assertions="28" errors="0" failures="0" skipped="0" time="0.541694">
+        <testsuite name="Tests\Unit\CryptoBoundaryTest::test_aes_roundtrip_for_payload_boundaries" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.001710">
+          <testcase name="test_aes_roundtrip_for_payload_boundaries with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="20" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.001011"/>
+          <testcase name="test_aes_roundtrip_for_payload_boundaries with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="20" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000149"/>
+          <testcase name="test_aes_roundtrip_for_payload_boundaries with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="20" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000208"/>
+          <testcase name="test_aes_roundtrip_for_payload_boundaries with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="20" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000342"/>
+        </testsuite>
+        <testsuite name="Tests\Unit\CryptoBoundaryTest::test_aes_authenticates_each_component" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.001226">
+          <testcase name="test_aes_authenticates_each_component with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="34" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000816"/>
+          <testcase name="test_aes_authenticates_each_component with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="34" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000150"/>
+          <testcase name="test_aes_authenticates_each_component with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="34" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000133"/>
+          <testcase name="test_aes_authenticates_each_component with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="34" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000128"/>
+        </testsuite>
+        <testcase name="test_aes_generates_distinct_ivs_for_the_same_plaintext" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="50" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000129"/>
+        <testsuite name="Tests\Unit\CryptoBoundaryTest::test_aes_rejects_invalid_key_size" tests="5" assertions="5" errors="0" failures="0" skipped="0" time="0.000663">
+          <testcase name="test_aes_rejects_invalid_key_size with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="63" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000190"/>
+          <testcase name="test_aes_rejects_invalid_key_size with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="63" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000118"/>
+          <testcase name="test_aes_rejects_invalid_key_size with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="63" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000119"/>
+          <testcase name="test_aes_rejects_invalid_key_size with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="63" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000117"/>
+          <testcase name="test_aes_rejects_invalid_key_size with data set #4" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="63" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000118"/>
+        </testsuite>
+        <testsuite name="Tests\Unit\CryptoBoundaryTest::test_kdf_rejects_parameters_outside_allowed_bounds" tests="7" assertions="7" errors="0" failures="0" skipped="0" time="0.002199">
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.001263"/>
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000125"/>
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000255"/>
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000119"/>
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #4" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000116"/>
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #5" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000203"/>
+          <testcase name="test_kdf_rejects_parameters_outside_allowed_bounds with data set #6" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="78" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000118"/>
+        </testsuite>
+        <testsuite name="Tests\Unit\CryptoBoundaryTest::test_kdf_rejects_malformed_persisted_salt" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.000540">
+          <testcase name="test_kdf_rejects_malformed_persisted_salt with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="93" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000122"/>
+          <testcase name="test_kdf_rejects_malformed_persisted_salt with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="93" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000116"/>
+          <testcase name="test_kdf_rejects_malformed_persisted_salt with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="93" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000117"/>
+          <testcase name="test_kdf_rejects_malformed_persisted_salt with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="93" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.000184"/>
+        </testsuite>
+        <testcase name="test_kdf_uses_persisted_work_factor" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="99" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="2" time="0.285813"/>
+        <testcase name="test_rsa_rejects_malformed_base64_without_returning_plaintext" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php" line="108" class="Tests\Unit\CryptoBoundaryTest" classname="Tests.Unit.CryptoBoundaryTest" assertions="1" time="0.249415"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\ExampleTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.000173">
+        <testcase name="test_that_true_is_true" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/ExampleTest.php" line="12" class="Tests\Unit\ExampleTest" classname="Tests.Unit.ExampleTest" assertions="1" time="0.000173"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\SecurityHardeningTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" tests="6" assertions="14" errors="0" failures="0" skipped="0" time="0.622895">
+        <testcase name="test_aes_round_trip_and_strict_envelope_validation" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" line="14" class="Tests\Unit\SecurityHardeningTest" classname="Tests.Unit.SecurityHardeningTest" assertions="2" time="0.273740">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_expired_share_is_invalid_and_cannot_write" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" line="31" class="Tests\Unit\SecurityHardeningTest" classname="Tests.Unit.SecurityHardeningTest" assertions="2" time="0.016360">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_active_read_write_share_uses_the_persisted_permission" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" line="43" class="Tests\Unit\SecurityHardeningTest" classname="Tests.Unit.SecurityHardeningTest" assertions="2" time="0.004573">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_security_headers_are_added_to_http_responses" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" line="55" class="Tests\Unit\SecurityHardeningTest" classname="Tests.Unit.SecurityHardeningTest" assertions="6" time="0.074630">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_argon2id_can_recalculate_with_persisted_parameters" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" line="64" class="Tests\Unit\SecurityHardeningTest" classname="Tests.Unit.SecurityHardeningTest" assertions="1" time="0.201705">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_rsa_encryption_round_trip_uses_the_configured_key_pair" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/SecurityHardeningTest.php" line="79" class="Tests\Unit\SecurityHardeningTest" classname="Tests.Unit.SecurityHardeningTest" assertions="1" time="0.051886">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="174" assertions="585" errors="0" failures="0" skipped="0" time="23.546876">
+      <testsuite name="Tests\Feature\Audit\ApiExtensionTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" tests="12" assertions="28" errors="0" failures="0" skipped="0" time="3.663835">
+        <testcase name="test_api_password_login_and_logout" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="11" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="8" time="0.754492">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_api_login_requires_verified_email" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="22" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="2" time="0.394969">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_api_mfa_accounts_cannot_obtain_a_token_directly" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="31" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="3" time="0.553676">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\ApiExtensionTest::test_scoped_token_can_use_extension_endpoint" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="1.021489">
+          <testcase name="test_scoped_token_can_use_extension_endpoint with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="47" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="1" time="0.410096">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_scoped_token_can_use_extension_endpoint with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="47" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="1" time="0.611394">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testsuite name="Tests\Feature\Audit\ApiExtensionTest::test_token_without_required_ability_is_denied" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.751081">
+          <testcase name="test_token_without_required_ability_is_denied with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="54" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="1" time="0.365515">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_token_without_required_ability_is_denied with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="54" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="1" time="0.385566">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_profile_handles_uninitialized_oauth_user" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="60" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="1" time="0.030629">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_handoff_code_is_single_use" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="67" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="5" time="0.010386">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_handoff_expires_after_sixty_seconds" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="78" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="1" time="0.005385">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_unlisted_extension_redirect_is_rejected" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="86" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="2" time="0.137805">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_invalid_handoff_cannot_create_a_token" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php" line="93" class="Tests\Feature\Audit\ApiExtensionTest" classname="Tests.Feature.Audit.ApiExtensionTest" assertions="2" time="0.003921">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\AuthenticationTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" tests="14" assertions="77" errors="0" failures="0" skipped="0" time="5.376908">
+        <testcase name="test_password_login_unlocks_the_vault" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="18" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="6" time="0.753116">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\AuthenticationTest::test_wrong_credential_leaves_user_logged_out" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="1.008186">
+          <testcase name="test_wrong_credential_leaves_user_logged_out with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="34" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="4" time="0.493089">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_wrong_credential_leaves_user_logged_out with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="34" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="4" time="0.515097">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_new_account_can_log_in_with_an_uppercase_email" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="44" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="7" time="0.488916">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_notification_outage_does_not_break_successful_login" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="54" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="3" time="0.667374">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_email_mfa_requires_valid_code_and_consumes_it" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="63" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="12" time="0.547847">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_oauth_unlock_sends_the_email_mfa_challenge" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="80" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="4" time="0.560504">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_recovery_code_is_accepted_by_the_mfa_form" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="91" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="6" time="0.357310">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_mfa_notification_failure_cannot_leave_an_authenticated_session" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="102" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="2" time="0.821733">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_google_requires_positive_email_verification" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="113" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="5" time="0.011498">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_google_does_not_link_an_existing_local_account" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="126" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="7" time="0.005208">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_google_provider_failure_returns_a_handled_error" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="140" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="4" time="0.003852">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_login_rate_limit_blocks_the_sixth_attempt" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="148" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="6" time="0.008931">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_logout_removes_all_key_material_and_mfa_state" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php" line="157" class="Tests\Feature\Audit\AuthenticationTest" classname="Tests.Feature.Audit.AuthenticationTest" assertions="7" time="0.142433">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\FamilyBillingTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" tests="9" assertions="23" errors="0" failures="0" skipped="0" time="1.477987">
+        <testcase name="test_family_page_renders_for_subscriber_and_member" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="32" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="4" time="0.187754">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_removing_member_revokes_family_vault_access" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="41" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="3" time="0.249474">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_leaving_family_revokes_vault_access" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="50" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="3" time="0.110779">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\FamilyBillingTest::test_subscription_loss_revokes_family_shares" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.615410">
+          <testcase name="test_subscription_loss_revokes_family_shares with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="65" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="2" time="0.514429">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_subscription_loss_revokes_family_shares with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="65" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="2" time="0.100980">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_non_subscriber_cannot_create_a_family" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="75" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="3" time="0.005454">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_member_cannot_remove_another_family_member" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="82" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="2" time="0.164935">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_unsigned_stripe_webhook_is_rejected" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="90" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="1" time="0.008306">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_already_subscribed_checkout_redirects_without_creating_another_subscription" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php" line="95" class="Tests\Feature\Audit\FamilyBillingTest" classname="Tests.Feature.Audit.FamilyBillingTest" assertions="3" time="0.135876">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\HttpSurfaceTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" tests="27" assertions="46" errors="0" failures="0" skipped="0" time="0.735720">
+        <testsuite name="Tests\Feature\Audit\HttpSurfaceTest::test_public_page_renders" tests="7" assertions="21" errors="0" failures="0" skipped="0" time="0.031654">
+          <testcase name="test_public_page_renders with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.004943">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_public_page_renders with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.003865">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_public_page_renders with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.004474">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_public_page_renders with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.005085">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_public_page_renders with data set #4" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.004534">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_public_page_renders with data set #5" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.004359">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_public_page_renders with data set #6" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="18" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.004394">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_every_authenticated_route_rejects_guests" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="23" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.023467">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\HttpSurfaceTest::test_authenticated_page_renders" tests="9" assertions="9" errors="0" failures="0" skipped="0" time="0.061643">
+          <testcase name="test_authenticated_page_renders with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.007489">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.006954">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.006271">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.008763">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #4" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.007913">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #5" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.006516">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #6" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.006106">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #7" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.005630">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_authenticated_page_renders with data set #8" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="55" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.006001">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testsuite name="Tests\Feature\Audit\HttpSurfaceTest::test_administrator_pages_render" tests="3" assertions="3" errors="0" failures="0" skipped="0" time="0.037092">
+          <testcase name="test_administrator_pages_render with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="69" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.007319">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_administrator_pages_render with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="69" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.023808">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_administrator_pages_render with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="69" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.005966">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_unverified_user_cannot_open_vault" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="76" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="2" time="0.005771">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_locked_vault_rejects_json_access" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="83" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.004639">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_locked_session_has_a_reachable_unlock_page" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="88" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.005395">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_invalid_session_key_is_treated_as_locked" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="98" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.004630">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_pending_mfa_prevents_access_even_if_old_vault_keys_exist" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="105" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.004709">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_private_pages_forbid_browser_caching" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="114" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="1" time="0.007469">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_user_cannot_assign_admin_privileges_through_registration" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php" line="120" class="Tests\Feature\Audit\HttpSurfaceTest" classname="Tests.Feature.Audit.HttpSurfaceTest" assertions="3" time="0.549251">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\PasskeysAndInfrastructureTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" tests="24" assertions="61" errors="0" failures="0" skipped="0" time="0.256397">
+        <testcase name="test_passkey_login_options_have_random_challenges_and_require_verification" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="14" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="5" time="0.075668">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_passkey_registration_options_include_user_and_excluded_credentials" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="23" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="4" time="0.010362">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_passkey_registration_without_challenge_is_rejected" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="35" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005091">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_malformed_passkey_attestation_cannot_be_registered" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="42" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="3" time="0.006994">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_unknown_passkey_cannot_authenticate" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="50" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="3" time="0.004406">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_passkey_deletion_is_owner_scoped" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="57" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="3" time="0.006358">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_signed_email_verification_marks_the_correct_user" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="69" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="3" time="0.006299">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_expired_email_verification_does_not_verify_account" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="79" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="1" time="0.005351">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_favicon_proxy_is_cached_and_does_not_fetch_user_supplied_urls" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="89" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="7" time="0.038338">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_favicon_outage_returns_empty_response" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="100" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005931">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_https_response_adds_hsts" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="107" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="3" time="0.004352">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_csrf_rejects_state_change_without_token_outside_test_bypass" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="112" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="1" time="0.005274">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\PasskeysAndInfrastructureTest::test_email_template_renders_with_escaped_user_content" tests="12" assertions="24" errors="0" failures="0" skipped="0" time="0.081972">
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.020257">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005436">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.004985">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005501">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #4" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005628">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #5" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005410">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #6" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.006764">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #7" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005864">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #8" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005390">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #9" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.006036">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #10" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005367">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_email_template_renders_with_escaped_user_content with data set #11" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/PasskeysAndInfrastructureTest.php" line="129" class="Tests\Feature\Audit\PasskeysAndInfrastructureTest" classname="Tests.Feature.Audit.PasskeysAndInfrastructureTest" assertions="2" time="0.005334">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\RegressionFixesTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" tests="27" assertions="99" errors="0" failures="0" skipped="0" time="5.342889">
+        <testcase name="test_schema_repair_is_idempotent_and_preserves_existing_accounts_tokens_and_logs" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="33" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.006080">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_schema_repair_refuses_destructive_rollback" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="47" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="1" time="0.003177">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_schema_repair_fills_partial_legacy_columns_without_changing_keys_or_privileges" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="54" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="5" time="0.376216">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_legacy_mixed_case_email_can_log_in_without_rewriting_the_account" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="71" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="5" time="0.791218">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_registration_rejects_a_case_variant_of_a_legacy_email" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="81" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="3" time="0.009144">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_recovery_code_is_consumed_and_cannot_be_replayed" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="91" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.379967">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_expired_mfa_session_cannot_consume_a_recovery_code" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="104" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.525209">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_mfa_resend_delivers_a_new_challenge_and_preserves_guest_state" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="117" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.291109">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_positive_google_claim_is_accepted_and_clears_previous_vault_keys" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="128" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="6" time="0.007565">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_invalid_private_key_cannot_unlock_a_session_with_a_valid_kek" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="143" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="1" time="0.005037">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_empty_share_selection_denies_http_api_and_direct_web_access" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="149" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="3" time="0.132472">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\RegressionFixesTest::test_unselected_item_cannot_be_deleted_or_favorited" tests="2" assertions="6" errors="0" failures="0" skipped="0" time="0.503595">
+          <testcase name="test_unselected_item_cannot_be_deleted_or_favorited with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="168" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="3" time="0.435796">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_unselected_item_cannot_be_deleted_or_favorited with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="168" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="3" time="0.067799">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_trash_restore_preserves_ciphertext_and_is_owner_scoped" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="182" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="8" time="0.011523">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_trash_retention_excludes_live_and_recent_items" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="199" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="5" time="0.009328">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_explicit_blank_password_is_preserved_but_notes_and_url_can_be_cleared" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="217" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.008179">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_changing_an_existing_element_type_is_rejected_without_data_loss" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="230" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="2" time="0.006128">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_family_removal_revokes_tagged_invites_and_shares_but_preserves_personal_shares" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="240" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.622211">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_family_join_without_recipient_keys_creates_no_membership_or_share" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="262" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="2" time="0.007483">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_historical_family_share_without_membership_is_no_longer_active" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="276" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.075705">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_old_family_invitation_cannot_restore_access_for_a_departed_member" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="292" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="2" time="0.007105">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_passkey_challenge_expires_and_is_consumed_on_invalid_submission" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="306" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="3" time="0.004275">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_sensitive_values_are_not_flashed_after_invalid_account_registration" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="314" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.005592">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_master_password_change_preserves_significant_whitespace" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="323" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.748138">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_verification_resend_transport_failure_preserves_account_without_500" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="337" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="5" time="0.006541">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_handoff_exchange_rejects_an_email_that_is_no_longer_verified" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="346" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="2" time="0.005015">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_invitation_transport_failure_does_not_report_email_delivery" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/RegressionFixesTest.php" line="354" class="Tests\Feature\Audit\RegressionFixesTest" classname="Tests.Feature.Audit.RegressionFixesTest" assertions="4" time="0.794876">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\SchemaContractTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" tests="14" assertions="17" errors="0" failures="0" skipped="0" time="0.047486">
+        <testsuite name="Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_contains_required_schema" tests="11" assertions="11" errors="0" failures="0" skipped="0" time="0.035444">
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;soft-deleted users&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003973">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;administrator flag&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003250">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;activity journal&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003259">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;share selection&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003242">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;invitation selection&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003089">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;family vault&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003033">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;sessions&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003277">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;subscription status&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003158">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;encrypted keys&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003081">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;Sanctum token owner&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.003128">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_fresh_installation_contains_required_schema with data set &quot;Sanctum token hash&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="32" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.002952">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_fresh_installation_can_reload_a_registered_user" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="37" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="1" time="0.004435">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_activity_logging_really_persists_an_event" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="43" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="2" time="0.003695">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_share_migration_is_idempotent" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php" line="50" class="Tests\Feature\Audit\SchemaContractTest" classname="Tests.Feature.Audit.SchemaContractTest" assertions="3" time="0.003913">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\SettingsAndMfaTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" tests="10" assertions="58" errors="0" failures="0" skipped="0" time="2.286439">
+        <testcase name="test_master_password_rotation_preserves_vault_and_private_key" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="22" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="5" time="1.057435">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_account_password_change_requires_current_password" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="41" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="6" time="0.011819">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_avatar_upload_replacement_and_removal" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="57" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="8" time="0.019994">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_avatar_rejects_non_images" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="74" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="4" time="0.006163">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_session_revocation_is_scoped_to_current_user" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="83" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="4" time="0.006816">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_email_mfa_code_is_hashed_single_use_and_expires" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="97" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="4" time="0.007594">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_email_mfa_locks_after_five_wrong_codes" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="112" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="6" time="0.010076">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_totp_setup_validate_and_verify_with_pending_keys" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="125" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="10" time="0.756341">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_totp_cannot_be_replayed_after_success" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="144" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="2" time="0.005839">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_account_deletion_requires_password_and_removes_keys_and_tokens" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php" line="159" class="Tests\Feature\Audit\SettingsAndMfaTest" classname="Tests.Feature.Audit.SettingsAndMfaTest" assertions="9" time="0.404363">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\SharingAuthorizationTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" tests="13" assertions="55" errors="0" failures="0" skipped="0" time="3.394232">
+        <testsuite name="Tests\Feature\Audit\SharingAuthorizationTest::test_permissions_status_and_expiry" tests="7" assertions="35" errors="0" failures="0" skipped="0" time="1.531120">
+          <testcase name="test_permissions_status_and_expiry with data set &quot;reader&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.154679">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_permissions_status_and_expiry with data set &quot;editor&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.195226">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_permissions_status_and_expiry with data set &quot;expired reader&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.298222">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_permissions_status_and_expiry with data set &quot;expired editor&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.182207">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_permissions_status_and_expiry with data set &quot;revoked&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.154510">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_permissions_status_and_expiry with data set &quot;pending&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.072000">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_permissions_status_and_expiry with data set &quot;refused&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="31" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="5" time="0.474276">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_selected_share_cannot_read_an_unselected_secret_by_url" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="49" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="2" time="0.154990">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_selected_share_cannot_modify_an_unselected_secret" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="62" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="1" time="0.368245">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_empty_share_selection_is_not_treated_as_the_entire_vault_by_api" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="77" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="1" time="0.263873">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_api_controller_returns_only_selected_ciphertexts" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="91" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="2" time="0.101340">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_invitation_full_lifecycle_accepts_once_and_revokes_access" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="106" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="10" time="0.967924">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_invitation_rejects_elements_from_a_different_vault" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php" line="133" class="Tests\Feature\Audit\SharingAuthorizationTest" classname="Tests.Feature.Audit.SharingAuthorizationTest" assertions="4" time="0.006740">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Audit\VaultWorkflowTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" tests="20" assertions="99" errors="0" failures="0" skipped="0" time="0.160835">
+        <testsuite name="Tests\Feature\Audit\VaultWorkflowTest::test_create_encrypt_read_and_edit_each_type" tests="6" assertions="54" errors="0" failures="0" skipped="0" time="0.069561">
+          <testcase name="test_create_encrypt_read_and_edit_each_type with data set &quot;login&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="24" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="9" time="0.011643">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_create_encrypt_read_and_edit_each_type with data set &quot;card&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="24" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="9" time="0.011169">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_create_encrypt_read_and_edit_each_type with data set &quot;note&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="24" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="9" time="0.012084">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_create_encrypt_read_and_edit_each_type with data set &quot;identity&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="24" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="9" time="0.011709">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_create_encrypt_read_and_edit_each_type with data set &quot;ssh&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="24" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="9" time="0.011180">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_create_encrypt_read_and_edit_each_type with data set &quot;other&quot;" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="24" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="9" time="0.011776">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_user_can_clear_an_optional_note" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="42" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="2" time="0.007245">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_omitted_password_is_preserved_when_editing_label" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="52" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="2" time="0.007098">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_editing_ssh_label_preserves_passphrase" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="62" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="2" time="0.008428">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_custom_fields_survive_http_validation" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="72" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="2" time="0.007320">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_delete_retains_the_item_for_the_trash_promised_by_the_ui" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="82" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="2" time="0.006750">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_favorite_toggles_both_directions" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="92" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.007697">
+          <system-out>
+</system-out>
+        </testcase>
+        <testsuite name="Tests\Feature\Audit\VaultWorkflowTest::test_invalid_service_data_is_rejected" tests="6" assertions="24" errors="0" failures="0" skipped="0" time="0.034984">
+          <testcase name="test_invalid_service_data_is_rejected with data set #0" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="111" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.006727">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_invalid_service_data_is_rejected with data set #1" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="111" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.005924">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_invalid_service_data_is_rejected with data set #2" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="111" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.005787">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_invalid_service_data_is_rejected with data set #3" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="111" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.005466">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_invalid_service_data_is_rejected with data set #4" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="111" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.005537">
+            <system-out>
+</system-out>
+          </testcase>
+          <testcase name="test_invalid_service_data_is_rejected with data set #5" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="111" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="4" time="0.005542">
+            <system-out>
+</system-out>
+          </testcase>
+        </testsuite>
+        <testcase name="test_user_cannot_create_a_service_in_another_users_vault" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="119" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="2" time="0.006548">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_validation_does_not_flash_vault_secrets_into_old_input" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php" line="127" class="Tests\Feature\Audit\VaultWorkflowTest" classname="Tests.Feature.Audit.VaultWorkflowTest" assertions="5" time="0.005205">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\ExampleTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.007774">
+        <testcase name="test_the_application_returns_a_successful_response" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/ExampleTest.php" line="13" class="Tests\Feature\ExampleTest" classname="Tests.Feature.ExampleTest" assertions="1" time="0.007774">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\RegistrationTest" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/RegistrationTest.php" tests="3" assertions="21" errors="0" failures="0" skipped="0" time="0.796376">
+        <testcase name="test_registration_creates_user_keys_and_vault" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/RegistrationTest.php" line="20" class="Tests\Feature\RegistrationTest" classname="Tests.Feature.RegistrationTest" assertions="8" time="0.372215">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_crypto_failure_rolls_back_the_entire_registration" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/RegistrationTest.php" line="47" class="Tests\Feature\RegistrationTest" classname="Tests.Feature.RegistrationTest" assertions="8" time="0.113732">
+          <system-out>
+</system-out>
+        </testcase>
+        <testcase name="test_email_provider_failure_does_not_turn_a_successful_registration_into_a_500" file="/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/RegistrationTest.php" line="74" class="Tests\Feature\RegistrationTest" classname="Tests.Feature.RegistrationTest" assertions="5" time="0.310428">
+          <system-out>
+</system-out>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

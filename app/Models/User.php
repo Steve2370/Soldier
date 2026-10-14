@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Models;
 
 use App\Notifications\VerificationEmailNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\MassPrunable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,8 +19,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
+    protected function email(): Attribute
+    {
+        return Attribute::make(set: fn (string $value) => mb_strtolower(trim($value)));
+    }
+
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, MassPrunable, Billable;
+    use Billable, HasApiTokens, HasFactory, MassPrunable, Notifiable, SoftDeletes;
 
     /**
      * Champs assignables en masse. is_admin est délibérément exclu :
@@ -104,7 +111,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new VerificationEmailNotification());
+        $this->notify(new VerificationEmailNotification);
     }
 
     public function clesUser(): HasOne

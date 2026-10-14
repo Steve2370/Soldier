@@ -12,6 +12,7 @@ final class ElementCoffrePolicy
         return $this->isOwner($user, $element) || $element->coffre->partages()
             ->where('destinataire_id', $user->id)
             ->actifs()
+            ->pourElement($element->id)
             ->exists();
     }
 
@@ -20,6 +21,7 @@ final class ElementCoffrePolicy
         return $this->isOwner($user, $element) || $element->coffre->partages()
             ->where('destinataire_id', $user->id)
             ->actifs()
+            ->pourElement($element->id)
             ->where('permission', 'ecriture')
             ->exists();
     }

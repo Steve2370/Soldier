@@ -59,7 +59,7 @@
                     @foreach($groupe['elements'] as $element)
                         <div
                             class="service-card"
-                            x-show='filtrerElement(@js(strtolower($element["label"])), @js(strtolower($element["url"] ?? "")), {{ $element["favori"] ? "true" : "false" }})'
+                            x-show="filtrerElement(@js(strtolower($element['label'])), @js(strtolower($element['url'] ?? '')), {{ $element['favori'] ? 'true' : 'false' }}, {{ $element['id'] }})"
                             x-transition:enter="transition ease-out duration-200"
                             x-transition:enter-start="opacity-0 scale-95"
                             x-transition:enter-end="opacity-100 scale-100"
@@ -122,7 +122,7 @@
 
                             <div style="display: flex; gap: 6px;">
                                 <button
-                                    @click='copierMdp(@js($element["donnees"]["mot_de_passe"] ?? ""))'
+                                    @click="copierMdp(@js($element['donnees']['mot_de_passe'] ?? ''))"
                                     class="action-chip"
                                     style="flex: 1;"
                                     title="Copier le mot de passe"
@@ -139,7 +139,7 @@
                                     </a>
                                 @endif
                                 @if(!($groupe['partage'] ?? false))
-                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" @submit.prevent='confirmerSuppression($event, @js($element["label"]))'>
+                                    <form method="POST" action="{{ route('services.supprimer', $element['id']) }}" @submit.prevent="confirmerSuppression($event, @js($element['label']))">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="action-chip action-chip-danger" title="Supprimer">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -172,28 +172,7 @@
 
     </div>
 
-    <div x-data x-show="$store.modalSuppression.show" x-transition
-         style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 99999; display: flex; align-items: center; justify-content: center;"
-         @click.self="$store.modalSuppression.show = false">
-        <div style="background: var(--bg-surface); border: 1px solid rgba(239,68,68,0.3); border-radius: 16px; padding: 28px; max-width: 380px; width: calc(100% - 40px);">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                <div style="width: 40px; height: 40px; border-radius: 10px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); display: flex; align-items: center; justify-content: center;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                </div>
-                <div>
-                    <div style="font-weight: 700; color: var(--text-primary); font-size: 1rem;">Supprimer le service ?</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;" x-text="'« ' + $store.modalSuppression.label + ' »'"></div>
-                </div>
-            </div>
-            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 22px; line-height: 1.6;">
-                Cette action est irréversible. Le service sera déplacé dans la corbeille.
-            </p>
-            <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                <button @click="$store.modalSuppression.show = false" class="btn-secondary">Annuler</button>
-                <button @click="$store.modalSuppression.executer()" class="btn-danger">Supprimer</button>
-            </div>
-        </div>
-    </div>
+    {{-- The confirmation dialog is owned by the page component. --}}
 
     <style>
         .service-card {
@@ -285,105 +264,7 @@
         .btn-danger:hover { background: rgba(239,68,68,0.2); border-color: #ef4444; }
     </style>
 
-    @push('scripts')
-        <script>
-            document.addEventListener('alpine:init', () => {
-                Alpine.store('modalSuppression', {
-                    show: false,
-                    label: '',
-                    form: null,
-                    confirmer(form, label) {
-                        this.form = form;
-                        this.label = label;
-                        this.show = true;
-                    },
-                    executer() {
-                        if (this.form) this.form.submit();
-                        this.show = false;
-                    }
-                });
-            });
-
-            function dashboard() {
-                return {
-                    recherche: '',
-                    filtreActif: 'Tous',
-                    showModal: false,
-                    labelASupprimer: '',
-                    formASupprimer: null,
-
-                    filtrerElement(label, url, favori) {
-                        if (this.filtreActif === 'Favoris' && !favori) return false;
-                        if (!this.recherche) return true;
-                        const q = this.recherche.toLowerCase();
-                        return label.includes(q) || url.includes(q);
-                    },
-
-                    async copierMdp(mdp) {
-                        if (!mdp) { showToast('warning', 'Aucun mot de passe', 'Ce service n\'a pas de mot de passe enregistré.'); return; }
-                        try {
-                            await navigator.clipboard.writeText(mdp);
-                            showToast('success', 'Copié !', 'Le mot de passe sera effacé dans 30 secondes.');
-                            setTimeout(() => navigator.clipboard.writeText(''), 30000);
-                        } catch { showToast('error', 'Erreur', 'Impossible d\'accéder au presse-papier.'); }
-                    },
-
-                    async toggleFavori(id, btn) {
-                        try {
-                            const res = await fetch(`/services/${id}/favori`, {
-                                method: 'PATCH',
-                                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' }
-                            });
-                            const data = await res.json();
-                            btn.classList.toggle('favori-active', data.favori);
-                            btn.querySelector('svg').setAttribute('fill', data.favori ? 'currentColor' : 'none');
-                            showToast('success', data.favori ? 'Ajouté aux favoris' : 'Retiré des favoris', '');
-                        } catch { showToast('error', 'Erreur', 'Impossible de mettre à jour le favori.'); }
-                    },
-
-                    confirmerSuppression(event, label) {
-                        this.formASupprimer = event.target;
-
-                        const existing = document.getElementById('modal-suppression');
-                        if (existing) existing.remove();
-
-                        const modal = document.createElement('div');
-                        modal.id = 'modal-suppression';
-                        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:999999;display:flex;align-items:center;justify-content:center;';
-                        modal.innerHTML = `
-        <div style="background:#202020;border:1px solid rgba(239,68,68,0.3);border-radius:16px;padding:28px;max-width:380px;width:calc(100% - 40px);position:relative;">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-                <div style="width:40px;height:40px;border-radius:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);display:flex;align-items:center;justify-content:center;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                </div>
-                <div>
-                    <div style="font-weight:700;color:#fff;font-size:1rem;">Supprimer le service ?</div>
-                    <div class="modal-service-label" style="font-size:0.8rem;color:#808080;margin-top:2px;"></div>
-                </div>
-            </div>
-            <p style="font-size:0.875rem;color:#e0e0e0;margin-bottom:22px;line-height:1.6;">Cette action est irréversible. Le service sera déplacé dans la corbeille.</p>
-            <div style="display:flex;gap:8px;justify-content:flex-end;">
-                <button id="modal-annuler" style="background:#404040;color:#e0e0e0;border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:10px 20px;font-size:0.875rem;cursor:pointer;font-family:Audiowide,sans-serif;">Annuler</button>
-                <button id="modal-supprimer" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:9px;padding:10px 20px;font-size:0.875rem;cursor:pointer;font-family:Audiowide,sans-serif;">Supprimer</button>
-            </div>
-        </div>
-    `;
-                        document.body.appendChild(modal);
-                        modal.querySelector('.modal-service-label').textContent = `« ${label} »`;
-                        document.getElementById('modal-annuler').onclick = () => modal.remove();
-                        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-                        document.getElementById('modal-supprimer').onclick = () => {
-                            modal.remove();
-                            this.formASupprimer.submit();
-                        };
-                    },
-
-                    executerSuppression() {
-                    },
-                }
-            }
-        </script>
-    @endpush
+    {{-- Behavior is supplied once by the tested TypeScript module. --}}
 
     @if(!auth()->user()->subscribed('famille'))
         <div style="margin-top: 32px; padding: 20px 24px; background: linear-gradient(135deg, rgba(45,159,212,0.08), rgba(33,126,170,0.05)); border: 1px solid rgba(45,159,212,0.25); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">

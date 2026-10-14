@@ -43,10 +43,12 @@ class ServicesApiController extends Controller
 
         foreach ($partages as $share) {
             $coffre = $share->coffre;
-            if (!$coffre) continue;
+            if (! $coffre) {
+                continue;
+            }
 
             $elementIds = $share->element_ids;
-            $elements = $elementIds ? $coffre->elements->whereIn('id', $elementIds)
+            $elements = $elementIds !== null ? $coffre->elements->whereIn('id', $elementIds)
                 : $coffre->elements;
 
             foreach ($elements as $element) {

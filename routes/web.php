@@ -10,7 +10,9 @@ use App\Http\Controllers\PartageController;
 use App\Http\Controllers\PasskeyController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\TrashController;
 use App\Http\Controllers\WelcomeController;
+use App\Services\Auth\Contracts\VerificationEmailInterface;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +32,7 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/verification-mfa', [AuthController::class, 'showMfa'])->name('mfa.verify');
 Route::post('/verification-mfa', [AuthController::class, 'verifierMfa'])->middleware('throttle:mfa')->name('mfa.verify.post');
+Route::post('/verification-mfa/renvoyer', [AuthController::class, 'renvoyerMfa'])->middleware('throttle:2,1')->name('mfa.resend');
 
 Route::get('/auth/github/redirect', [AuthController::class, 'redirectGithub'])->name('auth.github.redirect');
 Route::get('/auth/github/callback', [AuthController::class, 'callbackGithub'])->name('auth.github.callback');
@@ -42,7 +45,7 @@ Route::get('/', fn () => auth()->check()
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/oauth/master-password', [AuthController::class, 'showOauthMasterPassword'])->name('oauth.master-password');
-    Route::post('/oauth/master-password', [AuthController::class, 'configurerOauthMasterPassword'])->name('oauth.master-password.post');
+    Route::post('/oauth/master-password', [AuthController::class, 'configurerOauthMasterPassword'])->middleware('throttle:connexion')->name('oauth.master-password.post');
     Route::post('/deconnexion', [AuthController::class, 'deconnexion'])->name('deconnexion');
 
     Route::get('/email/verify', function () {
@@ -51,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
+
         return redirect()->route('dashboard')->with('toast', [
             'type' => 'success',
             'titre' => 'Email vérifié !',
@@ -58,12 +62,16 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->middleware('signed')->name('verification.verify');
 
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
+    Route::post('/email/verification-notification', function (Request $request, VerificationEmailInterface $delivery) {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('dashboard');
+        }
+        $sent = $delivery->send($request->user());
+
         return back()->with('toast', [
-            'type' => 'success',
-            'titre' => 'Email envoyé',
-            'message' => 'Un nouveau lien de vérification a été envoyé.',
+            'type' => $sent ? 'success' : 'warning',
+            'titre' => $sent ? 'Email envoyé' : 'Envoi indisponible',
+            'message' => $sent ? 'Un nouveau lien de vérification a été envoyé.' : 'Votre compte est conservé. Réessayez l’envoi du lien plus tard.',
         ]);
     })->middleware('throttle:6,1')->name('verification.send');
 });
@@ -71,6 +79,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'verified', 'vault.unlocked'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/corbeille', [TrashController::class, 'index'])->name('corbeille');
+    Route::patch('/corbeille/{id}/restaurer', [TrashController::class, 'restore'])->whereNumber('id')->name('corbeille.restaurer');
     Route::get('/services/creer', [DashboardController::class, 'creer'])->name('services.creer');
     Route::post('/services', [DashboardController::class, 'stocker'])->name('services.stocker');
     Route::get('/services/{element}', [DashboardController::class, 'afficher'])->name('services.afficher');
@@ -89,7 +99,7 @@ Route::middleware(['auth', 'verified', 'vault.unlocked'])->group(function () {
     Route::patch('/partage/{invitation}/annuler', [PartageController::class, 'annulerInvitation'])->name('partage.annuler');
 
     Route::post('/passkeys/options-inscription', [PasskeyController::class, 'optionsInscription'])->name('passkeys.options-inscription');
-    Route::post('/passkeys/inscrire', [PasskeyController::class, 'inscrire'])->name('passkeys.inscrire');
+    Route::post('/passkeys/inscrire', [PasskeyController::class, 'inscrire'])->block(10, 10)->name('passkeys.inscrire');
     Route::delete('/passkeys/{passkey}', [PasskeyController::class, 'supprimer'])->name('passkeys.supprimer');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
@@ -131,8 +141,9 @@ Route::middleware(['auth', 'famille', 'vault.unlocked'])->prefix('famille')->nam
     Route::delete('/quitter', [FamilleController::class, 'quitter'])->name('quitter');
 });
 
-Route::get('/privacy', fn() => view('privacy'))->name('privacy');
-Route::get('/invitation/{token}', [PartageController::class, 'accepter'])->name('partage.accepter');
+Route::get('/privacy', fn () => view('privacy'))->name('privacy');
+Route::get('/invitation/{token}', [PartageController::class, 'accepter'])
+    ->middleware(['auth', 'verified', 'vault.unlocked'])->name('partage.accepter');
 
 Route::post('/passkeys/options-connexion', [PasskeyController::class, 'optionsConnexion'])->name('passkeys.options-connexion');
-Route::post('/passkeys/connecter', [PasskeyController::class, 'connecter'])->name('passkeys.connecter');
+Route::post('/passkeys/connecter', [PasskeyController::class, 'connecter'])->middleware('throttle:connexion')->block(10, 10)->name('passkeys.connecter');

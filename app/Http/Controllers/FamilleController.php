@@ -13,11 +13,13 @@ use App\Models\User;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
 use App\Services\Crypto\RsaCryptoService;
+use App\Services\Famille\FamilyAccessRevocationService;
+use App\Services\Famille\FamilyMembershipService;
 use App\Services\Logs\ActivityLogService;
+use App\Services\Notifications\Contracts\MailDeliveryInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class FamilleController extends Controller
@@ -26,6 +28,9 @@ class FamilleController extends Controller
         private readonly CleManagementService $cleManagement,
         private readonly CoffreService $coffreService,
         private readonly RsaCryptoService $asymmetric,
+        private readonly FamilyAccessRevocationService $revocation,
+        private readonly FamilyMembershipService $memberships,
+        private readonly MailDeliveryInterface $mailDelivery,
     ) {}
 
     public function index(): View
@@ -57,13 +62,13 @@ class FamilleController extends Controller
                                 ->actifs()
                                 ->first();
                             $clePrivee = SessionHelper::obtenirClePrivee();
-                            $dataKey   = $share
+                            $dataKey = $share
                                 ? $this->asymmetric->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee)
                                 : null;
                         }
 
                         if (isset($dataKey)) {
-                            $elementsFamiliaux = $this->coffreService->listerElements($coffreFamille, $dataKey);
+                            $elementsFamiliaux = $this->coffreService->listerElements($coffreFamille, $dataKey, $group ? null : $share->element_ids);
                             sodium_memzero($dataKey);
                         }
                     } catch (\Exception $e) {
@@ -140,7 +145,7 @@ class FamilleController extends Controller
     {
         $request->validate(['email' => ['required', 'email']]);
 
-        $user  = auth()->user();
+        $user = auth()->user();
         $group = FamilyGroup::where('owner_id', $user->id)->with('members')->firstOrFail();
 
         if ($group->isFull()) {
@@ -149,7 +154,7 @@ class FamilleController extends Controller
 
         $destinataire = User::where('email', $request->email)->first();
 
-        if (!$destinataire) {
+        if (! $destinataire) {
             return back()->with('toast', ['type' => 'error', 'titre' => 'Utilisateur introuvable', 'message' => 'Cet email n\'est pas enregistré sur Soldier.']);
         }
 
@@ -161,43 +166,15 @@ class FamilleController extends Controller
             return back()->with('toast', ['type' => 'error', 'titre' => 'Déjà membre', 'message' => 'Cet utilisateur est déjà dans votre groupe.']);
         }
 
-        FamilyMember::create([
-            'family_group_id' => $group->id,
-            'user_id' => $destinataire->id,
-            'role' => 'member',
-            'joined_at' => now(),
-        ]);
-
-        if ($group->coffre_id) {
-            $coffre = Coffre::find($group->coffre_id);
-            $kek  = SessionHelper::obtenirKek();
-            $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
+        $kek = SessionHelper::obtenirKek();
+        try {
+            $this->memberships->add($group, $destinataire, $kek);
+        } finally {
             sodium_memzero($kek);
-
-            $clePublique = $destinataire->clesUser?->public_key;
-            $dataKeyChiffree = null;
-
-            if ($clePublique) {
-                $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique($dataKey, $clePublique);
-            }
-            sodium_memzero($dataKey);
-
-            if ($dataKeyChiffree) {
-                ShareCoffre::create([
-                    'coffre_id' => $coffre->id,
-                    'proprietaire_id' => $user->id,
-                    'destinataire_id' => $destinataire->id,
-                    'data_key_destinataire_encrypted' => $dataKeyChiffree,
-                    'permission' => 'ecriture',
-                    'statut' => 'accepte',
-                    'accepte_le' => now(),
-                    'element_ids' => null,
-                ]);
-            }
         }
 
-        Mail::to($user->email)->send(new MembreFamilleAjouteMail($user, $destinataire));
-        Mail::to($destinataire->email)->send(new MembreInviteFamilleMail($user, $destinataire));
+        $this->mailDelivery->send($user->email, new MembreFamilleAjouteMail($user, $destinataire));
+        $this->mailDelivery->send($destinataire->email, new MembreInviteFamilleMail($user, $destinataire));
 
         ActivityLogService::log('famille_membre_invite', "Membre ajouté : {$request->email}");
 
@@ -214,7 +191,7 @@ class FamilleController extends Controller
         }
 
         $nom = $member->user->name;
-        $member->delete();
+        $this->revocation->remove($member);
 
         ActivityLogService::log('famille_membre_retire', "Membre retiré : {$nom}");
 
@@ -225,7 +202,7 @@ class FamilleController extends Controller
     {
         $user = auth()->user();
         $membership = FamilyMember::where('user_id', $user->id)->where('role', 'member')->firstOrFail();
-        $membership->delete();
+        $this->revocation->remove($membership);
 
         ActivityLogService::log('famille_quitte', 'A quitté le groupe famille');
 

@@ -5,13 +5,16 @@ namespace App\Services\Coffre;
 use App\Models\Coffre;
 use App\Models\ElementCoffre;
 use App\Models\User;
+use App\Services\Coffre\Contracts\ElementPayloadInterface;
 use App\Services\Crypto\Contracts\EncryptionServiceInterface;
+use Illuminate\Validation\ValidationException;
 
 readonly class CoffreService
 {
     public function __construct(
         private EncryptionServiceInterface $encryption,
         private CleManagementService $cleManagement,
+        private ElementPayloadInterface $payloads,
     ) {}
 
     /**
@@ -41,8 +44,8 @@ readonly class CoffreService
         array $donnees,
         string $dataKey
     ): ElementCoffre {
-        $payload = $this->construirePayload($donnees);
-        $chiffre = $this->encryption->encrypt(json_encode($payload), $dataKey);
+        $payload = $this->payloads->build($donnees['type'] ?? 'login', $donnees);
+        $chiffre = $this->encryption->encrypt(json_encode($payload, JSON_THROW_ON_ERROR), $dataKey);
 
         return ElementCoffre::create([
             'coffre_id' => $coffre->id,
@@ -69,8 +72,7 @@ readonly class CoffreService
         }
 
         return $query->get()
-            ->map(fn(ElementCoffre $element) =>
-                $this->dechiffrerElement($element, $dataKey))
+            ->map(fn (ElementCoffre $element) => $this->dechiffrerElement($element, $dataKey))
             ->toArray();
     }
 
@@ -83,28 +85,24 @@ readonly class CoffreService
         ElementCoffre $element,
         array $donnees,
         string $dataKey
-    ) : ElementCoffre {
+    ): ElementCoffre {
         $ancienPayload = json_decode($this->encryption->decrypt(
             $element->payload_encrypted,
             $dataKey,
             $element->iv,
             $element->auth_tag,
-        ), true) ?? [];
+        ), true, 512, JSON_THROW_ON_ERROR);
 
-        $donneesMergees = $donnees;
-        foreach ($ancienPayload as $cle => $valeur) {
-            if (!isset($donneesMergees[$cle]) || $donneesMergees[$cle] === null || $donneesMergees[$cle] === '') {
-                $donneesMergees[$cle] = $valeur;
-            }
+        if (isset($donnees['type']) && $donnees['type'] !== $element->type) {
+            throw ValidationException::withMessages(['type' => 'Le type d’un élément existant ne peut pas être changé.']);
         }
-
-        $payload = $this->construirePayload($donneesMergees);
-        $chiffre = $this->encryption->encrypt(json_encode($payload), $dataKey);
+        $payload = $this->payloads->build($element->type, $donnees, $ancienPayload);
+        $chiffre = $this->encryption->encrypt(json_encode($payload, JSON_THROW_ON_ERROR), $dataKey);
 
         $element->update([
             'label' => $donnees['label'],
-            'url' => $donnees['url'] ?? $element->url,
-            'favicon_url' => $donnees['favicon_url'] ?? $element->favicon_url,
+            'url' => array_key_exists('url', $donnees) ? $donnees['url'] : $element->url,
+            'favicon_url' => array_key_exists('favicon_url', $donnees) ? $donnees['favicon_url'] : $element->favicon_url,
             'payload_encrypted' => $chiffre['ciphertext'],
             'iv' => $chiffre['iv'],
             'auth_tag' => $chiffre['tag'],
@@ -115,7 +113,8 @@ readonly class CoffreService
 
     public function toggleFavori(ElementCoffre $element): bool
     {
-        $element->update(['favori' => !$element->favori]);
+        $element->update(['favori' => ! $element->favori]);
+
         return $element->favori;
     }
 
@@ -137,16 +136,17 @@ readonly class CoffreService
      */
     public function resoudreFavicon(string $url, string $label = ''): string
     {
-        if (!empty($url)) {
+        if (! empty($url)) {
             $domain = parse_url($url, PHP_URL_HOST);
             if ($domain) {
                 return route('favicon', ['domain' => $domain]);
             }
         }
 
-        if (!empty($label)) {
+        if (! empty($label)) {
             $slug = strtolower(preg_replace('/\s+/', '', $label));
-            return route('favicon', ['domain' => $slug . '.com']);
+
+            return route('favicon', ['domain' => $slug.'.com']);
         }
 
         return '';
@@ -174,59 +174,4 @@ readonly class CoffreService
             'updated_at' => $element->updated_at->toISOString(),
         ];
     }
-
-    private function construirePayload(array $donnees): array
-    {
-        $type = $donnees['type'] ?? 'login';
-
-        $payload = match ($type) {
-            'login' => [
-                'identifiant' => $donnees['identifiant'] ?? '',
-                'mot_de_passe' => $donnees['mot_de_passe'] ?? '',
-                'totp_secret' => $donnees['totp_secret'] ?? null,
-                'notes' => $donnees['notes'] ?? null,
-                'champs_personnels' => $donnees['champs_personnels'] ?? [],
-            ],
-
-            'carte' => [
-                'numero' => $donnees['numero'] ?? '',
-                'titulaire' => $donnees['titulaire'] ?? '',
-                'expiration' => $donnees['expiration'] ?? '',
-                'cvv' => $donnees['cvv'] ?? '',
-                'code_pin' => $donnees['code_pin'] ?? null,
-                'notes' => $donnees['notes'] ?? null,
-            ],
-
-            'note' => [
-                'contenu' => $donnees['contenu'] ?? '',
-            ],
-
-            'identite' => [
-                'prenom' => $donnees['prenom'] ?? '',
-                'nom' => $donnees['nom'] ?? '',
-                'email' => $donnees['email'] ?? null,
-                'telephone' => $donnees['telephone'] ?? null,
-                'adresse' => $donnees['adresse'] ?? null,
-                'passeport' => $donnees['passeport'] ?? null,
-                'notes' => $donnees['notes'] ?? null,
-            ],
-
-            'cles' => [
-                'serveur' => $donnees['serveur'] ?? '',
-                'port' => $donnees['port'] ?? 22,
-                'username' => $donnees['username'] ?? '',
-                'cle_privee' => $donnees['cle_privee'] ?? null,
-                'mot_de_passe' => $donnees['passphrase_ssh'] ?? null,
-                'notes' => $donnees['notes'] ?? null,
-            ],
-
-            default => [
-                'contenu' => $donnees['contenu'] ?? '',
-                'notes' => $donnees['notes'] ?? null,
-            ],
-        };
-
-        return array_filter($payload, fn($v) => $v !== null);
-    }
-
 }

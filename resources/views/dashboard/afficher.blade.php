@@ -72,7 +72,7 @@
                         <div class="champ-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Identifiant</div>
                         <div class="champ-value">
                             <span style="font-family: Audiowide,sans-serif;">{{ $donnees['donnees']['identifiant'] }}</span>
-                            <button @click='copier(@js($donnees["donnees"]["identifiant"]), "Identifiant")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                            <button @click="copier(@js($donnees['donnees']['identifiant']), 'Identifiant')" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                         </div>
                     </div>
                 @endif
@@ -80,13 +80,13 @@
                     <div class="champ-row">
                         <div class="champ-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Mot de passe</div>
                         <div class="champ-value">
-                            <span style="font-family: monospace; letter-spacing: 0.08em;" x-text='showMdp ? @js($donnees["donnees"]["mot_de_passe"]) : "••••••••••••"'></span>
+                            <span style="font-family: monospace; letter-spacing: 0.08em;" x-text="showMdp ? @js($donnees['donnees']['mot_de_passe']) : '••••••••••••'"></span>
                             <div style="display: flex; gap: 4px;">
                                 <button @click="showMdp = !showMdp" class="copy-btn">
                                     <svg x-show="!showMdp" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                     <svg x-show="showMdp" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                                 </button>
-                                <button @click='copier(@js($donnees["donnees"]["mot_de_passe"]), "Mot de passe")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1 2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                                <button @click="copier(@js($donnees['donnees']['mot_de_passe']), 'Mot de passe')" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1 2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                             </div>
                         </div>
                     </div>
@@ -98,8 +98,8 @@
                         <div class="champ-row">
                             <div class="champ-label">{{ $label }}</div>
                             <div class="champ-value">
-                                <span style="font-family: monospace;" @if(in_array($champ, ['cvv','code_pin'])) x-text='showMdp ? @js($donnees["donnees"][$champ]) : "•••"' @else>{{ $donnees['donnees'][$champ] }}@endif></span>
-                                <button @click='copier(@js($donnees["donnees"][$champ]), @js($label))' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                                <span style="font-family: monospace;" @if(in_array($champ, ['cvv','code_pin'])) x-text="showMdp ? @js($donnees['donnees'][$champ]) : '•••'" @else>{{ $donnees['donnees'][$champ] }}@endif></span>
+                                <button @click="copier(@js($donnees['donnees'][$champ]), @js($label))" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2h9a2 2 0 0 1 2 2v1"/></svg></button>
                             </div>
                         </div>
                     @endif
@@ -124,7 +124,7 @@
                             <div class="champ-label">{{ $label }}</div>
                             <div class="champ-value">
                                 <span>{{ $donnees['donnees'][$champ] }}</span>
-                                <button @click='copier(@js($donnees["donnees"][$champ]), @js($label))' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                                <button @click="copier(@js($donnees['donnees'][$champ]), @js($label))" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                             </div>
                         </div>
                     @endif
@@ -136,7 +136,7 @@
                         <div class="champ-label">Serveur</div>
                         <div class="champ-value">
                             <span style="font-family: monospace;">{{ $donnees['donnees']['serveur'] }}:{{ $donnees['donnees']['port'] ?? 22 }}</span>
-                            <button @click='copier(@js($donnees["donnees"]["serveur"]), "Serveur")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                            <button @click="copier(@js($donnees['donnees']['serveur']), 'Serveur')" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2h9a2 2 0 0 1 2 2v1"/></svg></button>
                         </div>
                     </div>
                 @endif
@@ -145,7 +145,7 @@
                         <div class="champ-label">Username</div>
                         <div class="champ-value">
                             <span style="font-family: monospace;">{{ $donnees['donnees']['username'] }}</span>
-                            <button @click='copier(@js($donnees["donnees"]["username"]), "Username")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                            <button @click="copier(@js($donnees['donnees']['username']), 'Username')" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
                         </div>
                     </div>
                 @endif
@@ -153,10 +153,10 @@
                     <div class="champ-row" style="align-items: flex-start;">
                         <div class="champ-label" style="padding-top: 4px;">Clé privée</div>
                         <div style="flex: 1; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.2); border-radius: 9px; padding: 10px 12px;">
-                            <pre style="font-size: 0.72rem; color: var(--text-muted); white-space: pre-wrap; word-break: break-all; margin: 0;" x-text='showMdp ? @js($donnees["donnees"]["cle_privee"]) : "-----BEGIN OPENSSH PRIVATE KEY-----\n[masquée]\n-----END OPENSSH PRIVATE KEY-----"'></pre>
+                            <pre style="font-size: 0.72rem; color: var(--text-muted); white-space: pre-wrap; word-break: break-all; margin: 0;" x-text="showMdp ? @js($donnees['donnees']['cle_privee']) : '-----BEGIN OPENSSH PRIVATE KEY-----\n[masquée]\n-----END OPENSSH PRIVATE KEY-----'"></pre>
                             <div style="display: flex; gap: 8px; margin-top: 8px;">
                                 <button @click="showMdp = !showMdp" class="btn-secondary" style="font-size: 0.75rem; padding: 5px 12px;" x-text="showMdp ? 'Masquer' : 'Afficher'"></button>
-                                <button @click='copier(@js($donnees["donnees"]["cle_privee"]), "Clé privée")' class="btn-secondary" style="font-size: 0.75rem; padding: 5px 12px;">Copier</button>
+                                <button @click="copier(@js($donnees['donnees']['cle_privee']), 'Clé privée')" class="btn-secondary" style="font-size: 0.75rem; padding: 5px 12px;">Copier</button>
                             </div>
                         </div>
                     </div>
@@ -165,8 +165,8 @@
                     <div class="champ-row">
                         <div class="champ-label">Passphrase</div>
                         <div class="champ-value">
-                            <span style="font-family: monospace;" x-text='showMdp ? @js($donnees["donnees"]["mot_de_passe"]) : "••••••••"'></span>
-                            <button @click='copier(@js($donnees["donnees"]["mot_de_passe"]), "Passphrase")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"/></svg></button>
+                            <span style="font-family: monospace;" x-text="showMdp ? @js($donnees['donnees']['mot_de_passe']) : '••••••••'"></span>
+                            <button @click="copier(@js($donnees['donnees']['mot_de_passe']), 'Passphrase')" class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2 2v1"/></svg></button>
                         </div>
                     </div>
                 @endif
@@ -202,16 +202,7 @@
 
     </div>
 
-    <div x-show="showModal" x-transition style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);" @click.self="showModal = false">
-        <div class="card" style="max-width: 380px; width: calc(100% - 40px); border-color: rgba(239,68,68,0.3);">
-            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Confirmer la suppression</h3>
-            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 20px; line-height: 1.5;">« <strong style="color: var(--text-primary);">{{ $donnees['label'] }}</strong> » sera placé dans la corbeille.</p>
-            <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                <button @click="showModal = false" class="btn-secondary">Annuler</button>
-                <button @click="executerSuppression()" class="btn-danger">Supprimer</button>
-            </div>
-        </div>
-    </div>
+    {{-- The confirmation dialog is owned by the page component. --}}
 
     <style>
         .champ-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(33,126,170,0.15); }
@@ -225,27 +216,5 @@
         .btn-danger:hover { background: rgba(239,68,68,0.2); border-color: #ef4444; }
     </style>
 
-    @push('scripts')
-        <script>
-            function afficherService() {
-                return {
-                    showMdp: false,
-                    showModal: false,
-                    formASupprimer: null,
-
-                    async copier(texte, label) {
-                        if (!texte) return;
-                        try {
-                            await navigator.clipboard.writeText(texte);
-                            showToast('success', label + ' copié', 'Effacé dans 30 secondes.');
-                            setTimeout(() => navigator.clipboard.writeText(''), 30000);
-                        } catch { showToast('error', 'Erreur', 'Impossible d\'accéder au presse-papier.'); }
-                    },
-
-                    confirmerSuppression(event) { this.formASupprimer = event.target; this.showModal = true; },
-                    executerSuppression() { if (this.formASupprimer) this.formASupprimer.submit(); this.showModal = false; }
-                }
-            }
-        </script>
-    @endpush
+    {{-- Behavior is supplied once by the tested TypeScript module. --}}
 @endsection

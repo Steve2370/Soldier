@@ -20,6 +20,7 @@ class InvitationPartage extends Model
         'expire_le',
         'traitee_le',
         'element_ids',
+        'family_group_id',
     ];
 
     protected $hidden = [

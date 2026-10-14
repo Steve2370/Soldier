@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\Auth\AccountEmailResolver;
 use App\Services\Auth\ExtensionHandoffService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
@@ -11,7 +11,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 class AuthApiController extends Controller
 {
@@ -19,6 +18,7 @@ class AuthApiController extends Controller
         private readonly CleManagementService $cleManagement,
         private readonly ExtensionHandoffService $extensionHandoff,
         private readonly CoffreService $coffreService,
+        private readonly AccountEmailResolver $emails,
     ) {}
 
     /**
@@ -34,7 +34,7 @@ class AuthApiController extends Controller
 
         $user = $this->extensionHandoff->resoudreCode($request->input('code'));
 
-        if (!$user) {
+        if (! $user || ! $user->hasVerifiedEmail()) {
             return response()->json(['error' => 'Code invalide ou expiré.'], 422);
         }
 
@@ -48,12 +48,13 @@ class AuthApiController extends Controller
      */
     public function login(Request $request): JsonResponse
     {
-        $key = 'login:' . str($request->email)->lower() . '|' . $request->ip();
+        $key = 'login:'.str($request->email)->lower().'|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
+
             return response()->json([
-                'error' => "Trop de tentatives. Réessayez dans {$seconds} secondes."
+                'error' => "Trop de tentatives. Réessayez dans {$seconds} secondes.",
             ], 429);
         }
 
@@ -65,14 +66,14 @@ class AuthApiController extends Controller
             'master_password' => ['required', 'string'],
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = $this->emails->find($request->email);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['error' => 'Identifiants incorrects.'], 401);
         }
 
-        if (!$user->oauth_provider) {
-            if (!$request->password || !Hash::check($request->password, $user->password)) {
+        if (! $user->oauth_provider) {
+            if (! $request->password || ! Hash::check($request->password, $user->password)) {
                 return response()->json(['error' => 'Identifiants incorrects.'], 401);
             }
         }
@@ -86,8 +87,12 @@ class AuthApiController extends Controller
         }
 
         $cleUser = $user->clesUser;
-        if (!$cleUser) {
+        if (! $cleUser) {
             return response()->json(['error' => 'Coffre non initialisé.'], 422);
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            return response()->json(['error' => 'email_unverified'], 403);
         }
 
         if ($user->mfa()->where('actif', true)->exists()) {
@@ -98,10 +103,10 @@ class AuthApiController extends Controller
         }
 
         $coffre = $user->coffres()->first();
-        if (!$coffre) {
+        if (! $coffre) {
             $clesTemp = $this->cleManagement->deverouillerCles($user, $request->master_password);
             $coffre = $this->coffreService->creerCoffre($user, [
-                'nom'    => 'Mon coffre',
+                'nom' => 'Mon coffre',
                 'couleur' => '#217eaa',
             ], $clesTemp['kek']);
             sodium_memzero($clesTemp['kek']);
@@ -116,7 +121,7 @@ class AuthApiController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : null,
+                'avatar' => $user->avatar ? 'https://soldierkey.com'.\Storage::url($user->avatar) : null,
                 'avatar_url' => $user->avatar_url ?: null,
             ],
             'kdf' => [
@@ -138,12 +143,12 @@ class AuthApiController extends Controller
         $user = $request->user();
 
         $cleUser = $user->clesUser;
-        if (!$cleUser) {
+        if (! $cleUser) {
             return response()->json(['error' => 'Coffre non initialisé.'], 422);
         }
 
         $coffre = $user->coffres()->first();
-        if (!$coffre) {
+        if (! $coffre) {
             return response()->json(['error' => 'Coffre introuvable.'], 422);
         }
 
@@ -152,7 +157,7 @@ class AuthApiController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'avatar' => $user->avatar ? 'https://soldierkey.com' . \Storage::url($user->avatar) : null,
+                'avatar' => $user->avatar ? 'https://soldierkey.com'.\Storage::url($user->avatar) : null,
                 'avatar_url' => $user->avatar_url ?: null,
             ],
             'kdf' => [
@@ -174,6 +179,10 @@ class AuthApiController extends Controller
         $user = $request->user();
         $cleUser = $user->clesUser;
 
+        if (! $cleUser) {
+            return response()->json(['error' => 'Coffre non initialisé.'], 422);
+        }
+
         return response()->json([
             'user' => [
                 'id' => $user->id,
@@ -191,6 +200,7 @@ class AuthApiController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json(['message' => 'Déconnecté.']);
     }
 }

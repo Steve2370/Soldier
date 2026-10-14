@@ -11,7 +11,8 @@ class VaultUnlocked
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!SessionHelper::havecleKek() || !SessionHelper::haveClePrivee()) {
+        if (SessionHelper::obtenirMfaUserIdPending() !== null
+            || ! SessionHelper::havecleKek() || ! SessionHelper::haveClePrivee()) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => 'vault_locked',
@@ -19,7 +20,7 @@ class VaultUnlocked
                 ], 423);
             }
 
-            return redirect()->route('connexion')
+            return redirect()->route(SessionHelper::obtenirMfaUserIdPending() !== null ? 'mfa.verify' : 'oauth.master-password')
                 ->with('toast', [
                     'type' => 'warning',
                     'titre' => 'Session expirée',

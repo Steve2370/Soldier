@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreElementRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class StoreElementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', 'string', 'in:login,carte,note,identite,cles,autre'],
+            'type' => ['required', 'string', Rule::in(array_keys(config('vault.payloads')))],
             'label' => ['required', 'string', 'max:200'],
             'url' => ['nullable', 'url:http,https', 'max:500'],
             'identifiant' => ['nullable', 'string', 'max:255'],
@@ -37,6 +38,11 @@ class StoreElementRequest extends FormRequest
             'username' => ['nullable', 'string', 'max:255'],
             'cle_privee' => ['nullable', 'string', 'max:10000'],
             'notes' => ['nullable', 'string', 'max:5000'],
+            'contenu' => ['nullable', 'string', 'max:50000'],
+            'champs_personnels' => ['sometimes', 'array', 'max:50'],
+            'champs_personnels.*' => ['array:nom,valeur'],
+            'champs_personnels.*.nom' => ['required', 'string', 'max:100'],
+            'champs_personnels.*.valeur' => ['present', 'nullable', 'string', 'max:5000'],
         ];
     }
 

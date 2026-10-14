@@ -13,10 +13,10 @@ use App\Models\User;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Crypto\Contracts\CryptoAsymmetricInterface;
 use App\Services\Logs\ActivityLogService;
+use App\Services\Notifications\Contracts\MailDeliveryInterface;
+use App\Services\Partage\AcceptShareInvitation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Random\RandomException;
 
@@ -25,8 +25,9 @@ class PartageController extends Controller
     public function __construct(
         private readonly CleManagementService $keyManagement,
         private readonly CryptoAsymmetricInterface $asymmetric,
+        private readonly MailDeliveryInterface $mailDelivery,
+        private readonly AcceptShareInvitation $acceptInvitation,
     ) {}
-
 
     public function index(): View
     {
@@ -66,7 +67,6 @@ class PartageController extends Controller
         ));
     }
 
-
     /**
      * @throws RandomException
      * @throws \SodiumException
@@ -92,7 +92,9 @@ class PartageController extends Controller
 
         $user = auth()->user();
         $coffre = Coffre::findOrFail($request->coffre_id);
-        if ($coffre->user_id !== $user->id) abort(403);
+        if ($coffre->user_id !== $user->id) {
+            abort(403);
+        }
 
         $kek = SessionHelper::obtenirKek();
         $dataKey = $this->keyManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
@@ -102,6 +104,7 @@ class PartageController extends Controller
         $elements = $coffre->elements()->whereIn('id', $elementIds)->get();
         if ($elements->count() !== $elementIds->count()) {
             sodium_memzero($dataKey);
+
             return back()->withErrors(['element_ids' => 'Un ou plusieurs éléments ne correspondent pas à ce coffre.']);
         }
 
@@ -110,26 +113,33 @@ class PartageController extends Controller
                 ->with('members.user.clesUser')
                 ->first();
 
-            if (!$familyGroup) {
+            if (! $familyGroup) {
                 sodium_memzero($dataKey);
+
                 return back()->withErrors(['email' => 'Aucun groupe famille trouvé.']);
             }
 
             $count = 0;
+            $sent = 0;
 
             foreach ($familyGroup->members->where('role', 'member') as $membre) {
                 $destinataire = $membre->user;
                 $clePublique = $destinataire->clesUser?->public_key;
-                if (!$clePublique) continue;
+                if (! $clePublique) {
+                    continue;
+                }
 
                 $dataKeyChiffree = $this->asymmetric->chiffrerAvecClePublique($dataKey, $clePublique);
 
-                if (ShareCoffre::where('coffre_id', $coffre->id)->where('destinataire_id', $destinataire->id)->exists()) continue;
+                if (ShareCoffre::where('coffre_id', $coffre->id)->where('destinataire_id', $destinataire->id)->exists()) {
+                    continue;
+                }
 
                 $token = bin2hex(random_bytes(32));
                 $tokenHash = hash('sha256', $token);
 
                 InvitationPartage::create([
+                    'family_group_id' => $familyGroup->id,
                     'coffre_id' => $coffre->id,
                     'expediteur_id' => $user->id,
                     'email_destinataire' => $destinataire->email,
@@ -141,7 +151,7 @@ class PartageController extends Controller
                     'element_ids' => $elementIds->all(),
                 ]);
 
-                Mail::to($destinataire->email)->send(new InvitationPartageMail(
+                $delivered = $this->mailDelivery->send($destinataire->email, new InvitationPartageMail(
                     $user,
                     $destinataire->email,
                     $coffre->nom,
@@ -149,20 +159,22 @@ class PartageController extends Controller
                     route('partage.accepter', $token)
                 ));
                 $count++;
+                $sent += (int) $delivered;
             }
 
             sodium_memzero($dataKey);
             ActivityLogService::log('partage_envoye', "Partage groupe famille — coffre : {$coffre->nom} — {$count} membres");
 
             return redirect()->route('partage.index')->with('toast', [
-                'type' => 'success',
-                'titre' => 'Partage envoyé',
-                'message' => "Invitation envoyée à {$count} membre(s) de votre groupe famille.",
+                'type' => $sent === $count ? 'success' : 'warning',
+                'titre' => 'Invitations créées',
+                'message' => "{$count} invitation(s) créée(s), {$sent} email(s) envoyé(s).",
             ]);
         }
 
         if ($request->email === $user->email) {
             sodium_memzero($dataKey);
+
             return back()->withErrors(['email' => 'Vous ne pouvez pas partager avec vous-même.']);
         }
 
@@ -181,6 +193,7 @@ class PartageController extends Controller
 
             if ($partageExistant) {
                 sodium_memzero($dataKey);
+
                 return back()->withErrors(['email' => 'Ce coffre est déjà partagé avec cet utilisateur.']);
             }
         }
@@ -202,7 +215,7 @@ class PartageController extends Controller
             'element_ids' => $elementIds->all(),
         ]);
 
-        Mail::to($request->email)->send(new InvitationPartageMail(
+        $sent = $this->mailDelivery->send($request->email, new InvitationPartageMail(
             $user,
             $request->email,
             $coffre->nom,
@@ -213,9 +226,9 @@ class PartageController extends Controller
         ActivityLogService::log('partage_envoye', "Partage envoyé à {$request->email} — coffre : {$coffre->nom}");
 
         return redirect()->route('partage.index')->with('toast', [
-            'type' => 'success',
-            'titre' => 'Invitation envoyée',
-            'message' => "Un email a été envoyé à {$request->email}.",
+            'type' => $sent ? 'success' : 'warning',
+            'titre' => $sent ? 'Invitation envoyée' : 'Envoi indisponible',
+            'message' => $sent ? "Un email a été envoyé à {$request->email}." : 'L’invitation est créée mais son email n’a pas pu être envoyé. Annulez-la puis renvoyez-la lorsque le service est rétabli.',
         ]);
     }
 
@@ -224,49 +237,12 @@ class PartageController extends Controller
      */
     public function accepter(string $token): RedirectResponse
     {
-        if (!Auth::check()) { session(['url.intended' => route('partage.accepter', $token)]); return redirect()->route('connexion'); }
-        if (!SessionHelper::havecleKek()) { session(['url.intended' => route('partage.accepter', $token)]); return redirect()->route('connexion'); }
-
-        $tokenHash = hash('sha256', $token);
-        $invitation = InvitationPartage::where('token_hash', $tokenHash)->where('statut', 'en_attente')->where('expire_le', '>', now())->firstOrFail();
         $user = auth()->user();
-        $coffre = $invitation->coffre;
-
-        if ($invitation->email_destinataire !== $user->email) {
-            return redirect()->route('dashboard')->with('toast', ['type' => 'error', 'titre' => 'Invitation invalide', 'message' => 'Cette invitation ne vous est pas destinée.']);
+        $share = $this->acceptInvitation->accept($user, $token);
+        $coffre = $share->coffre;
+        if ($share->wasRecentlyCreated && $share->proprietaire) {
+            $this->mailDelivery->send($share->proprietaire->email, new InvitationAccepteeMail($share->proprietaire, $user, $coffre->nom));
         }
-
-        $dataKeyChiffree = $invitation->data_key_encrypted;
-        if (!$dataKeyChiffree) {
-            return redirect()->route('dashboard')->with('toast', ['type' => 'warning', 'titre' => 'Invitation en attente', 'message' => 'Demandez à ' . $invitation->expediteur->name . ' de vous renvoyer une invitation.']);
-        }
-
-        $share = ShareCoffre::firstOrCreate([
-            'coffre_id' => $coffre->id,
-            'destinataire_id' => $user->id,
-        ], [
-            'coffre_id' => $coffre->id,
-            'proprietaire_id' => $invitation->expediteur_id,
-            'destinataire_id' => $user->id,
-            'data_key_destinataire_encrypted' => $dataKeyChiffree,
-            'permission' => $invitation->permission,
-            'expire_le' => $invitation->expire_le,
-            'statut' => 'accepte',
-            'accepte_le' => now(),
-            'element_ids' => $invitation->element_ids,
-        ]);
-
-        if (!$share->wasRecentlyCreated) {
-            return redirect()->route('dashboard')->with('toast', [
-                'type' => 'info', 'titre' => 'Invitation déjà traitée', 'message' => 'Cet accès existe déjà pour votre compte.',
-            ]);
-        }
-
-        $invitation->update(['statut' => 'acceptee', 'traitee_le' => now()]);
-
-        $proprietaire = User::find($invitation->expediteur_id);
-        if ($proprietaire) Mail::to($proprietaire->email)->send(new InvitationAccepteeMail($proprietaire, auth()->user(), $coffre->nom));
-
         ActivityLogService::log('partage_accepte', "Partage accepté — coffre : {$coffre->nom}");
 
         return redirect()->route('dashboard')->with('toast', [

@@ -1,0 +1,101 @@
+✔ generator: password respects length and digits-only options (4975.125208ms)
+✔ generator: ambiguous characters are excluded (627.91375ms)
+✔ generator: disabling all character sets produces an empty result (329.245917ms)
+✔ generator: passphrase respects word count and separator (594.958917ms)
+✖ generator: displayed passphrase entropy matches the real dictionary (240.992875ms)
+✖ generator: digit entropy accounts for excluded ambiguous digits (134.269708ms)
+✔ create form: favicon stays on the local proxy and encodes domain (140.911166ms)
+✔ create form: empty label and URL reset favicon (137.649625ms)
+✔ create form: generated password is placed into the visible state (131.424167ms)
+✔ edit form: password generation updates the submitted input (141.429167ms)
+✔ dashboard: favorites filter excludes non-favorites (144.195417ms)
+✔ dashboard: search finds a matching normalized name or URL (155.825125ms)
+✖ dashboard: failed favorite request does not report success (162.355625ms)
+✔ toast: user HTML is rendered as text and cannot execute (267.238042ms)
+✔ sharing dialog: recipient name cannot inject HTML (142.723833ms)
+✔ dashboard deletion dialog: cancel leaves the form unsubmitted (209.5385ms)
+✖ clipboard: delayed clearing preserves newer user content (152.746958ms)
+✔ settings: TOTP QR is drawn locally without contacting an external service (277.487459ms)
+✔ passkey frontend: assertion binary buffers are serialized to base64url (139.220375ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 15
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9510.66625
+
+✖ failing tests:
+
+test at tests/Browser/frontend.test.mjs:72:1
+✖ generator: displayed passphrase entropy matches the real dictionary (240.992875ms)
+  AssertionError [ERR_ASSERTION]: {"dictionarySize":100,"displayed":65,"expected":33}
+  
+  65 !== 33
+  
+      at TestContext.<anonymous> (file:///Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Browser/frontend.test.mjs:84:12)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 65,
+    expected: 33,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/Browser/frontend.test.mjs:87:1
+✖ generator: digit entropy accounts for excluded ambiguous digits (134.269708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  66 !== 60
+  
+      at TestContext.<anonymous> (file:///Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Browser/frontend.test.mjs:93:12)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 66,
+    expected: 60,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/Browser/frontend.test.mjs:138:1
+✖ dashboard: failed favorite request does not report success (162.355625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'Retiré des favoris'
+  - 'Erreur'
+  
+      at TestContext.<anonymous> (file:///Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Browser/frontend.test.mjs:146:12)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Retiré des favoris',
+    expected: 'Erreur',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/Browser/frontend.test.mjs:180:1
+✖ clipboard: delayed clearing preserves newer user content (152.746958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + ''
+  - 'new-user-content'
+  
+      at TestContext.<anonymous> (file:///Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Browser/frontend.test.mjs:193:12)
+      at async Test.run (node:internal/test_runner/test:1208:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:831:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: 'new-user-content',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

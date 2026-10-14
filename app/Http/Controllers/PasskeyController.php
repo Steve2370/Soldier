@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\SessionHelper;
 use App\Models\Passkey;
 use App\Services\Auth\PasskeyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Random\RandomException;
@@ -33,6 +34,7 @@ class PasskeyController extends Controller
         $options = $this->passkeyService->optionsInscription(auth()->user());
 
         session(['passkey_challenge' => $options['challenge']]);
+        session(['passkey_challenge_expires' => now()->addMinute()->timestamp, 'passkey_challenge_user' => auth()->id()]);
 
         return response($options['json'], 200)->header('Content-Type', 'application/json');
     }
@@ -45,9 +47,11 @@ class PasskeyController extends Controller
         ]);
 
         $user = auth()->user();
-        $challenge = session('passkey_challenge');
+        $challenge = session()->pull('passkey_challenge');
+        $expires = session()->pull('passkey_challenge_expires', 0);
+        $challengeUser = session()->pull('passkey_challenge_user');
 
-        if (!$challenge) {
+        if (! $challenge || $expires <= now()->timestamp || $challengeUser !== $user->id) {
             return response()->json(['error' => 'Challenge expiré.'], 422);
         }
 
@@ -99,6 +103,7 @@ class PasskeyController extends Controller
         $options = $this->passkeyService->optionsConnexion();
 
         session()->put('passkey_challenge_auth', $options['challenge']);
+        session()->put('passkey_challenge_auth_expires', now()->addMinute()->timestamp);
         session()->save();
 
         return response($options['json'], 200)->header('Content-Type', 'application/json');
@@ -107,20 +112,21 @@ class PasskeyController extends Controller
     public function connecter(Request $request): JsonResponse
     {
         session()->start();
-        $challenge = session('passkey_challenge_auth');
+        $challenge = session()->pull('passkey_challenge_auth');
+        $expires = session()->pull('passkey_challenge_auth_expires', 0);
 
         $request->validate([
             'credential' => ['required', 'array'],
         ]);
 
-        if (!$challenge) {
+        if (! $challenge || $expires <= now()->timestamp) {
             return response()->json(['error' => 'Challenge expiré.'], 422);
         }
 
         $credentialId = $request->input('credential.id');
         $passkey = Passkey::where('credential_id', $credentialId)->first();
 
-        if (!$passkey) {
+        if (! $passkey) {
             return response()->json(['error' => 'Passkey non reconnu.'], 422);
         }
 
@@ -143,6 +149,11 @@ class PasskeyController extends Controller
 
             $user = $passkey->user;
 
+            if (! $user) {
+                return response()->json(['error' => 'Compte indisponible.'], 422);
+            }
+            SessionHelper::effacerCles();
+            session()->forget('oauth_new_user');
             Auth::login($user);
             session()->regenerate();
             session(['oauth_login' => true, 'passkey_login' => true]);
@@ -187,15 +198,34 @@ class PasskeyController extends Controller
     {
         $ua = $request->userAgent() ?? '';
 
-        if (str_contains($ua, 'iPhone')) return 'iPhone';
-        if (str_contains($ua, 'iPad')) return 'iPad';
-        if (str_contains($ua, 'Android')) return 'Android';
-        if (str_contains($ua, 'Windows Phone')) return 'Windows Phone';
-        if (str_contains($ua, 'BlackBerry')) return 'BlackBerry';
-        if (str_contains($ua, 'Windows')) return 'Windows';
-        if (str_contains($ua, 'Macintosh')) return 'Mac';
-        if (str_contains($ua, 'Linux')) return 'Linux';
-        if (str_contains($ua, 'CrOS')) return 'Chrome OS';
+        if (str_contains($ua, 'iPhone')) {
+            return 'iPhone';
+        }
+        if (str_contains($ua, 'iPad')) {
+            return 'iPad';
+        }
+        if (str_contains($ua, 'Android')) {
+            return 'Android';
+        }
+        if (str_contains($ua, 'Windows Phone')) {
+            return 'Windows Phone';
+        }
+        if (str_contains($ua, 'BlackBerry')) {
+            return 'BlackBerry';
+        }
+        if (str_contains($ua, 'Windows')) {
+            return 'Windows';
+        }
+        if (str_contains($ua, 'Macintosh')) {
+            return 'Mac';
+        }
+        if (str_contains($ua, 'Linux')) {
+            return 'Linux';
+        }
+        if (str_contains($ua, 'CrOS')) {
+            return 'Chrome OS';
+        }
+
         return 'Appareil inconnu';
     }
 }

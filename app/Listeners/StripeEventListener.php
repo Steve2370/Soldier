@@ -4,11 +4,14 @@ namespace App\Listeners;
 
 use App\Models\FamilyGroup;
 use App\Models\User;
+use App\Services\Famille\FamilyAccessRevocationService;
 use App\Services\Logs\ActivityLogService;
 use Laravel\Cashier\Events\WebhookReceived;
 
 class StripeEventListener
 {
+    public function __construct(private readonly FamilyAccessRevocationService $revocation) {}
+
     public function handle(WebhookReceived $event): void
     {
         $payload = $event->payload;
@@ -24,10 +27,14 @@ class StripeEventListener
     private function abonnementAnnule(array $payload): void
     {
         $stripeCustomerId = $payload['data']['object']['customer'] ?? null;
-        if (!$stripeCustomerId) return;
+        if (! $stripeCustomerId) {
+            return;
+        }
 
         $user = User::where('stripe_id', $stripeCustomerId)->first();
-        if (!$user) return;
+        if (! $user) {
+            return;
+        }
 
         $this->retirerMembresGroupe($user, 'annulation');
     }
@@ -36,11 +43,15 @@ class StripeEventListener
     {
         $stripeCustomerId = $payload['data']['object']['customer'] ?? null;
         $status = $payload['data']['object']['status'] ?? null;
-        if (!$stripeCustomerId) return;
+        if (! $stripeCustomerId) {
+            return;
+        }
 
         if (in_array($status, ['canceled', 'unpaid', 'past_due', 'incomplete_expired'])) {
             $user = User::where('stripe_id', $stripeCustomerId)->first();
-            if (!$user) return;
+            if (! $user) {
+                return;
+            }
             $this->retirerMembresGroupe($user, $status);
         }
     }
@@ -48,11 +59,11 @@ class StripeEventListener
     private function retirerMembresGroupe(User $user, string $raison): void
     {
         $group = FamilyGroup::where('owner_id', $user->id)->first();
-        if (!$group) return;
+        if (! $group) {
+            return;
+        }
 
-        $count = $group->members()->where('role', 'member')->count();
-
-        $group->members()->where('role', 'member')->delete();
+        $count = $this->revocation->removeAll($group);
 
         ActivityLogService::log(
             'famille_abonnement_expire',

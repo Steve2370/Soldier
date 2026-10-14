@@ -18,6 +18,8 @@ class Mfa extends Model
         'tentatives',
         'totp_secret_chiffre',
         'codes_recuperation',
+        'last_totp_step',
+        'active_le',
     ];
 
     protected $hidden = [
@@ -31,6 +33,7 @@ class Mfa extends Model
         'code_expire_le' => 'datetime',
         'tentatives' => 'integer',
         'codes_recuperation' => 'array',
+        'last_totp_step' => 'integer',
     ];
 
     public function user(): BelongsTo

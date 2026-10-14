@@ -2,16 +2,19 @@
 
 namespace App\Services\Crypto;
 
-use App\Services\Crypto\Contracts\EncryptionServiceInterface;
 use App\Exceptions\DecryptionException;
+use App\Services\Crypto\Contracts\EncryptionServiceInterface;
 use Random\RandomException;
 use RuntimeException;
 
 class AesEncryptionService implements EncryptionServiceInterface
 {
-    private const string CIPHER    = 'aes-256-gcm';
-    private const int IV_BYTES  = 12;
+    private const string CIPHER = 'aes-256-gcm';
+
+    private const int IV_BYTES = 12;
+
     private const int TAG_BYTES = 16;
+
     private const int CLE_BYTES = 32;
 
     /**
@@ -21,7 +24,7 @@ class AesEncryptionService implements EncryptionServiceInterface
     {
         $this->validerCle($key);
 
-        $iv  = random_bytes(self::IV_BYTES);
+        $iv = random_bytes(self::IV_BYTES);
         $tag = '';
 
         $ciphertext = openssl_encrypt(
@@ -36,7 +39,7 @@ class AesEncryptionService implements EncryptionServiceInterface
         );
 
         if ($ciphertext === false) {
-            throw new RuntimeException('Échec du chiffrement AES-GCM : ' . openssl_error_string());
+            throw new RuntimeException('Échec du chiffrement AES-GCM : '.openssl_error_string());
         }
 
         return [
@@ -59,7 +62,7 @@ class AesEncryptionService implements EncryptionServiceInterface
         $tagBinaire = $this->decoderBase64($tag, 'tag');
 
         if (strlen($ivBinaire) !== self::IV_BYTES || strlen($tagBinaire) !== self::TAG_BYTES) {
-            throw new DecryptionException();
+            throw new DecryptionException;
         }
 
         $plaintext = openssl_decrypt(
@@ -72,7 +75,7 @@ class AesEncryptionService implements EncryptionServiceInterface
         );
 
         if ($plaintext === false) {
-            throw new DecryptionException();
+            throw new DecryptionException;
         }
 
         return $plaintext;
@@ -103,8 +106,8 @@ class AesEncryptionService implements EncryptionServiceInterface
     {
         $decode = base64_decode($valeur, true);
 
-        if ($decode === false || ($champ === 'ciphertext' && $decode === '')) {
-            throw new DecryptionException();
+        if ($decode === false) {
+            throw new DecryptionException;
         }
 
         return $decode;

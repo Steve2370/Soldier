@@ -33,19 +33,20 @@
                             Code de vérification
                         </label>
 
-                        {{-- Input code 6 chiffres --}}
+                        {{-- A six-digit challenge or a single-use recovery code. --}}
                         <input
                             type="text"
                             name="code"
                             id="mfa_code"
                             class="input @error('code') input-error @enderror"
-                            maxlength="6"
+                            maxlength="14"
                             placeholder="000000"
                             autocomplete="one-time-code"
                             autofocus
-                            style="text-align: center; font-size: 2rem; font-weight: 700; letter-spacing: 0.5em; padding: 16px; font-family: 'Courier New', monospace;"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,6)"
+                            style="text-align: center; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.12em; padding: 16px; font-family: 'Courier New', monospace;"
+                            oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0,14)"
                         >
+                        <p style="font-size: .8rem; color: var(--text-muted);">Vous pouvez aussi utiliser un code de récupération.</p>
                         @error('code')
                         <p class="error-msg" style="justify-content: center;">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -66,7 +67,7 @@
                     @if(session('auth.mfa_type') !== 'totp')
                         <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
                             Vous n'avez pas reçu le code ?
-                            <a href="{{ route('mfa.verify') }}" style="color: var(--accent-bright); text-decoration: none; font-weight: 600;">Renvoyer →</a>
+                            <button type="submit" form="mfa-resend" style="color: var(--accent-bright); background: none; border: 0; cursor: pointer;">Renvoyer →</button>
                         </p>
                     @endif
 
@@ -76,6 +77,7 @@
                         </a>
                     </p>
                 </form>
+                <form id="mfa-resend" method="POST" action="{{ route('mfa.resend') }}">@csrf</form>
             </div>
 
             <p style="text-align: center; margin-top: 20px; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;">

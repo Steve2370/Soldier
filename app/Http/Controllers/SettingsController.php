@@ -12,11 +12,12 @@ use App\Services\Auth\MfaService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Crypto\Contracts\EncryptionServiceInterface;
 use App\Services\Logs\ActivityLogService;
+use App\Services\Notifications\Contracts\MailDeliveryInterface;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use PragmaRX\Google2FA\Google2FA;
 use Random\RandomException;
@@ -28,6 +29,7 @@ class SettingsController extends Controller
         private readonly MfaService $mfaService,
         private readonly EncryptionServiceInterface $encryption,
         private readonly Google2FA $totp,
+        private readonly MailDeliveryInterface $mailDelivery,
     ) {}
 
     public function index(): View
@@ -37,7 +39,7 @@ class SettingsController extends Controller
         $mfaTotp = $user->mfa()->where('type', 'totp')->first();
         $passkeys = auth()->user()->passkeys()->latest()->get();
 
-        return view('settings.index', compact('user','mfaEmail', 'mfaTotp', 'passkeys'));
+        return view('settings.index', compact('user', 'mfaEmail', 'mfaTotp', 'passkeys'));
     }
 
     /**
@@ -52,7 +54,14 @@ class SettingsController extends Controller
             ['actif' => true, 'active_le' => now()]
         );
 
-        $this->mfaService->envoyerCodeEmail($user);
+        try {
+            $this->mfaService->envoyerCodeEmail($user);
+        } catch (\Throwable $exception) {
+            return redirect()->route('settings')->with('toast', [
+                'type' => 'warning', 'titre' => 'MFA activé',
+                'message' => 'La protection est activée, mais le courriel de test n’a pas pu être envoyé.',
+            ]);
+        }
 
         return redirect()->route('settings')
             ->with('toast', [
@@ -79,7 +88,8 @@ class SettingsController extends Controller
         sodium_memzero($cles['cle_privee']);
 
         $user->mfa()->where('type', 'email')->update(['actif' => false]);
-        Mail::to($user->email)->send(new TotpDesactiveMail($user));
+        $this->mailDelivery->send($user->email, new TotpDesactiveMail($user));
+
         return redirect()->route('settings')
             ->with('toast', [
                 'type' => 'warning',
@@ -116,17 +126,17 @@ class SettingsController extends Controller
         $user = auth()->user();
         $secret = session('totp_secret_pending');
 
-        if (!$secret) {
+        if (! $secret) {
             return back()->withErrors(['code' => 'Session expirée. Recommencez.']);
         }
 
         try {
-            $valide = $this->totp->verifyKey($secret, $request->input('code'), 1);
+            $valide = $this->totp->verifyKeyNewer($secret, $request->input('code'), 0, 1);
         } catch (\Exception $e) {
             $valide = false;
         }
 
-        if (!$valide) {
+        if (! $valide) {
             return back()->withErrors(['code' => 'Code incorrect. Vérifiez votre application authenticator.']);
         }
 
@@ -139,10 +149,11 @@ class SettingsController extends Controller
             [
                 'actif' => true,
                 'totp_secret_chiffre' => json_encode($secretChiffre),
+                'last_totp_step' => $valide,
                 'active_le' => now(),
             ]);
         sodium_memzero($secret);
-        Mail::to($user->email)->send(new TotpActiveMail($user));
+        $this->mailDelivery->send($user->email, new TotpActiveMail($user));
         session()->forget('totp_secret_pending');
         $codes = $this->mfaService->genererCodesRecuperation($user);
         session(['codes_recuperation_afficher' => $codes]);
@@ -197,20 +208,21 @@ class SettingsController extends Controller
 
         $user = auth()->user();
 
-        if (!Hash::check($request->mot_de_passe_actuel, $user->password)) {
+        if (! Hash::check($request->mot_de_passe_actuel, $user->password)) {
             return back()->withErrors(['mot_de_passe_actuel' => 'Le mot de passe actuel est incorrect.'])
                 ->with('tab', 'compte');
         }
 
         $user->update(['password' => Hash::make($request->nouveau_mot_de_passe)]);
-        Mail::to($user->email)->send(new MotDePasseChangeMail(
+        $this->mailDelivery->send($user->email, new MotDePasseChangeMail(
             $user,
             $request->ip(),
             $request->userAgent()
         ));
+
         return redirect()->route('settings')
             ->with('toast', [
-               'type' => 'success',
+                'type' => 'success',
                 'titre' => 'Mot de passe modifié',
                 'message' => 'Votre mot de passe de connexion a été mis à jour.',
             ]);
@@ -254,11 +266,11 @@ class SettingsController extends Controller
         sodium_memzero($cles['cle_privee']);
 
         $user->mfa()->where('type', 'totp')->update(['actif' => false]);
-        Mail::to($user->email)->send(new TotpDesactiveMail($user));
+        $this->mailDelivery->send($user->email, new TotpDesactiveMail($user));
 
         return redirect()->route('settings')->with('toast', [
-           'type' => 'warning',
-           'titre' => 'TOTP désactivé',
+            'type' => 'warning',
+            'titre' => 'TOTP désactivé',
             'message' => 'L\'authentification par Authenticator a été désactivée.',
         ]);
     }
@@ -303,7 +315,7 @@ class SettingsController extends Controller
 
         $user = auth()->user();
 
-        if (!Hash::check($request->password_confirmation, $user->password)) {
+        if (! Hash::check($request->password_confirmation, $user->password)) {
             return back()->withErrors(['password_confirmation' => 'Mot de passe incorrect.']);
         }
 
@@ -339,13 +351,14 @@ class SettingsController extends Controller
             ->get()
             ->map(function ($session) use ($currentSessionId) {
                 $ua = $session->user_agent ?? '';
+
                 return [
                     'id' => $session->id,
                     'ip' => $session->ip_address,
                     'agent' => $ua,
                     'device' => $this->detectDevice($ua),
                     'browser' => $this->detectBrowser($ua),
-                    'last_active' => \Carbon\Carbon::createFromTimestamp($session->last_activity)->diffForHumans(),
+                    'last_active' => Carbon::createFromTimestamp($session->last_activity)->diffForHumans(),
                     'is_current' => $session->id === $currentSessionId,
                 ];
             });
@@ -380,18 +393,34 @@ class SettingsController extends Controller
 
     private function detectDevice(string $ua): string
     {
-        if (str_contains($ua, 'iPhone') || (str_contains($ua, 'Android') && str_contains($ua, 'Mobile'))) return 'Mobile';
-        if (str_contains($ua, 'iPad') || str_contains($ua, 'Android')) return 'Tablette';
+        if (str_contains($ua, 'iPhone') || (str_contains($ua, 'Android') && str_contains($ua, 'Mobile'))) {
+            return 'Mobile';
+        }
+        if (str_contains($ua, 'iPad') || str_contains($ua, 'Android')) {
+            return 'Tablette';
+        }
+
         return 'Ordinateur';
     }
 
     private function detectBrowser(string $ua): string
     {
-        if (str_contains($ua, 'Edg')) return 'Edge';
-        if (str_contains($ua, 'Chrome')) return 'Chrome';
-        if (str_contains($ua, 'Firefox')) return 'Firefox';
-        if (str_contains($ua, 'Safari')) return 'Safari';
-        if (str_contains($ua, 'Opera')) return 'Opera';
+        if (str_contains($ua, 'Edg')) {
+            return 'Edge';
+        }
+        if (str_contains($ua, 'Chrome')) {
+            return 'Chrome';
+        }
+        if (str_contains($ua, 'Firefox')) {
+            return 'Firefox';
+        }
+        if (str_contains($ua, 'Safari')) {
+            return 'Safari';
+        }
+        if (str_contains($ua, 'Opera')) {
+            return 'Opera';
+        }
+
         return 'Navigateur inconnu';
     }
 }

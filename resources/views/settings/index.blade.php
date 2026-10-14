@@ -361,7 +361,7 @@
                         <label>Nouveau mot de passe</label>
                         <div style="position: relative;">
                             <input :type="s2 ? 'text' : 'password'" name="nouveau_mot_de_passe"
-                                   class="input" x-model="nouveauMdp" placeholder="••••••••" autocomplete="new-password" style="padding-right: 44px;">
+                                   class="input" placeholder="••••••••" autocomplete="new-password" style="padding-right: 44px;">
                             <button type="button" @click="s2=!s2" class="eye-btn">...</button>
                         </div>
                     </div>

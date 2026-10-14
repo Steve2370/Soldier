@@ -1,15 +1,16 @@
 import { showToast } from '../toast'
+import { copySecret } from '../security/clipboard'
 
 export function afficherService() {
     return {
         showMdp: false as boolean,
+        showModal: false,
 
         async copier(texte: string, label: string): Promise<void> {
             if (!texte) return
             try {
-                await navigator.clipboard.writeText(texte)
-                showToast('success', `${label} copié`, 'Effacé du presse-papier dans 30 secondes.')
-                setTimeout(() => navigator.clipboard.writeText(''), 30000)
+                await copySecret(texte)
+                showToast('success', `${label} copié`, 'Effacement tenté après 30 s si le navigateur le permet et si le contenu est inchangé.')
             } catch {
                 showToast('error', 'Erreur', "Impossible d'accéder au presse-papier.")
             }

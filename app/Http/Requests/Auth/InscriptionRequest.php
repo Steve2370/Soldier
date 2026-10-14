@@ -3,9 +3,17 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 
 class InscriptionRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (is_string($this->input('email'))) {
+            $this->merge(['email' => mb_strtolower(trim($this->input('email')))]);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -15,7 +23,11 @@ class InscriptionRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2', 'max:100'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'email' => ['required', 'email', 'max:255', function ($attribute, $value, $fail) {
+                if (DB::table('users')->whereRaw('LOWER(email) = ?', [$value])->exists()) {
+                    $fail('Cette adresse email est déjà utilisée.');
+                }
+            }],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'master_password' => ['required', 'string', 'min:8'],
         ];

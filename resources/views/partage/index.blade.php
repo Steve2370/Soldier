@@ -233,7 +233,7 @@
                         <span class="badge {{ $share->permission === 'ecriture' ? 'badge-warning' : 'badge-info' }}">
                     {{ ucfirst($share->permission) }}
                 </span>
-                        <form method="POST" action="{{ route('partage.revoquer', $share->id) }}" @submit.prevent='confirmerRevocation($event, @js($share->destinataire->name))'>
+                        <form method="POST" action="{{ route('partage.revoquer', $share->id) }}" @submit.prevent="confirmerRevocation($event, @js($share->destinataire->name))">
                             @csrf @method('DELETE')
                             <button type="submit" class="btn-danger" style="padding: 6px 12px; font-size: 0.78rem;">Révoquer</button>
                         </form>
@@ -270,19 +270,6 @@
                     <p style="color: var(--text-muted); font-size: 0.875rem;">Personne n'a partagé de coffre avec vous.</p>
                 </div>
             @endforelse
-        </div>
-
-        <div x-show="showModal" x-transition style="position: fixed; inset: 0; background: rgba(1,15,26,0.85); z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);" @click.self="showModal = false">
-            <div class="card" style="max-width: 380px; width: calc(100% - 40px); border-color: rgba(239,68,68,0.3);">
-                <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Révoquer l'accès</h3>
-                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 20px; line-height: 1.5;">
-                    <strong style="color: var(--text-primary);" x-text="nomARevoquer"></strong> n'aura plus accès à ce coffre immédiatement.
-                </p>
-                <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                    <button @click="showModal = false" class="btn-secondary">Annuler</button>
-                    <button @click="executerRevocation()" class="btn-danger">Révoquer</button>
-                </div>
-            </div>
         </div>
 
     </div>

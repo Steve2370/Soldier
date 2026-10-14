@@ -1,0 +1,34 @@
+✔ real registration, email verification and every vault form type (7492.240541ms)
+✔ real generator, settings and trash pages render without script errors (1441.043791ms)
+✔ real WebAuthn registration, logout, assertion and vault unlock (2114.802917ms)
+✔ mobile navigation opens, closes and reaches the vault (1002.773792ms)
+✔ generator: password respects length and digits-only options (1282.882417ms)
+✔ generator: ambiguous characters are excluded (303.509416ms)
+✔ generator: disabling all character sets produces an empty result (155.0365ms)
+✔ generator: passphrase respects word count and separator (139.22575ms)
+✔ generator: displayed passphrase entropy matches the real dictionary (138.620625ms)
+✔ generator: digit entropy accounts for excluded ambiguous digits (133.897333ms)
+✔ create form: favicon stays on the local proxy and encodes domain (132.116542ms)
+✔ create form: empty label and URL reset favicon (131.371833ms)
+✔ create form: generated password is placed into the visible state (131.416208ms)
+✔ edit form: password generation updates the submitted input (147.984375ms)
+✔ dashboard: favorites filter excludes non-favorites (132.863166ms)
+✔ dashboard: search finds a matching normalized name or URL (147.883291ms)
+✔ dashboard: failed favorite request does not report success (168.987333ms)
+✔ toast: user HTML is rendered as text and cannot execute (134.323333ms)
+✔ sharing dialog: recipient name cannot inject HTML (258.42225ms)
+✔ dashboard deletion dialog: cancel leaves the form unsubmitted (209.74075ms)
+✔ clipboard: delayed clearing preserves newer user content (174.852583ms)
+✔ settings: TOTP QR is drawn locally without contacting an external service (153.557833ms)
+✔ uniform random indices reject the biased tail instead of reducing it modulo the alphabet (121.996584ms)
+✔ clipboard: unchanged copied secret is cleared when the browser permits reading (137.314833ms)
+✔ clipboard: denied read permission never destroys unknown clipboard content (170.855375ms)
+✔ passkey frontend: assertion binary buffers are serialized to base64url (173.604875ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12393.04125

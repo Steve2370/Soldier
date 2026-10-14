@@ -46,7 +46,7 @@ class DashboardController extends Controller
 
         $coffres = $user->coffres()
             ->withCount('elements')
-            ->when($familyCoffreId, fn($q) => $q->where('id', '!=', $familyCoffreId))
+            ->when($familyCoffreId, fn ($q) => $q->where('id', '!=', $familyCoffreId))
             ->get();
 
         $services = $coffres->map(function (Coffre $coffre) use ($kek, $user) {
@@ -54,30 +54,33 @@ class DashboardController extends Controller
                 $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($coffre->data_key_encrypted, $kek);
                 $elements = $this->coffreService->listerElements($coffre, $dataKey);
                 sodium_memzero($dataKey);
+
                 return ['coffre' => $coffre, 'elements' => $elements, 'partage' => false];
             } catch (\Exception $e) {
                 \Log::warning('Échec déchiffrement coffre personnel — possible manipulation de données', [
                     'user_id' => $user->id, 'coffre_id' => $coffre->id, 'exception' => $e->getMessage(),
                 ]);
                 session()->flash('security_alert', true);
+
                 return null;
             }
         })->filter();
 
         $partages = $user->sharesRecus()
             ->actifs()
-            ->when(!empty($familyCoffreIdsRecus), fn($q) => $q->whereNotIn('coffre_id', $familyCoffreIdsRecus))
-            ->when($familyCoffreId, fn($q) => $q->where('coffre_id', '!=', $familyCoffreId))
+            ->when(! empty($familyCoffreIdsRecus), fn ($q) => $q->whereNotIn('coffre_id', $familyCoffreIdsRecus))
+            ->when($familyCoffreId, fn ($q) => $q->where('coffre_id', '!=', $familyCoffreId))
             ->with('coffre')
             ->get();
 
-        $servicesPartages = $partages->map(function ($share) use ($kek, $user) {
+        $servicesPartages = $partages->map(function ($share) use ($user) {
             try {
                 $clePrivee = SessionHelper::obtenirClePrivee();
                 $dataKey = $this->asymmetric->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
                 $elementIds = $share->element_ids;
                 $elements = $this->coffreService->listerElements($share->coffre, $dataKey, $elementIds);
                 sodium_memzero($dataKey);
+
                 return [
                     'coffre' => $share->coffre,
                     'elements' => $elements,
@@ -90,6 +93,7 @@ class DashboardController extends Controller
                     'user_id' => $user->id, 'share_id' => $share->id ?? null, 'exception' => $e->getMessage(),
                 ]);
                 session()->flash('security_alert', true);
+
                 return null;
             }
         })->filter();
@@ -105,6 +109,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $familyCoffreId = FamilyGroup::where('owner_id', $user->id)->value('coffre_id');
         $coffres = $user->coffres()->get(['id', 'nom']);
+
         return view('dashboard.creer', compact('coffres', 'familyCoffreId'));
     }
 
@@ -122,7 +127,7 @@ class DashboardController extends Controller
             $coffre = $user->coffres()->findOrFail($request->coffre_id);
         } else {
             $coffre = $user->coffres()
-                ->when($familyCoffreId, fn($q) => $q->where('id', '!=', $familyCoffreId))
+                ->when($familyCoffreId, fn ($q) => $q->where('id', '!=', $familyCoffreId))
                 ->first()
                 ?? $this->coffreService->creerCoffre($user, ['nom' => 'Mon coffre', 'couleur' => '#03A63C'], $kek);
         }
@@ -135,7 +140,7 @@ class DashboardController extends Controller
         sodium_memzero($dataKey);
         sodium_memzero($kek);
 
-        ActivityLogService::log('service_cree', 'Service créé : ' . $request->validated('label'));
+        ActivityLogService::log('service_cree', 'Service créé : '.$request->validated('label'));
 
         if ($familyCoffreId && $coffre->id == $familyCoffreId) {
             return redirect()->route('famille.index')->with('toast', [
@@ -158,6 +163,7 @@ class DashboardController extends Controller
         $dataKey = $this->obtenirDataKey($element, $user);
         $donnees = $this->coffreService->lireElement($element, $dataKey);
         sodium_memzero($dataKey);
+
         return view('dashboard.afficher', compact('element', 'donnees'));
     }
 
@@ -171,6 +177,7 @@ class DashboardController extends Controller
         $dataKey = $this->obtenirDataKey($element, $user);
         $donnees = $this->coffreService->lireElement($element, $dataKey);
         sodium_memzero($dataKey);
+
         return view('dashboard.modifier', compact('element', 'donnees'));
     }
 
@@ -187,7 +194,7 @@ class DashboardController extends Controller
         $this->coffreService->mettreAJourElement($element, array_merge($request->validated(), ['favicon_url' => $faviconUrl]), $dataKey);
         sodium_memzero($dataKey);
 
-        ActivityLogService::log('service_modifie', 'Service modifié : ' . $request->validated('label'));
+        ActivityLogService::log('service_modifie', 'Service modifié : '.$request->validated('label'));
 
         return redirect()->route('dashboard')->with('toast', [
             'type' => 'success', 'titre' => 'Service mis à jour', 'message' => "« {$request->validated('label')} » a été modifié.",
@@ -198,9 +205,9 @@ class DashboardController extends Controller
     {
         $this->verifierAcces($element, true);
         $label = $element->label;
-        $this->coffreService->supprimerDefinitivement($element);
+        $this->coffreService->supprimerElement($element);
 
-        ActivityLogService::log('service_supprime', 'Service supprimé : ' . $label);
+        ActivityLogService::log('service_supprime', 'Service supprimé : '.$label);
 
         return redirect()->route('dashboard')->with('toast', [
             'type' => 'warning', 'titre' => 'Service supprimé', 'message' => "« {$label} » a été supprimé.",
@@ -211,6 +218,7 @@ class DashboardController extends Controller
     {
         $this->verifierAcces($element, true);
         $favori = $this->coffreService->toggleFavori($element);
+
         return response()->json(['favori' => $favori]);
     }
 
@@ -220,13 +228,16 @@ class DashboardController extends Controller
             $kek = SessionHelper::obtenirKek();
             $dataKey = $this->cleManagement->dechiffrerDataKeyCoffre($element->coffre->data_key_encrypted, $kek);
             sodium_memzero($kek);
+
             return $dataKey;
         }
         $share = ShareCoffre::where('coffre_id', $element->coffre->id)
             ->where('destinataire_id', $user->id)
             ->actifs()
+            ->pourElement($element->id)
             ->firstOrFail();
         $clePrivee = SessionHelper::obtenirClePrivee();
+
         return $this->asymmetric->decrypterAvecClePrivee($share->data_key_destinataire_encrypted, $clePrivee);
     }
 

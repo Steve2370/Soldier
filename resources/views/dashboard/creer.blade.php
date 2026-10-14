@@ -2,7 +2,7 @@
 @section('title', 'Nouveau service')
 
 @section('content')
-    <div style="max-width: 680px;" x-data="creerService()">
+    <div style="max-width: 680px;" x-data="creerService(@js(['type' => old('type', 'login'), 'label' => old('label', ''), 'url' => old('url', '')]))">
 
         <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
             <a href="{{ route('dashboard') }}" class="btn-secondary" style="padding: 9px 12px; flex-shrink: 0;">
@@ -111,7 +111,7 @@
                     @error('label')<p class="error-msg" style="margin-top: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p>@enderror
                 </div>
 
-                <div x-show="type === 'login'" x-transition>
+                <fieldset x-show="type === 'login'" :disabled="type !== 'login'" x-transition style="border:0; padding:0; margin:0; min-width:0;">
                     <div style="margin-bottom: 18px;">
                         <label>URL du service</label>
                         <div style="position: relative;">
@@ -152,9 +152,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </fieldset>
 
-                <div x-show="type === 'carte'" x-transition>
+                <fieldset x-show="type === 'carte'" :disabled="type !== 'carte'" x-transition style="border:0; padding:0; margin:0; min-width:0;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
                         <div>
                             <label>Numéro de carte</label>
@@ -177,16 +177,16 @@
                         <label>Code PIN</label>
                         <input type="text" name="code_pin" class="input" value="{{ old('code_pin') }}" placeholder="••••">
                     </div>
-                </div>
+                </fieldset>
 
-                <div x-show="type === 'note'" x-transition>
+                <fieldset x-show="type === 'note'" :disabled="type !== 'note'" x-transition style="border:0; padding:0; margin:0; min-width:0;">
                     <div style="margin-bottom: 18px;">
                         <label>Contenu <span style="color: var(--danger);">*</span></label>
                         <textarea name="contenu" class="input" rows="6" placeholder="Votre note sécurisée..." style="resize: vertical; line-height: 1.6;">{{ old('contenu') }}</textarea>
                     </div>
-                </div>
+                </fieldset>
 
-                <div x-show="type === 'identite'" x-transition>
+                <fieldset x-show="type === 'identite'" :disabled="type !== 'identite'" x-transition style="border:0; padding:0; margin:0; min-width:0;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
                         <div>
                             <label>Prénom</label>
@@ -215,9 +215,9 @@
                         <label>Adresse</label>
                         <textarea name="adresse" class="input" rows="2" placeholder="123 rue Principale, Montréal, QC" style="resize: vertical;">{{ old('adresse') }}</textarea>
                     </div>
-                </div>
+                </fieldset>
 
-                <div x-show="type === 'cles'" x-transition>
+                <fieldset x-show="type === 'cles'" :disabled="type !== 'cles'" x-transition style="border:0; padding:0; margin:0; min-width:0;">
                     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 18px;">
                         <div>
                             <label>Serveur</label>
@@ -246,14 +246,14 @@
                             </button>
                         </div>
                     </div>
-                </div>
+                </fieldset>
 
-                <div x-show="type === 'autre'" x-transition>
+                <fieldset x-show="type === 'autre'" :disabled="type !== 'autre'" x-transition style="border:0; padding:0; margin:0; min-width:0;">
                     <div style="margin-bottom: 18px;">
                         <label>Contenu</label>
                         <textarea name="contenu" class="input" rows="4" placeholder="Valeur, token, données diverses..." style="resize: vertical; line-height: 1.6;">{{ old('contenu') }}</textarea>
                     </div>
-                </div>
+                </fieldset>
 
                 <div x-show="type !== 'note'" style="margin-bottom: 24px;">
                     <label>Notes</label>
@@ -299,81 +299,5 @@
         .type-btn-active svg { stroke: var(--accent-bright); }
     </style>
 
-    @push('scripts')
-        <script>
-            function creerService() {
-                return {
-                    type: @js(old('type', 'login')),
-                    label: @js(old('label', '')),
-                    url: @js(old('url', '')),
-                    motDePasse: '',
-                    showMdp: false,
-                    faviconUrl: '',
-                    entropie: 0,
-                    forceSegments: 0,
-                    forceLabel: '',
-                    forceColor: 'rgba(33,126,170,0.4)',
-
-                    get nomPlaceholder() {
-                        const p = {
-                            login: 'Ex : GitHub, Netflix...',
-                            carte: 'Ex : Varte Visa',
-                            note: 'Ex : Codes de récupération',
-                            identite: 'Ex : Passeport',
-                            cles: 'Ex : Serveur prod',
-                            autre: 'Ex : Token API'
-                        };
-                        return p[this.type] || 'Nom';
-                    },
-
-                    mettreAJourFavicon() {
-                        if (this.url) {
-                            try {
-                                const domaine = new URL(this.url).hostname;
-                                this.faviconUrl = `/favicon?domain=${encodeURIComponent(domaine)}`;
-                                return;
-                            } catch {}
-                        }
-                        if (this.label && this.label.length > 1) {
-                            const nom = this.label.toLowerCase().replace(/\s+/g, '');
-                            this.faviconUrl = `/favicon?domain=${encodeURIComponent(nom + '.com')}`;
-                        } else {
-                            this.faviconUrl = '';
-                        }
-                    },
-
-                    genererMdp() {
-                        const chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*()-_=+';
-                        const array = new Uint8Array(20);
-                        crypto.getRandomValues(array);
-                        this.motDePasse = Array.from(array, b => chars[b % chars.length]).join('');
-                        this.showMdp = true;
-                        this.calculerForce();
-                    },
-
-                    toggleMdp() {
-                        this.showMdp = !this.showMdp;
-                        const input = document.getElementById('mdp_visuel');
-                        if (input) input.type = this.showMdp ? 'text' : 'password';
-                    },
-
-                    calculerForce() {
-                        const mdp = this.motDePasse;
-                        let alphabet = 0;
-                        if (/[a-z]/.test(mdp)) alphabet += 26;
-                        if (/[A-Z]/.test(mdp)) alphabet += 26;
-                        if (/[0-9]/.test(mdp)) alphabet += 10;
-                        if (/[^a-zA-Z0-9]/.test(mdp)) alphabet += 32;
-                        this.entropie = alphabet > 0 ? Math.round(mdp.length * Math.log2(alphabet)) : 0;
-                        if (this.entropie === 0) { this.forceSegments = 0; this.forceLabel = ''; this.forceColor = 'rgba(33,126,170,0.2)'; }
-                        else if (this.entropie < 40) { this.forceSegments = 1; this.forceLabel = 'Très faible'; this.forceColor = '#ef4444'; }
-                        else if (this.entropie < 60) { this.forceSegments = 2; this.forceLabel = 'Faible'; this.forceColor = '#f97316'; }
-                        else if (this.entropie < 80) { this.forceSegments = 3; this.forceLabel = 'Moyen'; this.forceColor = '#f59e0b'; }
-                        else if (this.entropie < 100) { this.forceSegments = 4; this.forceLabel = 'Fort'; this.forceColor = 'var(--accent-bright)'; }
-                        else { this.forceSegments = 5; this.forceLabel = 'Très fort ✓'; this.forceColor = '#2d9fd4'; }
-                    }
-                }
-            }
-        </script>
-    @endpush
+    {{-- Behavior is supplied once by the tested TypeScript module. --}}
 @endsection

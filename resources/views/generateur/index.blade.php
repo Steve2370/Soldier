@@ -147,13 +147,13 @@
                     </div>
                     <div style="position: relative; height: 6px; background: var(--bg-elevated); border-radius: 3px;">
                         <div style="position: absolute; left: 0; top: 0; height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-bright)); transition: width 0.1s;"
-                             :style="'width: ' + ((nbMots - 3) / (10 - 3) * 100) + '%'"></div>
-                        <input type="range" min="3" max="10" x-model.number="nbMots" @input="generer()"
+                             :style="'width: ' + ((nbMots - 5) / (16 - 5) * 100) + '%'"></div>
+                        <input type="range" min="5" max="16" x-model.number="nbMots" @input="generer()"
                                style="position: absolute; inset: -8px 0; opacity: 0; cursor: pointer; width: 100%;">
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                        <span style="font-size: 0.72rem; color: var(--text-muted);">3 mots</span>
-                        <span style="font-size: 0.72rem; color: var(--text-muted);">10 mots</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">5 mots</span>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">16 mots</span>
                     </div>
                 </div>
 
@@ -171,8 +171,8 @@
 
                 <div style="background: var(--accent-dim); border: 1px solid var(--border-bright); border-radius: 9px; padding: 12px 14px;">
                     <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0; line-height: 1.5;">
-                        💡 Une passphrase de <strong style="color: var(--accent-bright);" x-text="nbMots + ' mots'"></strong> depuis un dictionnaire de 7776 mots (diceware) =
-                        <strong style="color: var(--accent-bright);" x-text="Math.round(nbMots * Math.log2(7776)) + ' bits'"></strong> d'entropie.
+                        Une passphrase de <strong style="color: var(--accent-bright);" x-text="nbMots + ' mots'"></strong> depuis notre dictionnaire de <span x-text="dictionnaireTaille"></span> mots =
+                        <strong style="color: var(--accent-bright);" x-text="entropie + ' bits'"></strong> d’entropie théorique. Conservez au moins 12 mots pour environ 80 bits.
                         Plus mémorisable qu'un mot de passe aléatoire.
                     </p>
                 </div>
@@ -234,120 +234,5 @@
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 
-    @push('scripts')
-        <script>
-            const DICEWARE = [
-                'abri','acier','acte','adieu','agile','aigle','aimer','ainsi','ajout','aléa',
-                'algue','allez','allié','alpin','ancre','angle','animer','anode','apnée','appel',
-                'arbre','arche','ardeur','argent','armée','arôme','arrêt','artère','asile','aspect',
-                'astre','atome','atout','aube','avenir','avoir','axe','azote','badge','balcon',
-                'balle','banque','barque','bassin','bâton','bazar','béton','bijou','bilan','bogue',
-                'boîte','bombe','bonne','bord','botte','boule','brique','brume','bulle','câble',
-                'calme','canal','capot','cargo','carte','caser','cause','caverne','cendre','cercle',
-                'champ','chaos','charme','charte','chasse','cheval','chiffe','chose','cible','ciment',
-                'cirque','clair','classe','clef','clone','cobalt','coffre','coiffe','colère','combat',
-                'comète','copie','corde','corps','cortex','coude','coulis','couple','crayon','crédit',
-                'crête','croix','crypte','cube','cycle','dague','dalle','débit','décor','delta',
-                'dense','désir','destin','dette','diode','disque','dôme','droit','duvet','ébène',
-                'écart','éclat','écran','effet','effort','égide','élite','embrun','empire','encre',
-                'engin','entier','envol','épée','époque','erreur','escale','étage','éther','exil',
-                'explo','fable','facette','fagot','fanal','farce','fatal','fenêtre','ferme','fiche',
-                'flair','flèche','flore','flotte','fluide','foehn','fonte','force','forge','forum',
-                'fossé','foudre','foyer','franc','frein','front','fugue','funeste','fusion','galet',
-                'garde','gazelle','geste','givre','glace','globe','gloire','golem','gorge','grain',
-                'grille','grotte','groupe','guide','guilde','halte','havre','héros','hivernal','humeur',
-            ];
-
-            function generateur() {
-                return {
-                    type: 'password',
-                    motDePasse: '',
-                    longueur: 20,
-                    nbMots: 5,
-                    separateur: '-',
-                    spinning: false,
-                    entropie: 0,
-                    tailleAlphabet: 0,
-                    forceSegments: 0,
-                    forceLabel: '',
-                    forceColor: 'var(--border-bright)',
-
-                    options: {
-                        majuscules: true,
-                        minuscules: true,
-                        chiffres: true,
-                        symboles: true,
-                        similaires: true,
-                    },
-
-                    generer() {
-                        this.spinning = true;
-                        setTimeout(() => this.spinning = false, 400);
-
-                        if (this.type === 'password') {
-                            this.genererPassword();
-                        } else {
-                            this.genererPassphrase();
-                        }
-                        this.calculerEntropie();
-                    },
-
-                    genererPassword() {
-                        let chars = '';
-                        if (this.options.minuscules) chars += 'abcdefghijklmnopqrstuvwxyz';
-                        if (this.options.majuscules) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        if (this.options.chiffres) chars += '0123456789';
-                        if (this.options.symboles) chars += '!@#$%^&*()-_=+[]{}|;:,.<>?';
-
-                        if (this.options.similaires) {
-                            chars = chars.replace(/[0O1lI]/g, '');
-                        }
-
-                        if (!chars) { this.motDePasse = ''; return; }
-
-                        const array = new Uint8Array(this.longueur);
-                        crypto.getRandomValues(array);
-                        this.motDePasse = Array.from(array, b => chars[b % chars.length]).join('');
-                    },
-
-                    genererPassphrase() {
-                        const array = new Uint32Array(this.nbMots);
-                        crypto.getRandomValues(array);
-                        const mots = Array.from(array, n => DICEWARE[n % DICEWARE.length]);
-                        this.motDePasse = mots.join(this.separateur);
-                    },
-
-                    calculerEntropie() {
-                        if (this.type === 'passphrase') {
-                            this.entropie = Math.round(this.nbMots * Math.log2(7776));
-                            this.tailleAlphabet = 7776;
-                        } else {
-                            let alphabet = 0;
-                            const mdp = this.motDePasse;
-                            if (/[a-z]/.test(mdp)) alphabet += 26;
-                            if (/[A-Z]/.test(mdp)) alphabet += 26;
-                            if (/[0-9]/.test(mdp)) alphabet += 10;
-                            if (/[^a-zA-Z0-9]/.test(mdp)) alphabet += 32;
-                            this.tailleAlphabet = alphabet;
-                            this.entropie = alphabet > 0 ? Math.round(mdp.length * Math.log2(alphabet)) : 0;
-                        }
-
-                        if (this.entropie === 0) { this.forceSegments = 0; this.forceLabel = ''; this.forceColor = 'var(--border-bright)'; }
-                        else if (this.entropie < 40) { this.forceSegments = 1; this.forceLabel = 'Très faible'; this.forceColor = '#ef4444'; }
-                        else if (this.entropie < 60) { this.forceSegments = 2; this.forceLabel = 'Faible'; this.forceColor = '#f97316'; }
-                        else if (this.entropie < 80) { this.forceSegments = 3; this.forceLabel = 'Moyen'; this.forceColor = '#f59e0b'; }
-                        else if (this.entropie < 100) { this.forceSegments = 4; this.forceLabel = 'Fort'; this.forceColor = 'var(--accent)'; }
-                        else { this.forceSegments = 5; this.forceLabel = 'Très fort'; this.forceColor = 'var(--accent-bright)'; }
-                    },
-
-                    async copierMdp() {
-                        if (!this.motDePasse) return;
-                        await navigator.clipboard.writeText(this.motDePasse);
-                        showToast('success', 'Copié !', 'Le mot de passe sera effacé du presse-papier dans 30 secondes.');
-                        setTimeout(() => navigator.clipboard.writeText(''), 30000);
-                    }
-                }
-            }
-        </script>
-    @endpush
+    {{-- Behavior is supplied once by the tested TypeScript module. --}}
 @endsection

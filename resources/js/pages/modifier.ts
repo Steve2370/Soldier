@@ -1,4 +1,6 @@
 import { showToast } from '../toast'
+import { randomPassword } from '../security/random'
+import { copySecret } from '../security/clipboard'
 
 interface ModifierState {
     label: string
@@ -60,9 +62,7 @@ export function modifierService(initialLabel: string, initialUrl: string, initia
 
         genererMdp(): void {
             const chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*()-_=+'
-            const array = new Uint8Array(20)
-            crypto.getRandomValues(array)
-            this.motDePasse = Array.from(array, b => chars[b % chars.length]).join('')
+            this.motDePasse = randomPassword(chars, 20)
             this.showMdp = true
             this.calculerForce()
             const input = document.getElementById('mot_de_passe') as HTMLInputElement
@@ -92,9 +92,8 @@ export function modifierService(initialLabel: string, initialUrl: string, initia
         async copier(texte: string): Promise<void> {
             if (!texte) return
             try {
-                await navigator.clipboard.writeText(texte)
-                showToast('success', 'Copié !', 'Effacé dans 30 secondes.')
-                setTimeout(() => navigator.clipboard.writeText(''), 30000)
+                await copySecret(texte)
+                showToast('success', 'Copié !', 'Effacement tenté après 30 s si le navigateur le permet et si le contenu est inchangé.')
             } catch {
                 showToast('error', 'Erreur', "Impossible d'accéder au presse-papier.")
             }

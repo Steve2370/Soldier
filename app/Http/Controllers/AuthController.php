@@ -10,22 +10,24 @@ use App\Http\Requests\Auth\InscriptionRequest;
 use App\Mail\BienvenueMail;
 use App\Mail\NouvelleConnexionMail;
 use App\Models\User;
-use App\Services\Auth\ExtensionHandoffService;
-use App\Services\Auth\MfaService;
+use App\Services\Auth\AccountEmailResolver;
 use App\Services\Auth\Contracts\UserRegistrationNotificationInterface;
+use App\Services\Auth\ExtensionHandoffService;
+use App\Services\Auth\MfaChallengeService;
+use App\Services\Auth\MfaService;
 use App\Services\Auth\UserRegistrationService;
 use App\Services\Coffre\CleManagementService;
 use App\Services\Coffre\CoffreService;
 use App\Services\Logs\ActivityLogService;
+use App\Services\Notifications\Contracts\MailDeliveryInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Laravel\Socialite\Socialite;
 use Random\RandomException;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -36,6 +38,9 @@ class AuthController extends Controller
         private readonly MfaService $mfaService,
         private readonly UserRegistrationService $userRegistration,
         private readonly UserRegistrationNotificationInterface $registrationNotifications,
+        private readonly MfaChallengeService $mfaChallenge,
+        private readonly AccountEmailResolver $emails,
+        private readonly MailDeliveryInterface $mailDelivery,
     ) {}
 
     public function showInscription(): View|RedirectResponse
@@ -73,14 +78,14 @@ class AuthController extends Controller
         $notificationEnvoyee = $this->registrationNotifications->envoyer($user);
         sodium_memzero($cles['kek']);
         sodium_memzero($cles['cle_privee']);
-        ActivityLogService::log('inscription', 'Nouveau compte créé — ' . $user->email, $user->id);
+        ActivityLogService::log('inscription', 'Nouveau compte créé — '.$user->email, $user->id);
 
         return redirect()->route('verification.notice')
             ->with('toast', [
                 'type' => $notificationEnvoyee ? 'info' : 'warning',
                 'titre' => 'Vérifiez votre email',
                 'message' => $notificationEnvoyee
-                    ? 'Un lien de vérification a été envoyé à ' . $user->email
+                    ? 'Un lien de vérification a été envoyé à '.$user->email
                     : 'Votre compte est créé. L’envoi de l’email a échoué ; demandez un nouveau lien.',
             ]);
     }
@@ -101,6 +106,7 @@ class AuthController extends Controller
         ]);
 
         session(['login_email' => strtolower(trim((string) $request->email))]);
+
         return redirect()->route('connexion.password');
     }
 
@@ -110,7 +116,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        if (!session('login_email')) {
+        if (! session('login_email')) {
             return redirect()->route('connexion');
         }
 
@@ -129,16 +135,17 @@ class AuthController extends Controller
 
         $email = session('login_email');
 
-        if (!$email) {
+        if (! $email) {
             return redirect()->route('connexion');
         }
 
-        $authOk = Auth::attempt(
-            ['email' => $email, 'password' => $request->password],
+        $candidate = $this->emails->find($email);
+        $authOk = $candidate && Auth::attempt(
+            ['email' => $candidate->email, 'password' => $request->password],
             $request->boolean('remember')
         );
 
-        if (!$authOk) {
+        if (! $authOk) {
             return back()->withErrors([
                 'password' => 'Mot de passe du compte incorrect.',
             ]);
@@ -148,7 +155,7 @@ class AuthController extends Controller
 
         \Log::info('Login attempt', [
             'user_id' => $user->id ?? null,
-            'ip' => request()->ip()
+            'ip' => request()->ip(),
         ]);
 
         try {
@@ -178,23 +185,12 @@ class AuthController extends Controller
         $mfaActif = $user->mfa()->where('actif', true)->exists();
 
         if ($mfaActif) {
-            $mfaType = $user->mfa()->where('type', 'email')->where('actif', true)->exists()
-                ? 'email'
-                : 'totp';
-            SessionHelper::stockerMfaPendante($cles['kek'], $cles['cle_privee'], $mfaType);
-
-            SessionHelper::mfaUserIdPending($user->id);
-
-            $mfaEmail = $user->mfa()->where('type', 'email')->where('actif', true)->first();
-            if ($mfaEmail) {
-                $this->mfaService->envoyerCodeEmail($user);
-            }
-
-            Auth::logout();
+            $ready = $this->mfaChallenge->begin($user, $cles['kek'], $cles['cle_privee']);
             sodium_memzero($cles['kek']);
             sodium_memzero($cles['cle_privee']);
 
-            return redirect()->route('mfa.verify');
+            return $ready ? redirect()->route('mfa.verify')
+                : redirect()->route('connexion')->withErrors(['email' => 'Impossible d’envoyer le code MFA. Réessayez plus tard.']);
         }
 
         session()->forget('login_email');
@@ -204,7 +200,7 @@ class AuthController extends Controller
         sodium_memzero($cles['cle_privee']);
         ActivityLogService::log('connexion', 'Connexion par email/mot de passe', $user->id);
 
-        Mail::to($user->email)->send(new NouvelleConnexionMail(
+        $this->mailDelivery->send($user->email, new NouvelleConnexionMail(
             $user,
             $request->ip(),
             $request->userAgent(),
@@ -219,14 +215,30 @@ class AuthController extends Controller
             ]);
     }
 
-
     public function showMfa(): View|RedirectResponse
     {
-        if (!SessionHelper::obtenirMfaUserIdPending()) {
+        if (! SessionHelper::obtenirMfaUserIdPending()) {
             return redirect()->route('connexion');
         }
 
         return view('auth.mfa');
+    }
+
+    public function renvoyerMfa(): RedirectResponse
+    {
+        $id = SessionHelper::obtenirMfaUserIdPending();
+        if (! $id || ! SessionHelper::obtenirMfaPendante() || SessionHelper::typeMfaPending() !== 'email') {
+            return redirect()->route('connexion')->withErrors(['email' => 'Session MFA expirée. Reconnectez-vous.']);
+        }
+        try {
+            $this->mfaService->envoyerCodeEmail(User::findOrFail($id));
+        } catch (\Throwable $exception) {
+            \Log::warning('Renvoi MFA indisponible.', ['exception' => $exception::class]);
+
+            return back()->withErrors(['code' => 'Envoi indisponible. Réessayez plus tard.']);
+        }
+
+        return redirect()->route('mfa.verify')->with('toast', ['type' => 'info', 'titre' => 'Code envoyé', 'message' => 'Utilisez le dernier code reçu.']);
     }
 
     /**
@@ -235,24 +247,30 @@ class AuthController extends Controller
     public function verifierMfa(Request $request): RedirectResponse
     {
         $request->validate([
-            'code' => ['required', 'string', 'size:6'],
+            'code' => ['required', 'string', 'regex:/^(?:[0-9]{6}|[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4})$/i'],
         ]);
 
         $userId = SessionHelper::obtenirMfaUserIdPending();
 
-        if (!$userId) {
+        if (! $userId) {
             return redirect()->route('connexion')
                 ->withErrors(['code' => 'Session expirée. Reconnectez-vous.']);
         }
 
         $user = User::findOrFail($userId);
-        if (!$this->mfaService->verifierCode($user, $request->input('code'))) {
+        if (! SessionHelper::obtenirMfaPendante()) {
+            SessionHelper::effacerCles();
+
+            return redirect()->route('connexion')->withErrors(['code' => 'Session expirée. Reconnectez-vous.']);
+        }
+        if (! $this->mfaService->verifierCode($user, $request->input('code'))) {
             return back()->withErrors(['code' => 'Code incorrect ou expiré.']);
         }
 
         $clesPendantes = SessionHelper::obtenirMfaPendante();
-        if (!$clesPendantes) {
+        if (! $clesPendantes) {
             SessionHelper::effacerMfaPendante();
+
             return redirect()->route('connexion')
                 ->withErrors(['code' => 'Session expirée. Reconnectez-vous.']);
         }
@@ -295,7 +313,7 @@ class AuthController extends Controller
             ->with('toast', [
                 'type' => 'info',
                 'titre' => 'Déconnecté',
-                'message' => 'Vous avez été déconnecté avec succès.'
+                'message' => 'Vous avez été déconnecté avec succès.',
             ]);
     }
 
@@ -343,24 +361,27 @@ class AuthController extends Controller
 
         $oauthEmail = $oauthUser->getEmail();
         $oauthRaw = $oauthUser->getRaw();
-        if (($provider === 'google' && array_key_exists('email_verified', $oauthRaw) && !$oauthRaw['email_verified'])
-            || ($provider === 'github' && array_key_exists('verified', $oauthRaw) && !$oauthRaw['verified'])) {
+        // Socialite's GitHub driver requests user:email and selects only a
+        // primary verified address; Google supplies an explicit boolean claim.
+        if (! filter_var($oauthEmail, FILTER_VALIDATE_EMAIL)
+            || ($provider === 'google' && ($oauthRaw['email_verified'] ?? null) !== true)
+            || ($provider === 'github' && isset($oauthRaw['verified']) && $oauthRaw['verified'] !== true)) {
             return redirect()->route('connexion')->withErrors([
                 'email' => 'L’adresse email du fournisseur OAuth n’est pas vérifiée.',
             ]);
         }
 
-        if (!$user && $oauthEmail) {
-            $existingUser = User::where('email', $oauthEmail)->first();
-            if ($existingUser) {
+        if (! $user && $oauthEmail) {
+            $emailExists = User::withTrashed()->whereRaw('LOWER(email) = ?', [mb_strtolower($oauthEmail)])->exists();
+            if ($emailExists) {
                 return redirect()->route('connexion')->withErrors([
                     'email' => 'Un compte existe déjà avec cette adresse. Connectez-vous avec ses identifiants avant de lier ce fournisseur.',
                 ]);
             }
         }
 
-        if (!$user) {
-            if (!$oauthEmail) {
+        if (! $user) {
+            if (! $oauthEmail) {
                 return redirect()->route('connexion')->withErrors([
                     'email' => 'Le fournisseur OAuth n’a pas fourni une adresse email vérifiable.',
                 ]);
@@ -376,16 +397,18 @@ class AuthController extends Controller
             ]);
         }
 
+        SessionHelper::effacerCles();
+        session()->forget(['oauth_login', 'oauth_new_user']);
         Auth::login($user);
-
-        if (!$user->hasVerifiedEmail()) {
+        session()->regenerate(true);
+        if (! $user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
         }
 
-        ActivityLogService::log('connexion_oauth', 'Connexion via ' . ucfirst($provider), $user->id);
+        ActivityLogService::log('connexion_oauth', 'Connexion via '.ucfirst($provider), $user->id);
 
         $coffreExiste = $user->coffres()->exists();
-        if (!$coffreExiste) {
+        if (! $coffreExiste) {
             session(['oauth_new_user' => true]);
         } else {
             session(['oauth_login' => true]);
@@ -396,9 +419,10 @@ class AuthController extends Controller
 
     public function showOauthMasterPassword(): View|RedirectResponse
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('connexion');
         }
+
         return view('auth.oauth-master-password');
     }
 
@@ -413,7 +437,7 @@ class AuthController extends Controller
 
         if ($isNewUser) {
             $request->validate([
-                'master_password_confirmation' => ['required', 'same:master_password']
+                'master_password_confirmation' => ['required', 'same:master_password'],
             ]);
 
             try {
@@ -421,12 +445,12 @@ class AuthController extends Controller
                 // étapes échoue, on ne laisse pas un compte OAuth avec des clés
                 // à moitié initialisées (cf. UninitializedKeysException).
                 $cles = \DB::transaction(function () use ($user, $request) {
-                    if (!$user->clesUser()->exists()) {
+                    if (! $user->clesUser()->exists()) {
                         $this->cleManagement->initialiserClesUser($user, $request->master_password);
                     }
                     $cles = $this->cleManagement->deverouillerCles($user, $request->master_password);
 
-                    if (!$user->coffres()->exists()) {
+                    if (! $user->coffres()->exists()) {
                         $this->coffreService->creerCoffre($user, [
                             'nom' => 'Mon coffre',
                             'couleur' => '#217eaa',
@@ -440,7 +464,7 @@ class AuthController extends Controller
                 SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
                 sodium_memzero($cles['kek']);
                 sodium_memzero($cles['cle_privee']);
-                Mail::to($user->email)->send(new BienvenueMail($user));
+                $this->mailDelivery->send($user->email, new BienvenueMail($user));
 
                 ActivityLogService::log('inscription', 'Compte créé via OAuth', $user->id);
 
@@ -451,7 +475,7 @@ class AuthController extends Controller
                 return redirect()->route('dashboard')->with('toast', [
                     'type' => 'success',
                     'titre' => 'Coffre créé !',
-                    'message' => 'Bienvenue ' . $user->name . ', votre coffre est prêt.',
+                    'message' => 'Bienvenue '.$user->name.', votre coffre est prêt.',
                 ]);
             } catch (\Throwable $e) {
                 \Log::error('Échec de la configuration OAuth.', [
@@ -468,15 +492,12 @@ class AuthController extends Controller
             session()->forget('oauth_login');
 
             if ($user->mfa()->where('actif', true)->exists()) {
-                $mfaType = $user->mfa()->where('type', 'email')->where('actif', true)->exists()
-                    ? 'email'
-                    : 'totp';
-                SessionHelper::stockerMfaPendante($cles['kek'], $cles['cle_privee'], $mfaType);
-                SessionHelper::mfaUserIdPending($user->id);
-                Auth::logout();
+                $ready = $this->mfaChallenge->begin($user, $cles['kek'], $cles['cle_privee']);
                 sodium_memzero($cles['kek']);
                 sodium_memzero($cles['cle_privee']);
-                return redirect()->route('mfa.verify');
+
+                return $ready ? redirect()->route('mfa.verify')
+                    : redirect()->route('connexion')->withErrors(['email' => 'Impossible d’envoyer le code MFA. Réessayez plus tard.']);
             }
 
             SessionHelper::deverouiller($cles['kek'], $cles['cle_privee']);
@@ -490,7 +511,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard')->with('toast', [
                 'type' => 'success',
                 'titre' => 'Bon retour !',
-                'message' => 'Coffre déverrouillé, ' . $user->name . '.',
+                'message' => 'Coffre déverrouillé, '.$user->name.'.',
             ]);
         } catch (\Throwable $e) {
             \Log::warning('Échec du déverrouillage OAuth.', [
@@ -512,12 +533,12 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect($redirect . '?' . http_build_query(['code' => $code]));
+        return redirect($redirect.'?'.http_build_query(['code' => $code]));
     }
 
     private function memoriserRedirectionExtension(Request $request): void
     {
-        if (!$request->filled('extension_redirect')) {
+        if (! $request->filled('extension_redirect')) {
             return;
         }
 
@@ -527,7 +548,7 @@ class AuthController extends Controller
             explode(',', (string) config('services.extension.redirect_urls', ''))
         )));
 
-        if (!in_array(rtrim($redirect, '/'), $autorisees, true)) {
+        if (! in_array(rtrim($redirect, '/'), $autorisees, true)) {
             abort(400, 'Destination d’extension non autorisée.');
         }
 

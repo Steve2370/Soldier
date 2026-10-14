@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ElementCoffre;
 use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -11,4 +12,5 @@ Artisan::command('inspire', function () {
 
 Schedule::command('model:prune', ['--model' => [
     User::class,
+    ElementCoffre::class,
 ]])->daily();

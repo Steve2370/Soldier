@@ -1,4 +1,6 @@
 import { showToast } from '../toast'
+import { randomIndices, randomPassword } from '../security/random'
+import { copySecret } from '../security/clipboard'
 
 const DICEWARE = [
     'abri','acier','acte','adieu','agile','aigle','aimer','ainsi','ajout','aléa',
@@ -18,7 +20,8 @@ export function generateur() {
         type: 'password' as 'password' | 'passphrase',
         motDePasse: '' as string,
         longueur: 20 as number,
-        nbMots: 5 as number,
+        nbMots: 12 as number,
+        dictionnaireTaille: DICEWARE.length,
         separateur: '-' as string,
         spinning: false as boolean,
         entropie: 0 as number,
@@ -54,32 +57,20 @@ export function generateur() {
             if (this.options.chiffres) chars += '0123456789'
             if (this.options.symboles) chars += '!@#$%^&*()-_=+[]{}|;:,.<>?'
             if (this.options.similaires) chars = chars.replace(/[0O1lI]/g, '')
-            if (!chars) { this.motDePasse = ''; return }
-
-            const array = new Uint8Array(this.longueur)
-            crypto.getRandomValues(array)
-            this.motDePasse = Array.from(array, b => chars[b % chars.length]).join('')
+            this.tailleAlphabet = chars.length
+            this.motDePasse = randomPassword(chars, this.longueur)
         },
 
         genererPassphrase(): void {
-            const array = new Uint32Array(this.nbMots)
-            crypto.getRandomValues(array)
-            this.motDePasse = Array.from(array, n => DICEWARE[n % DICEWARE.length]).join(this.separateur)
+            this.motDePasse = randomIndices(DICEWARE.length, this.nbMots).map(i => DICEWARE[i]).join(this.separateur)
         },
 
         calculerEntropie(): void {
             if (this.type === 'passphrase') {
-                this.entropie = Math.round(this.nbMots * Math.log2(7776))
-                this.tailleAlphabet = 7776
+                this.entropie = Math.round(this.nbMots * Math.log2(DICEWARE.length))
+                this.tailleAlphabet = DICEWARE.length
             } else {
-                let alphabet = 0
-                const mdp = this.motDePasse
-                if (/[a-z]/.test(mdp)) alphabet += 26
-                if (/[A-Z]/.test(mdp)) alphabet += 26
-                if (/[0-9]/.test(mdp)) alphabet += 10
-                if (/[^a-zA-Z0-9]/.test(mdp)) alphabet += 32
-                this.tailleAlphabet = alphabet
-                this.entropie = alphabet > 0 ? Math.round(mdp.length * Math.log2(alphabet)) : 0
+                this.entropie = this.tailleAlphabet > 0 ? Math.round(this.motDePasse.length * Math.log2(this.tailleAlphabet)) : 0
             }
 
             if (this.entropie === 0) { this.forceSegments = 0; this.forceLabel = ''; this.forceColor = 'var(--border-bright)' }
@@ -93,9 +84,8 @@ export function generateur() {
         async copierMdp(): Promise<void> {
             if (!this.motDePasse) return
             try {
-                await navigator.clipboard.writeText(this.motDePasse)
-                showToast('success', 'Copié !', 'Effacé du presse-papier dans 30 secondes.')
-                setTimeout(() => navigator.clipboard.writeText(''), 30000)
+                await copySecret(this.motDePasse)
+                showToast('success', 'Copié !', 'Effacement tenté après 30 s si le navigateur le permet et si le contenu est inchangé.')
             } catch {
                 showToast('error', 'Erreur', "Impossible d'accéder au presse-papier.")
             }

@@ -1,15 +1,19 @@
 import { showToast } from '../toast'
+import { copySecret } from '../security/clipboard'
 
 export function dashboard() {
     return {
         recherche: '' as string,
         filtreActif: 'Tous' as string,
+        showModal: false,
+        favoris: {} as Record<number, boolean>,
 
-        filtrerElement(label: string, url: string, favori: boolean): boolean {
+        filtrerElement(label: string, url: string, favori: boolean, id?: number): boolean {
+            if (id !== undefined) favori = this.favoris[id] ?? favori
             if (this.filtreActif === 'Favoris' && !favori) return false
             if (!this.recherche) return true
             const q = this.recherche.toLowerCase()
-            return label.includes(q) || url.includes(q)
+            return label.toLowerCase().includes(q) || url.toLowerCase().includes(q)
         },
 
         async copierMdp(mdp: string): Promise<void> {
@@ -18,9 +22,8 @@ export function dashboard() {
                 return
             }
             try {
-                await navigator.clipboard.writeText(mdp)
-                showToast('success', 'Copié !', 'Le mot de passe sera effacé dans 30 secondes.')
-                setTimeout(() => navigator.clipboard.writeText(''), 30000)
+                await copySecret(mdp)
+                showToast('success', 'Copié !', 'Effacement tenté après 30 s si le navigateur le permet et si le contenu est inchangé.')
             } catch {
                 showToast('error', 'Erreur', "Impossible d'accéder au presse-papier.")
             }
@@ -35,8 +38,12 @@ export function dashboard() {
                         'Accept': 'application/json',
                     },
                 })
+                if (!res.ok) throw new Error('Favorite update rejected')
                 const data = await res.json()
+                if (typeof data.favori !== 'boolean') throw new Error('Invalid favorite response')
+                this.favoris[id] = data.favori
                 btn.classList.toggle('favori-active', data.favori)
+                btn.title = data.favori ? 'Retirer des favoris' : 'Ajouter aux favoris'
                 btn.querySelector('svg')?.setAttribute('fill', data.favori ? 'currentColor' : 'none')
                 showToast('success', data.favori ? 'Ajouté aux favoris' : 'Retiré des favoris')
             } catch {
@@ -80,7 +87,7 @@ export function dashboard() {
                         </div>
                     </div>
                     <p style="font-size:0.875rem;color:#e0e0e0;margin-bottom:24px;line-height:1.65;">
-                        Cette action est irréversible. Le service sera déplacé dans la corbeille.
+                        Le service sera restaurable depuis la corbeille pendant 30 jours.
                     </p>
                     <div style="display:flex;gap:10px;justify-content:flex-end;">
                         <button id="modal-annuler" style="background:#404040;color:#e0e0e0;border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:10px 20px;font-size:0.85rem;cursor:pointer;font-family:Audiowide,sans-serif;transition:all 0.15s;">

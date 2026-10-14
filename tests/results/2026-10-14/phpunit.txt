@@ -1,0 +1,1408 @@
+PHPUnit 12.5.34 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.5.3
+Configuration: /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/phpunit.xml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Time: 00:20.104, Memory: 85.00 MB
+
+There were 6 errors:
+
+1) Tests\Unit\CryptoBoundaryTest::test_aes_roundtrip_for_payload_boundaries#0 with data ('')
+App\Exceptions\DecryptionException: Déchiffrement impossible.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Services/Crypto/AesEncryptionService.php:107
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Services/Crypto/AesEncryptionService.php:57
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Unit/CryptoBoundaryTest.php:25
+
+2) Tests\Feature\Audit\ApiExtensionTest::test_scoped_token_can_use_extension_endpoint#0 with data ('/api/services')
+Illuminate\Contracts\Container\BindingResolutionException: Target class [abilities] does not exist.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1149
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:50
+
+Caused by
+ReflectionException: Class "abilities" does not exist
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1147
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:50
+
+3) Tests\Feature\Audit\ApiExtensionTest::test_scoped_token_can_use_extension_endpoint#1 with data ('/api/auth/oauth-data')
+Illuminate\Contracts\Container\BindingResolutionException: Target class [abilities] does not exist.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1149
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:50
+
+Caused by
+ReflectionException: Class "abilities" does not exist
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1147
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:50
+
+4) Tests\Feature\Audit\ApiExtensionTest::test_token_without_required_ability_is_denied#0 with data ('/api/services')
+Illuminate\Contracts\Container\BindingResolutionException: Target class [abilities] does not exist.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1149
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:57
+
+Caused by
+ReflectionException: Class "abilities" does not exist
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1147
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:57
+
+5) Tests\Feature\Audit\ApiExtensionTest::test_token_without_required_ability_is_denied#1 with data ('/api/auth/oauth-data')
+Illuminate\Contracts\Container\BindingResolutionException: Target class [abilities] does not exist.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1149
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:57
+
+Caused by
+ReflectionException: Class "abilities" does not exist
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:1147
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:939
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1085
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Container/Container.php:867
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Application.php:1065
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:257
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php:215
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:604
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php:381
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:57
+
+6) Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_can_reload_a_registered_user
+Illuminate\Database\QueryException: SQLSTATE[HY000]: General error: 1 no such column: users.deleted_at (Connection: sqlite, Database: :memory:, SQL: select * from "users" where "users"."id" = 1 and "users"."deleted_at" is null limit 1)
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:857
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:813
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:426
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3629
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3613
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:931
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:913
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php:366
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:595
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php:23
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2871
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2887
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:40
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such column: users.deleted_at
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:435
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:846
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:813
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Connection.php:426
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3629
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3613
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:931
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:913
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php:366
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:595
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php:642
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Support/Traits/ForwardsCalls.php:23
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2871
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php:2887
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:40
+
+--
+
+There were 35 failures:
+
+1) Tests\Feature\Audit\ApiExtensionTest::test_api_login_requires_verified_email
+Expected response status code [403] but received 200.
+Failed asserting that 200 is identical to 403.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/Concerns/AssertsStatusCodes.php:141
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:27
+
+2) Tests\Feature\Audit\ApiExtensionTest::test_profile_handles_uninitialized_oauth_user
+Expected response status code [422] but received 500.
+Failed asserting that 500 is identical to 422.
+
+The following exception occurred during the last request:
+
+ErrorException: Attempt to read property "kdf_salt" on null in /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Http/Controllers/Api/AuthApiController.php:184
+Stack trace:
+#0 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(263): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'Attempt to read...', '/Users/leonbelt...', 184)
+#1 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Http/Controllers/Api/AuthApiController.php(184): Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():262}(2, 'Attempt to read...', '/Users/leonbelt...', 184)
+#2 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App\Http\Controllers\Api\AuthApiController->profil(Object(Illuminate\Http\Request))
+#3 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Route.php(276): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Api\AuthApiController), 'profil')
+#4 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Route.php(216): Illuminate\Routing\Route->runController()
+#5 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()
+#6 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#7 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#8 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#9 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(63): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#10 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Auth\Middleware\Authenticate->handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')
+#11 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#12 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#13 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#14 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#15 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#16 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#17 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#18 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Http/Middleware/SecurityHeaders.php(14): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#19 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App\Http\Middleware\SecurityHeaders->handle(Object(Illuminate\Http\Request), Object(Closure))
+#20 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#21 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#23 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#24 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#25 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#27 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#29 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#31 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#32 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#33 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#34 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#35 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#36 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#37 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#38 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#39 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#40 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#41 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(638): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#42 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(604): Illuminate\Foundation\Testing\TestCase->call('GET', '/api/profil', Array, Array, Array, Array, '[]')
+#43 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(381): Illuminate\Foundation\Testing\TestCase->json('GET', '/api/profil', Array, Array, 0)
+#44 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php(64): Illuminate\Foundation\Testing\TestCase->getJson('/api/profil')
+#45 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): Tests\Feature\Audit\ApiExtensionTest->test_profile_handles_uninitialized_oauth_user()
+#46 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('test_profile_ha...', Array)
+#47 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#48 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#49 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\Audit\ApiExtensionTest))
+#50 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#51 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#52 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#53 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#54 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#55 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/phpunit(104): PHPUnit\TextUI\Application->run(Array)
+#56 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/bin/phpunit(122): include('/Users/leonbelt...')
+#57 {main}
+
+----------------------------------------------------------------------------------
+
+Attempt to read property "kdf_salt" on null
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/Concerns/AssertsStatusCodes.php:221
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/ApiExtensionTest.php:64
+
+3) Tests\Feature\Audit\AuthenticationTest::test_new_account_can_log_in_with_an_uppercase_email
+Failed asserting that two strings are equal.
+
+The following errors occurred during the last request:
+
+Mot de passe du compte incorrect.
+
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost:8000/dashboard'
++'http://localhost:8000'
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:440
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:214
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:50
+
+4) Tests\Feature\Audit\AuthenticationTest::test_notification_outage_does_not_break_successful_login
+Expected response status code [201, 301, 302, 303, 307, 308] but received 500.
+Failed asserting that false is true.
+
+The following exception occurred during the last request:
+
+RuntimeException: Synthetic provider outage in /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:57
+Stack trace:
+#0 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): Tests\Feature\Audit\AuthenticationTest->test_notification_outage_does_not_break_successful_login()
+#1 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('test_notificati...', Array)
+#2 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#3 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#4 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\Audit\AuthenticationTest))
+#5 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#6 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#7 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#8 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#9 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#10 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/phpunit(104): PHPUnit\TextUI\Application->run(Array)
+#11 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/bin/phpunit(122): include('/Users/leonbelt...')
+#12 {main}
+
+----------------------------------------------------------------------------------
+
+Synthetic provider outage
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:208
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:60
+
+5) Tests\Feature\Audit\AuthenticationTest::test_oauth_unlock_sends_the_email_mfa_challenge
+The expected [App\Mail\CodeMfaMail] mailable was not sent.
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Support/Testing/Fakes/MailFake.php:93
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:364
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:87
+
+6) Tests\Feature\Audit\AuthenticationTest::test_recovery_code_is_accepted_by_the_mfa_form
+Session has unexpected errors: 
+
+{
+    "default": [
+        "The code field must be 6 characters."
+    ]
+}
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:1769
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:98
+
+7) Tests\Feature\Audit\AuthenticationTest::test_mfa_notification_failure_cannot_leave_an_authenticated_session
+The user is authenticated
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/InteractsWithAuthentication.php:77
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:110
+
+8) Tests\Feature\Audit\AuthenticationTest::test_google_requires_positive_email_verification
+Failed asserting that two strings are equal.
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost:8000/connexion'
++'http://localhost:8000/oauth/master-password'
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:440
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:214
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/AuthenticationTest.php:121
+
+9) Tests\Feature\Audit\FamilyBillingTest::test_removing_member_revokes_family_vault_access
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php:47
+
+10) Tests\Feature\Audit\FamilyBillingTest::test_leaving_family_revokes_vault_access
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php:56
+
+11) Tests\Feature\Audit\FamilyBillingTest::test_subscription_loss_revokes_family_shares#0 with data ('customer.subscription.deleted', 'canceled')
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php:72
+
+12) Tests\Feature\Audit\FamilyBillingTest::test_subscription_loss_revokes_family_shares#1 with data ('customer.subscription.updated', 'unpaid')
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php:72
+
+13) Tests\Feature\Audit\FamilyBillingTest::test_unsigned_stripe_webhook_is_rejected
+Expected response status code [403] but received 302.
+Failed asserting that 302 is identical to 403.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/Concerns/AssertsStatusCodes.php:141
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/FamilyBillingTest.php:92
+
+14) Tests\Feature\Audit\HttpSurfaceTest::test_every_authenticated_route_rejects_guests
+/api/auth/oauth-data: Target class [abilities] does not exist.
+/api/services: Target class [abilities] does not exist.
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => '/api/auth/oauth-data: Target class [abilities] does not exist.',
++    1 => '/api/services: Target class [abilities] does not exist.',
++]
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php:43
+
+15) Tests\Feature\Audit\HttpSurfaceTest::test_authenticated_page_renders#5 with data ('/settings/sessions')
+Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+InvalidArgumentException: View [settings.sessions] not found. in /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/View/FileViewFinder.php:138
+Stack trace:
+#0 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/View/FileViewFinder.php(78): Illuminate\View\FileViewFinder->findInPaths('settings.sessio...', Array)
+#1 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/View/Factory.php(150): Illuminate\View\FileViewFinder->find('settings.sessio...')
+#2 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(1101): Illuminate\View\Factory->make('settings.sessio...', Array, Array)
+#3 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Http/Controllers/SettingsController.php(353): view('settings.sessio...', Array)
+#4 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App\Http\Controllers\SettingsController->sessions()
+#5 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Route.php(276): Illuminate\Routing\ControllerDispatcher->dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\SettingsController), 'sessions')
+#6 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Route.php(216): Illuminate\Routing\Route->runController()
+#7 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\Routing\Route->run()
+#8 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Routing\Router->{closure:Illuminate\Routing\Router::runRouteWithinStack():821}(Object(Illuminate\Http\Request))
+#9 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Http/Middleware/VaultUnlocked.php(31): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#10 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App\Http\Middleware\VaultUnlocked->handle(Object(Illuminate\Http\Request), Object(Closure))
+#11 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Auth/Middleware/EnsureEmailIsVerified.php(41): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#12 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Auth\Middleware\EnsureEmailIsVerified->handle(Object(Illuminate\Http\Request), Object(Closure))
+#13 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#14 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Routing\Middleware\SubstituteBindings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#15 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(63): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#16 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Auth\Middleware\Authenticate->handle(Object(Illuminate\Http\Request), Object(Closure))
+#17 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestForgery.php(104): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#18 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestForgery->handle(Object(Illuminate\Http\Request), Object(Closure))
+#19 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#20 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\View\Middleware\ShareErrorsFromSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#21 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(120): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#22 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(63): Illuminate\Session\Middleware\StartSession->handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#23 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Session\Middleware\StartSession->handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#25 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse->handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(74): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#27 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Cookie\Middleware\EncryptCookies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#29 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#30 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\Routing\Router->runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#31 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\Routing\Router->runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#32 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#33 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#34 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\Foundation\Http\Kernel->{closure:Illuminate\Foundation\Http\Kernel::dispatchToRouter():197}(Object(Illuminate\Http\Request))
+#35 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/app/Http/Middleware/SecurityHeaders.php(14): Illuminate\Pipeline\Pipeline->{closure:Illuminate\Pipeline\Pipeline::prepareDestination():178}(Object(Illuminate\Http\Request))
+#36 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App\Http\Middleware\SecurityHeaders->handle(Object(Illuminate\Http\Request), Object(Closure))
+#37 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#38 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#39 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull->handle(Object(Illuminate\Http\Request), Object(Closure))
+#40 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#41 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest->handle(Object(Illuminate\Http\Request), Object(Closure))
+#42 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\TrimStrings->handle(Object(Illuminate\Http\Request), Object(Closure))
+#43 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#44 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePostSize->handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#46 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance->handle(Object(Illuminate\Http\Request), Object(Closure))
+#47 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(61): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#48 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\HandleCors->handle(Object(Illuminate\Http\Request), Object(Closure))
+#49 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#50 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\TrustProxies->handle(Object(Illuminate\Http\Request), Object(Closure))
+#51 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#52 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks->handle(Object(Illuminate\Http\Request), Object(Closure))
+#53 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#54 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\Http\Middleware\ValidatePathEncoding->handle(Object(Illuminate\Http\Request), Object(Closure))
+#55 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\Pipeline\Pipeline->{closure:{closure:Illuminate\Pipeline\Pipeline::carry():194}:195}(Object(Illuminate\Http\Request))
+#56 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#57 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#58 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(638): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#59 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase->call('GET', '/settings/sessi...', Array, Array, Array, Array)
+#60 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php(60): Illuminate\Foundation\Testing\TestCase->get('/settings/sessi...')
+#61 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(1318): Tests\Feature\Audit\HttpSurfaceTest->test_authenticated_page_renders('/settings/sessi...')
+#62 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(1355): PHPUnit\Framework\TestCase->invokeTestMethod('test_authentica...', Array)
+#63 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(521): PHPUnit\Framework\TestCase->runTest()
+#64 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php(99): PHPUnit\Framework\TestCase->runBare()
+#65 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestCase.php(361): PHPUnit\Framework\TestRunner->run(Object(Tests\Feature\Audit\HttpSurfaceTest))
+#66 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestCase->run()
+#67 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#68 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#69 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/Framework/TestSuite.php(374): PHPUnit\Framework\TestSuite->run()
+#70 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/TextUI/TestRunner.php(64): PHPUnit\Framework\TestSuite->run()
+#71 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/src/TextUI/Application.php(229): PHPUnit\TextUI\TestRunner->run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#72 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/phpunit/phpunit/phpunit(104): PHPUnit\TextUI\Application->run(Array)
+#73 /Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/bin/phpunit(122): include('/Users/leonbelt...')
+#74 {main}
+
+----------------------------------------------------------------------------------
+
+View [settings.sessions] not found.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/Concerns/AssertsStatusCodes.php:16
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php:60
+
+16) Tests\Feature\Audit\HttpSurfaceTest::test_locked_session_has_a_reachable_unlock_page
+Expected response status code [200] but received 302.
+Failed asserting that 302 is identical to 200.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/Concerns/AssertsStatusCodes.php:16
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php:95
+
+17) Tests\Feature\Audit\HttpSurfaceTest::test_invalid_session_key_is_treated_as_locked
+Expected response status code [423] but received 200.
+Failed asserting that 200 is identical to 423.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php:102
+
+18) Tests\Feature\Audit\HttpSurfaceTest::test_pending_mfa_prevents_access_even_if_old_vault_keys_exist
+Expected response status code [423] but received 200.
+Failed asserting that 200 is identical to 423.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:183
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/HttpSurfaceTest.php:111
+
+19) Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_contains_required_schema@soft-deleted users with data ('users', 'deleted_at')
+Missing migration: users.deleted_at
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:34
+
+20) Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_contains_required_schema@administrator flag with data ('users', 'is_admin')
+Missing migration: users.is_admin
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:34
+
+21) Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_contains_required_schema@activity journal with data ('activity_logs', 'action')
+Missing migration: activity_logs.action
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:34
+
+22) Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_contains_required_schema@Sanctum token owner with data ('personal_access_tokens', 'tokenable_id')
+Missing migration: personal_access_tokens.tokenable_id
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:34
+
+23) Tests\Feature\Audit\SchemaContractTest::test_fresh_installation_contains_required_schema@Sanctum token hash with data ('personal_access_tokens', 'token')
+Missing migration: personal_access_tokens.token
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:34
+
+24) Tests\Feature\Audit\SchemaContractTest::test_activity_logging_really_persists_an_event
+Logging errors are swallowed; no journal table exists.
+Failed asserting that false is true.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SchemaContractTest.php:46
+
+25) Tests\Feature\Audit\SettingsAndMfaTest::test_totp_cannot_be_replayed_after_success
+Failed asserting that true is false.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SettingsAndMfaTest.php:154
+
+26) Tests\Feature\Audit\SharingAuthorizationTest::test_selected_share_cannot_read_an_unselected_secret_by_url
+Failed asserting that '<!DOCTYPE html>\n
+<html lang="fr" class="h-full">\n
+<head>\n
+    <meta charset="UTF-8">\n
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n
+    <meta name="csrf-token" content="2w8C76Ykbu1TOnMkqMBZxT8sA7mChPSNCnOtAuUj">\n
+    <title>Service audit Password Manager</title>\n
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=999">\n
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=999">\n
+    <link rel="apple-touch-icon" href="http://localhost:8000/assets/Soldier-Logotype.png">\n
+    <link rel="preload" as="style" href="http://localhost:8000/build/assets/app-ZXzA7VzK.css" /><link rel="modulepreload" as="script" href="http://localhost:8000/build/assets/app-Bh-3XIDP.js" /><link rel="stylesheet" href="http://localhost:8000/build/assets/app-ZXzA7VzK.css" /><script type="module" src="http://localhost:8000/build/assets/app-Bh-3XIDP.js"></script>    <style>\n
+        :root {\n
+            --bg-base: #000000;\n
+            --bg-surface: #202020;\n
+            --bg-elevated: #404040;\n
+            --bg-hover: #606060;\n
+            --border: #404040;\n
+            --border-bright: #606060;\n
+            --accent: #217eaa;\n
+            --accent-bright: #2d9fd4;\n
+            --accent-dim: rgba(33,126,170,0.15);\n
+            --text-primary: #ffffff;\n
+            --text-secondary:#e0e0e0;\n
+            --text-muted: #808080;\n
+            --danger: #ef4444;\n
+            --warning: #f59e0b;\n
+            --success: #22c55e;\n
+        }\n
+\n
+        * { box-sizing: border-box; margin: 0; padding: 0; }\n
+\n
+        body {\n
+            font-family: 'Audiowide', sans-serif;\n
+            background: var(--bg-base);\n
+            color: var(--text-primary);\n
+            min-height: 100vh;\n
+        }\n
+\n
+        ::-webkit-scrollbar { width: 5px; }\n
+        ::-webkit-scrollbar-track { background: #000; }\n
+        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 3px; }\n
+\n
+        .sidebar {\n
+            background: var(--bg-surface);\n
+            border-right: 1px solid #303030;\n
+            width: 252px;\n
+            min-height: 100vh;\n
+            position: fixed;\n
+            left: 0; top: 0;\n
+            display: flex;\n
+            flex-direction: column;\n
+            z-index: 40;\n
+        }\n
+\n
+        .sidebar-logo {\n
+            padding: 22px 20px;\n
+            border-bottom: 1px solid #303030;\n
+            display: flex; align-items: center; gap: 10px;\n
+        }\n
+\n
+        .logo-icon {\n
+            width: 36px; height: 36px;\n
+            background: var(--accent);\n
+            border-radius: 10px;\n
+            display: flex; align-items: center; justify-content: center;\n
+            flex-shrink: 0;\n
+        }\n
+\n
+        .nav-section-label {\n
+            font-size: 0.68rem; font-weight: 700;\n
+            color: var(--text-muted);\n
+            text-transform: uppercase; letter-spacing: 0.1em;\n
+            padding: 12px 16px 4px;\n
+        }\n
+\n
+        .nav-item {\n
+            position: relative;\n
+            display: flex; align-items: center; gap: 10px;\n
+            padding: 9px 12px; margin: 1px 6px;\n
+            border-radius: 8px;\n
+            color: var(--text-secondary);\n
+            font-size: 0.9rem; font-weight: 500;\n
+            text-decoration: none;\n
+            cursor: pointer;\n
+            transition: all 0.15s;\n
+        }\n
+\n
+        .nav-item:hover {\n
+            background: rgba(255,255,255,0.06);\n
+            color: var(--text-primary);\n
+        }\n
+\n
+        .nav-item.active {\n
+            background: rgba(33,126,170,0.2);\n
+            color: var(--accent-bright);\n
+        }\n
+\n
+        .nav-item.active::before {\n
+            content: '';\n
+            position: absolute;\n
+            left: -6px; top: 25%; bottom: 25%;\n
+            width: 3px;\n
+            background: var(--accent-bright);\n
+            border-radius: 0 2px 2px 0;\n
+        }\n
+\n
+        .nav-item svg {\n
+            width: 17px; height: 17px;\n
+            flex-shrink: 0; opacity: 0.6;\n
+            transition: opacity 0.15s;\n
+        }\n
+\n
+        .nav-item:hover svg, .nav-item.active svg { opacity: 1; }\n
+\n
+        .main-content {\n
+            margin-left: 252px;\n
+            min-height: 100vh;\n
+            padding: 32px 36px;\n
+            position: relative;\n
+            z-index: 1;\n
+            isolation: isolate;\n
+        }\n
+\n
+        .card {\n
+            background: var(--bg-surface);\n
+            border: 1px solid #303030;\n
+            border-radius: 14px;\n
+            padding: 24px;\n
+        }\n
+\n
+        .input {\n
+            background: var(--bg-elevated);\n
+            border: 1px solid #505050;\n
+            border-radius: 9px;\n
+            color: var(--text-primary);\n
+            padding: 10px 14px;\n
+            font-size: 0.875rem;\n
+            font-family: 'Audiowide', sans-serif;\n
+            width: 100%;\n
+            outline: none;\n
+            transition: border-color 0.15s, box-shadow 0.15s;\n
+        }\n
+\n
+        .input:focus {\n
+            border-color: var(--accent-bright);\n
+            box-shadow: 0 0 0 3px rgba(33,126,170,0.2);\n
+        }\n
+\n
+        .input::placeholder { color: var(--text-muted); }\n
+\n
+        label {\n
+            display: block;\n
+            font-size: 0.8125rem; font-weight: 500;\n
+            color: var(--text-secondary);\n
+            margin-bottom: 6px;\n
+        }\n
+\n
+        .btn-primary {\n
+            background: var(--accent);\n
+            color: #fff;\n
+            border: none; border-radius: 9px;\n
+            padding: 10px 20px;\n
+            font-size: 0.875rem; font-weight: 700;\n
+            font-family: 'Audiowide', sans-serif;\n
+            cursor: pointer; transition: all 0.15s;\n
+            display: inline-flex; align-items: center; gap: 8px;\n
+            text-decoration: none;\n
+        }\n
+        .btn-primary:hover { background: var(--accent-bright); }\n
+\n
+        .btn-secondary {\n
+            background: var(--bg-elevated);\n
+            color: var(--text-secondary);\n
+            border: 1px solid #505050;\n
+            border-radius: 9px; padding: 10px 20px;\n
+            font-size: 0.875rem; font-weight: 500;\n
+            font-family: 'Audiowide', sans-serif;\n
+            cursor: pointer; transition: all 0.15s;\n
+            display: inline-flex; align-items: center; gap: 8px;\n
+            text-decoration: none;\n
+        }\n
+        .btn-secondary:hover {\n
+            border-color: var(--accent-bright);\n
+            color: var(--text-primary);\n
+            background: rgba(255,255,255,0.06);\n
+        }\n
+\n
+        .error-msg {\n
+            color: #fca5a5; font-size: 0.8rem;\n
+            margin-top: 5px;\n
+            display: flex; align-items: center; gap: 5px;\n
+        }\n
+\n
+        .divider { height: 1px; background: #303030; margin: 14px 0; }\n
+        .input-error { border-color: #ef4444 !important; }\n
+\n
+        .eye-btn {\n
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);\n
+            background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.15s;\n
+        }\n
+        .eye-btn:hover { color: var(--accent-bright); }\n
+\n
+        .mobile-topbar {\n
+            display: none;\n
+            position: fixed;\n
+            top: 0; left: 0; right: 0;\n
+            height: 56px;\n
+            background: var(--bg-surface);\n
+            border-bottom: 1px solid #303030;\n
+            z-index: 50;\n
+            align-items: center;\n
+            justify-content: space-between;\n
+            padding: 0 16px;\n
+        }\n
+\n
+        .mobile-menu-btn {\n
+            background: none;\n
+            border: none;\n
+            color: #ffffff;\n
+            cursor: pointer;\n
+            padding: 8px;\n
+            border-radius: 8px;\n
+            display: flex;\n
+            align-items: center;\n
+            justify-content: center;\n
+        }\n
+\n
+        .mobile-menu-btn:hover {\n
+            background: rgba(255,255,255,0.06);\n
+        }\n
+\n
+        @media (max-width: 768px) {\n
+            .mobile-topbar { display: flex; }\n
+\n
+            .sidebar {\n
+                transform: translateX(-100%);\n
+                transition: transform 0.25s ease;\n
+                z-index: 40;\n
+            }\n
+\n
+            .sidebar-open {\n
+                transform: translateX(0) !important;\n
+            }\n
+\n
+            .main-content {\n
+                margin-left: 0 !important;\n
+                padding: 80px 16px 32px !important;\n
+            }\n
+        }\n
+    </style>\n
+</head>\n
+\n
+<body x-data="{ ...toastManager(), mobileMenu: false }" @toast.window="addToast($event.detail)">\n
+\n
+<video\n
+    autoplay muted loop playsinline\n
+    id="rain-canvas"\n
+    style="position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none; opacity: 0.25;"\n
+>\n
+    <source src="http://localhost:8000/assets/cyber.mp4" type="video/mp4">\n
+</video>\n
+\n
+    <div class="mobile-topbar">\n
+        <button @click="mobileMenu = !mobileMenu" class="mobile-menu-btn" aria-label="Menu">\n
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">\n
+                <template x-if="!mobileMenu"><g><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></g></template>\n
+                <template x-if="mobileMenu"><g><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></g></template>\n
+            </svg>\n
+        </button>\n
+        <img src="http://localhost:8000/assets/Soldier-Logo.png" alt="Soldier" style="height: 36px;">\n
+        <div style="width: 40px;"></div>\n
+    </div>\n
+\n
+    <div x-show="mobileMenu" @click="mobileMenu = false"\n
+         style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 39;"\n
+         x-transition:enter="transition ease-out duration-200"\n
+         x-transition:enter-start="opacity-0"\n
+         x-transition:enter-end="opacity-100"\n
+         x-transition:leave="transition ease-in duration-150"\n
+         x-transition:leave-start="opacity-100"\n
+         x-transition:leave-end="opacity-0">\n
+    </div>\n
+\n
+    <aside class="sidebar" :class="mobileMenu ? 'sidebar-open' : ''">\n
+        <div style="display: flex; justify-content: flex-start; margin: 20px 0 10px 20px;">\n
+            <img src="http://localhost:8000/assets/Soldier-Logo.png" alt="Logo" style="width: 90px; height: auto;">\n
+        </div>\n
+\n
+        <nav style="padding: 10px 0; flex: 1; overflow-y: auto;">\n
+            <div class="nav-section-label">Principal</div>\n
+\n
+            <a href="http://localhost:8000/dashboard" @click="mobileMenu = false" class="nav-item ">\n
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>\n
+                Tableau de bord\n
+            </a>\n
+\n
+            <a href="http://localhost:8000/generateur" class="nav-item ">\n
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>\n
+                Générateur\n
+            </a>\n
+\n
+            <a href="http://localhost:8000/partage" class="nav-item ">\n
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>\n
+                Partage\n
+            </a>\n
+\n
+            <a href="http://localhost:8000/famille" class="nav-item ">\n
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>\n
+                Famille\n
+                                    <span style="background:rgba(45,159,212,0.15); color:#2d9fd4; border-radius:20px; padding:1px 6px; font-size:0.6rem; font-weight:700; margin-left:auto;">NEW</span>\n
+                            </a>\n
+\n
+            \n
+            <div class="nav-section-label">Compte</div>\n
+\n
+            <a href="http://localhost:8000/settings" class="nav-item ">\n
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>\n
+                Paramètres\n
+            </a>\n
+        </nav>\n
+\n
+        <div style="padding: 14px; border-top: 1px solid #303030;">\n
+            <div style="background: var(--bg-elevated); border-radius: 9px; padding: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">\n
+                <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; color: #fff; flex-shrink: 0;">\n
+                                            G\n
+                                    </div>\n
+                <div style="overflow: hidden; flex: 1;">\n
+                    <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Grayson Donnelly</div>\n
+                    <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">prosacco.keenan@example.com</div>\n
+                </div>\n
+            </div>\n
+            <div style="margin-bottom: 10px;">\n
+                <a href="https://paypal.me/BriceSteve" target="_blank"\n
+                   style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; transition: background 0.15s; flex-shrink: 0;"\n
+                   onmouseover="this.style.background='#005ea6'"\n
+                   onmouseout="this.style.background='#0070ba'">\n
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.59 3.025-2.566 6.643-8.993 6.643H9.38l-1.165 7.388h3.114l.777-4.927h2.19c5.146 0 8.132-2.87 9.05-7.132a5.918 5.918 0 0 0-.124-1.685z"/></svg>\n
+                    Offrez moi un café 😄\n
+                </a>\n
+            </div>\n
+            <form method="POST" action="http://localhost:8000/deconnexion">\n
+                <input type="hidden" name="_token" value="2w8C76Ykbu1TOnMkqMBZxT8sA7mChPSNCnOtAuUj" autocomplete="off">                <button type="submit" class="btn-secondary" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.8rem;">\n
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>\n
+                    Déconnexion\n
+                </button>\n
+            </form>\n
+        </div>\n
+    </aside>\n
+\n
+<main class="main-content">\n
+        <div style="max-width: 680px;" x-data="afficherService()">\n
+\n
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">\n
+            <a href="http://localhost:8000/dashboard" class="btn-secondary" style="padding: 9px 12px; flex-shrink: 0;">\n
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>\n
+            </a>\n
+            <div style="flex: 1; min-width: 0;">\n
+                <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">\n
+                    Service audit\n
+                </h1>\n
+                <p style="color: var(--text-muted); font-size: 0.8375rem; margin: 0;">\n
+                    Dernière modification : 0 seconds ago\n
+                </p>\n
+            </div>\n
+            <a href="http://localhost:8000/services/2/modifier" class="btn-secondary">\n
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>\n
+                Modifier\n
+            </a>\n
+        </div>\n
+\n
+        <div class="card" style="margin-bottom: 16px;">\n
+\n
+            <div style="display: flex; align-items: center; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid rgba(33,126,170,0.2); margin-bottom: 20px;">\n
+                                <div style="width: 56px; height: 56px; border-radius: 14px; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; color: var(--accent-bright);">\n
+                                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>\n
+                                    </div>\n
+                <div style="flex: 1; min-width: 0;">\n
+                    <div style="font-weight: 800; font-size: 1.125rem; color: var(--text-primary); margin-bottom: 4px;">Service audit</div>\n
+                                    </div>\n
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">\n
+                    <span style="background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700; color: #22c55e;">Chiffré</span>\n
+                                        <span style="background: rgba(33,126,170,0.15); border: 1px solid rgba(33,126,170,0.3); border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700; color: var(--accent-bright);">Mot de passe</span>\n
+                </div>\n
+            </div>\n
+\n
+                                                <div class="champ-row">\n
+                        <div class="champ-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Identifiant</div>\n
+                        <div class="champ-value">\n
+                            <span style="font-family: Audiowide,sans-serif;">audit@example.test</span>\n
+                            <button @click='copier('audit@example.test', "Identifiant")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>\n
+                        </div>\n
+                    </div>\n
+                                                    <div class="champ-row">\n
+                        <div class="champ-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Mot de passe</div>\n
+                        <div class="champ-value">\n
+                            <span style="font-family: monospace; letter-spacing: 0.08em;" x-text='showMdp ? 'not-shared-secret' : "••••••••••••"'></span>\n
+                            <div style="display: flex; gap: 4px;">\n
+                                <button @click="showMdp = !showMdp" class="copy-btn">\n
+                                    <svg x-show="!showMdp" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>\n
+                                    <svg x-show="showMdp" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>\n
+                                </button>\n
+                                <button @click='copier('not-shared-secret', "Mot de passe")' class="copy-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1 2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>\n
+                            </div>\n
+                        </div>\n
+                    </div>\n
+                \n
+            \n
+                            <div class="champ-row" style="align-items: flex-start;">\n
+                    <div class="champ-label" style="padding-top: 2px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Notes</div>\n
+                    <div style="flex: 1; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.2); border-radius: 9px; padding: 12px 14px; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap;">note initiale</div>\n
+                </div>\n
+                    </div>\n
+\n
+        <div class="card" style="border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.04);">\n
+            <h3 style="font-size: 0.9rem; font-weight: 700; color: #ef4444; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">\n
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>\n
+                Zone de danger\n
+            </h3>\n
+            <p style="font-size: 0.8375rem; color: var(--text-muted); margin-bottom: 14px;">Cette action est <strong style="color: #ef4444;">irréversible</strong>. Votre compte, tous vos coffres et toutes vos données chiffrées seront supprimés immédiatement.</p>\n
+            <form method="POST" action="http://localhost:8000/services/2" @submit.prevent="confirmerSuppression($event)">\n
+                <input type="hidden" name="_token" value="2w8C76Ykbu1TOnMkqMBZxT8sA7mChPSNCnOtAuUj" autocomplete="off"> <input type="hidden" name="_method" value="DELETE">                <button type="submit" class="btn-danger">\n
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>\n
+                    Supprimer\n
+                </button>\n
+            </form>\n
+        </div>\n
+\n
+    </div>\n
+\n
+    <div x-show="showModal" x-transition style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px);" @click.self="showModal = false">\n
+        <div class="card" style="max-width: 380px; width: calc(100% - 40px); border-color: rgba(239,68,68,0.3);">\n
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 8px;">Confirmer la suppression</h3>\n
+            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 20px; line-height: 1.5;">« <strong style="color: var(--text-primary);">Service audit</strong> » sera placé dans la corbeille.</p>\n
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">\n
+                <button @click="showModal = false" class="btn-secondary">Annuler</button>\n
+                <button @click="executerSuppression()" class="btn-danger">Supprimer</button>\n
+            </div>\n
+        </div>\n
+    </div>\n
+\n
+    <style>\n
+        .champ-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(33,126,170,0.15); }\n
+        .champ-row:last-child { border-bottom: none; padding-bottom: 0; }\n
+        .champ-row:first-child { padding-top: 0; }\n
+        .champ-label { display: flex; align-items: center; gap: 7px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); width: 120px; flex-shrink: 0; }\n
+        .champ-value { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.2); border-radius: 9px; padding: 9px 12px; min-width: 0; }\n
+        .copy-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 6px; display: flex; align-items: center; transition: all 0.15s; flex-shrink: 0; }\n
+        .copy-btn:hover { color: var(--accent-bright); background: rgba(33,126,170,0.15); }\n
+        .btn-danger { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 9px; padding: 10px 20px; font-size: 0.875rem; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 8px; font-family: 'Audiowide', sans-serif; }\n
+        .btn-danger:hover { background: rgba(239,68,68,0.2); border-color: #ef4444; }\n
+    </style>\n
+\n
+    </main>\n
+\n
+<div style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column-reverse; gap: 10px; pointer-events: none;">\n
+    <template x-for="toast in toasts" :key="toast.id">\n
+        <div\n
+            x-show="toast.visible"\n
+            x-transition:enter="transition ease-out duration-300"\n
+            x-transition:enter-start="opacity-0 translate-y-4"\n
+            x-transition:enter-end="opacity-100 translate-y-0"\n
+            x-transition:leave="transition ease-in duration-200"\n
+            x-transition:leave-start="opacity-100"\n
+            x-transition:leave-end="opacity-0"\n
+            :class="'toast-item toast-' + toast.type"\n
+            style="pointer-events: all; min-width: 300px; max-width: 380px;"\n
+        >\n
+            <div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px;">\n
+                <div class="toast-icon" :class="'toast-icon-' + toast.type">\n
+                    <template x-if="toast.type === 'success'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></template>\n
+                    <template x-if="toast.type === 'error'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></template>\n
+                    <template x-if="toast.type === 'warning'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></template>\n
+                    <template x-if="toast.type === 'info'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></template>\n
+                </div>\n
+                <div style="flex: 1;">\n
+                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary);" x-text="toast.titre"></div>\n
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;" x-text="toast.message" x-show="toast.message"></div>\n
+                </div>\n
+                <button @click="removeToast(toast.id)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px;">\n
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>\n
+                </button>\n
+            </div>\n
+            <div style="height: 2px; background: rgba(255,255,255,0.06);">\n
+                <div :class="'toast-bar-' + toast.type" :style="'animation-duration:' + toast.duration + 'ms; height:100%; animation: toast-shrink linear forwards;'"></div>\n
+            </div>\n
+        </div>\n
+    </template>\n
+</div>\n
+\n
+\n
+<style>\n
+    .toast-item { border-radius: 12px; border: 1px solid; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.7); backdrop-filter: blur(12px); }\n
+    .toast-success { background: rgba(20,20,20,0.97); border-color: rgba(34,197,94,0.4); }\n
+    .toast-error { background: rgba(20,20,20,0.97); border-color: rgba(239,68,68,0.4); }\n
+    .toast-warning { background: rgba(20,20,20,0.97); border-color: rgba(245,158,11,0.4); }\n
+    .toast-info { background: rgba(20,20,20,0.97); border-color: rgba(33,126,170,0.5); }\n
+    .toast-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }\n
+    .toast-icon-success { background: rgba(34,197,94,0.15); color: #22c55e; }\n
+    .toast-icon-error { background: rgba(239,68,68,0.15); color: #ef4444; }\n
+    .toast-icon-warning { background: rgba(245,158,11,0.15); color: #f59e0b; }\n
+    .toast-icon-info { background: rgba(33,126,170,0.15); color: var(--accent-bright); }\n
+    .toast-bar-success { background: #22c55e; }\n
+    .toast-bar-error { background: #ef4444; }\n
+    .toast-bar-warning { background: #f59e0b; }\n
+    .toast-bar-info { background: var(--accent-bright); }\n
+    @keyframes toast-shrink { from { transform: scaleX(1); transform-origin: left; } to { transform: scaleX(0); transform-origin: left; } }\n
+</style>\n
+\n
+<script>\n
+    function toastManager() {\n
+        return {\n
+            toasts: [],\n
+            addToast(data) {\n
+                const id = Date.now() + Math.random();\n
+                const duration = data.duration || 5000;\n
+                this.toasts.push({ id, visible: true, duration, ...data });\n
+                setTimeout(() => this.removeToast(id), duration);\n
+            },\n
+            removeToast(id) {\n
+                const t = this.toasts.find(t => t.id === id);\n
+                if (t) t.visible = false;\n
+                setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 300);\n
+            }\n
+        };\n
+    }\n
+    function showToast(type, titre, message = '', duration = 5000) {\n
+        window.dispatchEvent(new CustomEvent('toast', { detail: { type, titre, message, duration } }));\n
+    }\n
+</script>\n
+\n
+<div id="session-warning" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">\n
+    <div style="background:#141414; border:1px solid #2a2a2a; border-radius:16px; padding:32px; max-width:400px; width:90%; text-align:center;">\n
+        <div style="width:56px; height:56px; border-radius:14px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">\n
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>\n
+        </div>\n
+        <h2 style="color:#fff; font-size:1.1rem; margin-bottom:10px;">Session sur le point d'expirer</h2>\n
+        <p style="color:#808080; font-size:0.875rem; margin-bottom:24px;">Vous serez déconnecté dans <span id="countdown" style="color:#f59e0b; font-weight:700;">2:00</span> en raison d'inactivité.</p>\n
+        <button onclick="resetSessionTimer()" style="background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border:none; border-radius:10px; padding:12px 32px; font-size:0.9rem; font-weight:700; cursor:pointer; width:100%;">\n
+            Rester connecté\n
+        </button>\n
+    </div>\n
+</div>\n
+\n
+<script>\n
+    (function() {\n
+        const TIMEOUT = 60 * 60 * 1000;\n
+        const WARNING = 2 * 60 * 1000;\n
+        let warningTimer, logoutTimer, countdownInterval;\n
+        let countdownSec = 120;\n
+\n
+        function resetSessionTimer() {\n
+            clearTimeout(warningTimer);\n
+            clearTimeout(logoutTimer);\n
+            clearInterval(countdownInterval);\n
+            document.getElementById('session-warning').style.display = 'none';\n
+            countdownSec = 120;\n
+            warningTimer = setTimeout(showWarning, TIMEOUT - WARNING);\n
+            logoutTimer = setTimeout(doLogout, TIMEOUT);\n
+        }\n
+\n
+        function showWarning() {\n
+            countdownSec = 120;\n
+            document.getElementById('session-warning').style.display = 'flex';\n
+            countdownInterval = setInterval(() => {\n
+                countdownSec--;\n
+                const m = Math.floor(countdownSec / 60).toString().padStart(1,'0');\n
+                const s = (countdownSec % 60).toString().padStart(2,'0');\n
+                document.getElementById('countdown').textContent = m + ':' + s;\n
+                if (countdownSec <= 0) clearInterval(countdownInterval);\n
+            }, 1000);\n
+        }\n
+\n
+        function doLogout() {\n
+            const form = document.createElement('form');\n
+            form.method = 'POST';\n
+            form.action = 'http://localhost:8000/deconnexion';\n
+            const csrf = document.createElement('input');\n
+            csrf.type = 'hidden';\n
+            csrf.name = '_token';\n
+            csrf.value = '2w8C76Ykbu1TOnMkqMBZxT8sA7mChPSNCnOtAuUj';\n
+            form.appendChild(csrf);\n
+            document.body.appendChild(form);\n
+            form.submit();\n
+        }\n
+\n
+        window.resetSessionTimer = resetSessionTimer;\n
+        ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(ev => {\n
+            document.addEventListener(ev, resetSessionTimer, { passive: true });\n
+        });\n
+\n
+        resetSessionTimer();\n
+    })();\n
+</script>\n
+\n
+        <script>\n
+            function afficherService() {\n
+                return {\n
+                    showMdp: false,\n
+                    showModal: false,\n
+                    formASupprimer: null,\n
+\n
+                    async copier(texte, label) {\n
+                        if (!texte) return;\n
+                        try {\n
+                            await navigator.clipboard.writeText(texte);\n
+                            showToast('success', label + ' copié', 'Effacé dans 30 secondes.');\n
+                            setTimeout(() => navigator.clipboard.writeText(''), 30000);\n
+                        } catch { showToast('error', 'Erreur', 'Impossible d\'accéder au presse-papier.'); }\n
+                    },\n
+\n
+                    confirmerSuppression(event) { this.formASupprimer = event.target; this.showModal = true; },\n
+                    executerSuppression() { if (this.formASupprimer) this.formASupprimer.submit(); this.showModal = false; }\n
+                }\n
+            }\n
+        </script>\n
+    </body>\n
+</html>\n
+' [UTF-8](length: 35791) does not contain "not-shared-secret" [ASCII](length: 17).
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:46
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:812
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php:59
+
+27) Tests\Feature\Audit\SharingAuthorizationTest::test_selected_share_cannot_modify_an_unselected_secret
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'Do not edit'
++'Unauthorized edit'
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php:74
+
+28) Tests\Feature\Audit\SharingAuthorizationTest::test_empty_share_selection_is_not_treated_as_the_entire_vault_by_api
+Failed asserting that 1 is identical to 0.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/SharingAuthorizationTest.php:88
+
+29) Tests\Feature\Audit\VaultWorkflowTest::test_create_encrypt_read_and_edit_each_type@note with data ('note', 'contenu', 'Une note privée')
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'Une note privée'
++''
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:34
+
+30) Tests\Feature\Audit\VaultWorkflowTest::test_create_encrypt_read_and_edit_each_type@other with data ('autre', 'contenu', 'synthetic-api-token')
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'synthetic-api-token'
++''
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:34
+
+31) Tests\Feature\Audit\VaultWorkflowTest::test_user_can_clear_an_optional_note
+Failed asserting that a string is empty.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:49
+
+32) Tests\Feature\Audit\VaultWorkflowTest::test_editing_ssh_label_preserves_passphrase
+Failed asserting that null is identical to 'ssh-secret'.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:69
+
+33) Tests\Feature\Audit\VaultWorkflowTest::test_custom_fields_survive_http_validation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 [
+-    0 => Array &1 [
+-        'nom' => 'Client',
+-        'valeur' => '12345',
+-    ],
+-]
++Array &0 []
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:79
+
+34) Tests\Feature\Audit\VaultWorkflowTest::test_delete_retains_the_item_for_the_trash_promised_by_the_ui
+Failed asserting that any soft deleted row in the table [elements_coffres] matches the attributes {"id":1}.
+
+The table is empty.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/InteractsWithDatabase.php:177
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:89
+
+35) Tests\Feature\Audit\VaultWorkflowTest::test_validation_does_not_flash_vault_secrets_into_old_input
+Secret flashed: mot_de_passe
+Failed asserting that 'audit-password' is null.
+
+/Users/leonbeltran/PhpstormProjects/Soldier/Soldier/tests/Feature/Audit/VaultWorkflowTest.php:135
+
+[37;41mERRORS![0m
+[37;41mTests: 181[0m[37;41m, Assertions: 496[0m[37;41m, Errors: 6[0m[37;41m, Failures: 35[0m[37;41m.[0m

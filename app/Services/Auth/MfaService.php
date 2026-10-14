@@ -17,8 +17,10 @@ use Random\RandomException;
 
 class MfaService
 {
-    private const int CODE_LONGUEUR  = 6;
+    private const int CODE_LONGUEUR = 6;
+
     private const int CODE_EXPIRATION = 10;
+
     private const int MAX_TENTATIVES = 5;
 
     public function __construct(
@@ -53,22 +55,37 @@ class MfaService
      */
     public function verifierCode(User $user, string $codeSaisi): bool
     {
-        $limite = 'mfa-verification:' . $user->id;
+        $limite = 'mfa-verification:'.$user->id;
         if (RateLimiter::tooManyAttempts($limite, self::MAX_TENTATIVES)) {
             return false;
+        }
+
+        if (preg_match('/^[A-Z2-9]{4}-[A-Z2-9]{4}-[A-Z2-9]{4}$/i', $codeSaisi)) {
+            $valide = $this->consumeRecoveryCode($user, strtoupper($codeSaisi));
+            if ($valide) {
+                RateLimiter::clear($limite);
+            } else {
+                RateLimiter::hit($limite, 600);
+            }
+
+            return $valide;
         }
 
         $type = SessionHelper::typeMfaPending() ?? 'email';
         $mfa = $user->mfa()->where('type', $type)->where('actif', true)->first();
 
-        if (!$mfa) {
+        if (! $mfa) {
             return false;
         }
 
         if ($mfa->type === 'totp') {
             $valide = $this->verifierTotp($user, $codeSaisi);
-            if (!$valide) RateLimiter::hit($limite, 600);
-            else RateLimiter::clear($limite);
+            if (! $valide) {
+                RateLimiter::hit($limite, 600);
+            } else {
+                RateLimiter::clear($limite);
+            }
+
             return $valide;
         }
 
@@ -76,26 +93,31 @@ class MfaService
             return false;
         }
 
-        if (!$mfa->code_expire_le || $mfa->code_expire_le->isPast()) {
+        if (! $mfa->code_expire_le || $mfa->code_expire_le->isPast()) {
             RateLimiter::hit($limite, 600);
+
             return false;
         }
 
-        if (!Hash::check($codeSaisi, $mfa->code_hash)) {
+        if (! Hash::check($codeSaisi, $mfa->code_hash)) {
             $mfa->increment('tentatives');
             RateLimiter::hit($limite, 600);
+
             return false;
         }
 
-        $mfa->update([
-            'code_hash' => null,
-            'code_expire_le' => null,
-            'tentatives' => 0,
-        ]);
+        $consumed = $user->mfa()->whereKey($mfa->id)
+            ->where('code_hash', $mfa->code_hash)
+            ->where('tentatives', '<', self::MAX_TENTATIVES)
+            ->where('code_expire_le', '>', now())->update([
+                'code_hash' => null,
+                'code_expire_le' => null,
+                'tentatives' => 0,
+            ]);
 
         RateLimiter::clear($limite);
 
-        return true;
+        return $consumed === 1;
     }
 
     /**
@@ -105,7 +127,7 @@ class MfaService
     {
         $secret = $this->genererSecretBase32();
 
-        $label  = urlencode('Soldier:' . $user->email);
+        $label = urlencode('Soldier:'.$user->email);
         $issuer = urlencode('Soldier');
         $otpauthUrl = "otpauth://totp/{$label}?secret={$secret}&issuer={$issuer}&algorithm=SHA1&digits=6&period=30";
 
@@ -122,28 +144,37 @@ class MfaService
     {
         $mfa = $user->mfa()->where('type', 'totp')->where('actif', true)->first();
 
-        if (!$mfa || !$mfa->totp_secret_chiffre) {
+        if (! $mfa || ! $mfa->totp_secret_chiffre) {
             return false;
         }
 
         $kek = SessionHelper::obtenirKek();
-        if (!$kek) {
+        if (! $kek) {
             $clesPendantes = SessionHelper::obtenirMfaPendante();
-            if (!$clesPendantes) return false;
+            if (! $clesPendantes) {
+                return false;
+            }
             $kek = $clesPendantes['kek'];
         }
 
         $secretChiffre = json_decode($mfa->totp_secret_chiffre, true);
         $secret = $this->encryption->decrypt(
-                $secretChiffre['ciphertext'],
-                $kek,
-                $secretChiffre['iv'],
-                $secretChiffre['tag'],
-            );
+            $secretChiffre['ciphertext'],
+            $kek,
+            $secretChiffre['iv'],
+            $secretChiffre['tag'],
+        );
         sodium_memzero($kek);
 
         try {
-            return $this->totp->verifyKey($secret, $code, 1);
+            $step = $this->totp->verifyKeyNewer($secret, $code, $mfa->last_totp_step ?? 0, 1);
+            if ($step === false) {
+                return false;
+            }
+
+            return $user->mfa()->whereKey($mfa->id)
+                ->where(fn ($q) => $q->whereNull('last_totp_step')->orWhere('last_totp_step', '<', $step))
+                ->update(['last_totp_step' => $step]) === 1;
         } catch (IncompatibleWithGoogleAuthenticatorException) {
             return false;
         } catch (InvalidCharactersException) {
@@ -182,9 +213,7 @@ class MfaService
      */
     private function genererCode(): string
     {
-        $bytes = random_bytes(4);
-        $int = hexdec(bin2hex($bytes));
-        return str_pad($int % pow(10, self::CODE_LONGUEUR), self::CODE_LONGUEUR, '0', STR_PAD_LEFT);
+        return str_pad((string) random_int(0, 999999), self::CODE_LONGUEUR, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -196,12 +225,12 @@ class MfaService
         $segments = [];
         for ($s = 0; $s < 3; $s++) {
             $segment = '';
-            $bytes = random_bytes(4);
             for ($i = 0; $i < 4; $i++) {
-                $segment .= $chars[ord($bytes[$i]) % strlen($chars)];
+                $segment .= $chars[random_int(0, strlen($chars) - 1)];
             }
             $segments[] = $segment;
         }
+
         return implode('-', $segments);
     }
 
@@ -211,5 +240,28 @@ class MfaService
     private function genererSecretBase32(): string
     {
         return $this->totp->generateSecretKey(16);
+    }
+
+    private function consumeRecoveryCode(User $user, string $code): bool
+    {
+        $mfa = $user->mfa()->where('type', 'totp')->where('actif', true)->first();
+        if (! $mfa) {
+            return false;
+        }
+        $hashes = $mfa->codes_recuperation ?? [];
+        foreach ($hashes as $index => $hash) {
+            if (! Hash::check($code, $hash)) {
+                continue;
+            }
+            unset($hashes[$index]);
+
+            // Optimistic compare-and-swap: two requests cannot consume the
+            // same recovery code, even when both read the original hash list.
+            return $user->mfa()->whereKey($mfa->id)
+                ->where('codes_recuperation', $mfa->getRawOriginal('codes_recuperation'))
+                ->update(['codes_recuperation' => json_encode(array_values($hashes), JSON_THROW_ON_ERROR)]) === 1;
+        }
+
+        return false;
     }
 }

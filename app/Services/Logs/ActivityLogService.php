@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Services\Logs;
 
 use App\Models\ActivityLog;
-use Illuminate\Http\Request;
 
 class ActivityLogService
 {
@@ -20,11 +20,11 @@ class ActivityLogService
                 'description' => $description,
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'metadata' => $metadata ? json_encode($metadata) : null,
-                'created_at'  => now(),
+                'metadata' => $metadata,
+                'created_at' => now(),
             ]);
         } catch (\Exception $e) {
-            \Log::error('ActivityLog failed: ' . $e->getMessage());
+            \Log::error('ActivityLog failed: '.$e->getMessage());
         }
     }
 }

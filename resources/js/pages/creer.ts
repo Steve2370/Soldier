@@ -1,9 +1,10 @@
+import { randomPassword } from '../security/random'
 
-export function creerService() {
+export function creerService(initial: { type?: string, label?: string, url?: string } = {}) {
     return {
-        type: 'login' as string,
-        label: '' as string,
-        url: '' as string,
+        type: initial.type ?? 'login',
+        label: initial.label ?? '',
+        url: initial.url ?? '',
         motDePasse: '' as string,
         showMdp: false as boolean,
         faviconUrl: '' as string,
@@ -61,9 +62,7 @@ export function creerService() {
 
         genererMdp(): void {
             const chars = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%^&*()-_=+'
-            const array = new Uint8Array(20)
-            crypto.getRandomValues(array)
-            this.motDePasse = Array.from(array, b => chars[b % chars.length]).join('')
+            this.motDePasse = randomPassword(chars, 20)
             this.showMdp = true
             const input = document.getElementById('mdp_visuel') as HTMLInputElement
             if (input) input.type = 'text'
