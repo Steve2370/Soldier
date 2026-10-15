@@ -29,7 +29,7 @@ export function afficherService() {
                 'left:0',
                 'width:100%',
                 'height:100%',
-                'background:rgba(0,0,0,0.75)',
+                'background:rgba(2,5,10,0.82);backdrop-filter:blur(6px)',
                 'z-index:999999',
                 'display:flex',
                 'align-items:center',
@@ -38,16 +38,16 @@ export function afficherService() {
             ].join(';')
 
             modal.innerHTML = `
-                <div style="background:#202020;border:1px solid rgba(239,68,68,0.35);border-radius:16px;padding:28px;max-width:400px;width:calc(100% - 40px);">
-                    <h3 style="font-size:1rem;font-weight:700;color:#ffffff;margin-bottom:10px;">Confirmer la suppression</h3>
-                    <p style="color:#e0e0e0;font-size:0.875rem;margin-bottom:22px;line-height:1.6;">
+                <div style="background:rgba(6,14,22,0.97);border:1px solid rgba(255,90,100,0.45);border-radius:16px;box-shadow:0 0 50px rgba(255,90,100,0.18),0 24px 60px rgba(0,0,0,0.6);padding:28px;max-width:400px;width:calc(100% - 40px);">
+                    <h3 style="font-size:1rem;color:#eef3f8;margin-bottom:10px;">Confirmer la suppression</h3>
+                    <p style="color:#c3cedb;font-size:0.875rem;margin-bottom:22px;line-height:1.6;">
                         Ce service sera placé dans la corbeille pendant 30 jours.
                     </p>
                     <div style="display:flex;gap:10px;justify-content:flex-end;">
-                        <button id="aff-annuler" style="background:#404040;color:#e0e0e0;border:1px solid rgba(255,255,255,0.12);border-radius:9px;padding:10px 20px;font-size:0.85rem;cursor:pointer;font-family:Audiowide,sans-serif;">
+                        <button id="aff-annuler" style="background:rgba(79,195,247,0.06);color:#c3cedb;border:1px solid #2a4258;border-radius:9px;padding:10px 20px;font-size:0.85rem;cursor:pointer;font-family:Audiowide,sans-serif;">
                             Annuler
                         </button>
-                        <button id="aff-supprimer" style="background:rgba(239,68,68,0.12);color:#ef4444;border:1px solid rgba(239,68,68,0.35);border-radius:9px;padding:10px 20px;font-size:0.85rem;cursor:pointer;font-family:Audiowide,sans-serif;">
+                        <button id="aff-supprimer" style="background:rgba(255,90,100,0.12);color:#ff5a64;border:1px solid rgba(255,90,100,0.35);border-radius:9px;padding:10px 20px;font-size:0.85rem;cursor:pointer;font-family:Audiowide,sans-serif;">
                             Supprimer
                         </button>
                     </div>

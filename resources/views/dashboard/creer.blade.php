@@ -2,19 +2,24 @@
 @section('title', 'Nouveau service')
 
 @section('content')
-    <div style="max-width: 680px;" x-data="creerService(@js(['type' => old('type', 'login'), 'label' => old('label', ''), 'url' => old('url', '')]))">
+    <div style="max-width: 1100px;" x-data="creerService(@js(['type' => old('type', 'login'), 'label' => old('label', ''), 'url' => old('url', '')]))">
 
-        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
-            <a href="{{ route('dashboard') }}" class="btn-secondary" style="padding: 9px 12px; flex-shrink: 0;">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-            </a>
+        <a href="{{ route('dashboard') }}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 0.8rem; color: var(--text-muted); text-decoration: none; margin-bottom: 14px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Mes services
+        </a>
+
+        <div class="s-page-head">
             <div>
-                <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 3px;">Nouveau service</h1>
-                <p style="color: var(--text-muted); font-size: 0.8375rem; margin: 0;">Chiffré avec AES-256-GCM avant sauvegarde</p>
+                <span class="s-tag">// Nouvel élément</span>
+                <h1 style="margin-top: 10px;">Nouveau service</h1>
+                <p class="s-sub">Chiffré avec AES-256-GCM avant sauvegarde</p>
             </div>
+            <span class="s-chip s-chip-ok"><span class="s-dot" aria-hidden="true"></span>Chiffrement actif</span>
         </div>
 
-        <div class="card">
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start;">
+        <div class="card s-hud" style="flex: 999 1 560px; min-width: 0;">
             <form method="POST" action="{{ route('services.stocker') }}">
                 @csrf
 
@@ -87,7 +92,7 @@
                     <label>Nom <span style="color: var(--danger);">*</span></label>
                     <div style="display: flex; gap: 10px; align-items: center;">
 
-                        <div style="width: 44px; height: 44px; border-radius: 10px; background: var(--bg-elevated); border: 1px solid rgba(33,126,170,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                        <div style="width: 44px; height: 44px; border-radius: 10px; background: var(--bg-elevated); border: 1px solid rgba(79,195,247,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                             <img
                                 x-show="faviconUrl"
                                 :src="faviconUrl"
@@ -127,7 +132,7 @@
                     <div style="margin-bottom: 18px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <label style="margin-bottom: 0;">Mot de passe</label>
-                            <button type="button" @click="genererMdp()" style="font-size: 0.775rem; color: var(--accent-bright); background: rgba(33,126,170,0.12); border: 1px solid rgba(33,126,170,0.3); padding: 3px 10px; border-radius: 20px; cursor: pointer; font-weight: 600; font-family: 'Audiowide', sans-serif;">Générer</button>
+                            <button type="button" @click="genererMdp()" class="s-gen-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Générer</button>
                         </div>
                         <div style="position: relative;">
                             <input type="password" id="mdp_visuel" name="mot_de_passe" class="input @error('mot_de_passe') input-error @enderror"
@@ -143,7 +148,7 @@
                         <div x-show="motDePasse.length > 0" style="margin-top: 8px;" x-transition>
                             <div style="display: flex; gap: 3px; height: 4px; margin-bottom: 5px;">
                                 <template x-for="i in 5" :key="i">
-                                    <div style="flex: 1; border-radius: 3px; transition: background 0.3s;" :style="'background: ' + (i <= forceSegments ? forceColor : 'rgba(33,126,170,0.15)')"></div>
+                                    <div style="flex: 1; border-radius: 3px; transition: background 0.35s, box-shadow 0.35s;" :style="i <= forceSegments ? 'background: ' + forceColor + '; box-shadow: 0 0 10px ' + forceColor : 'background: #16283a'"></div>
                                 </template>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 0.72rem;">
@@ -260,7 +265,7 @@
                     <textarea name="notes" class="input" rows="3" placeholder="Informations complémentaires..." style="resize: vertical; line-height: 1.5;">{{ old('notes') }}</textarea>
                 </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid rgba(33,126,170,0.2);">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding-top: 18px; border-top: 1px solid #12202e;">
                     <a href="{{ route('dashboard') }}" class="btn-secondary">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         Annuler
@@ -272,32 +277,12 @@
                 </div>
             </form>
         </div>
+
+        @include('dashboard.partials.stockage-chiffre')
+        </div>
     </div>
 
-    <style>
-        .type-btn {
-            display: flex; flex-direction: column; align-items: center; gap: 7px;
-            padding: 14px 8px; border-radius: 10px;
-            border: 1px solid rgba(33,126,170,0.25);
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            cursor: pointer; transition: all 0.15s;
-            font-family: 'Audiowide', sans-serif;
-            font-size: 0.8rem; font-weight: 600;
-        }
-        .type-btn:hover {
-            border-color: var(--accent-bright);
-            color: var(--text-primary);
-            background: rgba(33,126,170,0.12);
-        }
-        .type-btn-active {
-            border-color: var(--accent-bright) !important;
-            background: rgba(33,126,170,0.2) !important;
-            color: var(--accent-bright) !important;
-        }
-        .type-btn svg { transition: stroke 0.15s; }
-        .type-btn-active svg { stroke: var(--accent-bright); }
-    </style>
+    @include('dashboard.partials.form-styles')
 
     {{-- Behavior is supplied once by the tested TypeScript module. --}}
 @endsection

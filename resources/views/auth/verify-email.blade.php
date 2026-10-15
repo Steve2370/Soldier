@@ -2,38 +2,43 @@
 @section('title', 'Vérifiez votre email')
 
 @section('content')
-    <div style="min-height: calc(100vh - 88px); display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
-        <div style="width: 100%; max-width: 440px; text-align:center;">
+    <div class="s-centered">
+        <x-soldier.backdrop :locks="5" />
 
-            <div style="width:72px; height:72px; background:rgba(45,159,212,0.1); border:1px solid rgba(45,159,212,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <div class="card s-orbit-border s-boot" style="width: 100%; max-width: 500px; padding: 42px 38px; border-radius: 16px; border-color: transparent; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 22px;">
+            <div class="s-mail" aria-hidden="true">
+                <span class="s-mail-wave"></span>
+                <span class="s-mail-wave" style="animation-delay: 1.2s;"></span>
+                <span class="s-mail-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </span>
             </div>
 
-            <h1 style="font-size:1.5rem; font-weight:800; color:var(--text-primary); margin-bottom:12px;">Vérifiez votre email</h1>
-            <p style="font-size:0.875rem; color:var(--text-muted); line-height:1.7; margin-bottom:32px;">
-                Un lien de vérification a été envoyé à <strong style="color:var(--text-primary);">{{ auth()->user()->email }}</strong>.<br>
-                Cliquez sur le lien dans l'email pour activer votre compte.
-            </p>
+            <div>
+                <h1 style="font-size: 1.55rem; font-weight: 400; color: var(--text-primary); margin-bottom: 12px;">Vérifiez votre email</h1>
+                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.7;">
+                    Un lien de vérification a été envoyé à <strong class="s-mono" style="color: var(--text-primary); font-weight: 400;">{{ auth()->user()->email }}</strong>.<br>
+                    Cliquez sur le lien dans l'email pour activer votre compte.
+                </p>
+            </div>
 
-            <div class="card" style="text-align:left;">
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 10px;">
                 <form method="POST" action="{{ route('verification.send') }}">
                     @csrf
-                    <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:13px;">
+                    <button type="submit" class="btn-primary" style="width: 100%; min-height: 50px;">
                         Renvoyer l'email de vérification
                     </button>
                 </form>
 
-                <div class="divider"></div>
-
                 <form method="POST" action="{{ route('deconnexion') }}">
                     @csrf
-                    <button type="submit" class="btn-secondary" style="width:100%; justify-content:center; padding:11px; font-size:0.875rem;">
+                    <button type="submit" class="btn-secondary" style="width: 100%; min-height: 46px;">
                         Se déconnecter
                     </button>
                 </form>
             </div>
 
-            <p style="margin-top:20px; font-size:0.75rem; color:var(--text-muted);">
+            <p style="font-size: 0.75rem; color: var(--text-muted);">
                 Vérifiez vos spams si vous ne trouvez pas l'email.
             </p>
         </div>

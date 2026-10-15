@@ -4,23 +4,28 @@
 @section('content')
     <div x-data="modifierService(@js($donnees['label']), @js($donnees['url'] ?? ''), @js($donnees['favicon_url'] ?? ''))">
 
-        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 28px;">
-            <a href="{{ route('services.afficher', $element->id) }}" class="btn-secondary" style="padding: 9px 12px; flex-shrink: 0;">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-            </a>
+        <a href="{{ route('services.afficher', $element->id) }}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 40px; font-size: 0.8rem; color: var(--text-muted); text-decoration: none; margin-bottom: 14px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Retour au service
+        </a>
+
+        <div class="s-page-head">
             <div>
-                <h1 style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 3px;">Modifier le service</h1>
-                <p style="color: var(--text-muted); font-size: 0.8375rem; margin: 0;">Les modifications seront rechiffrées avec un nouvel IV</p>
+                <span class="s-tag">// Modification</span>
+                <h1 style="margin-top: 10px;">Modifier le service</h1>
+                <p class="s-sub">Les modifications seront rechiffrées avec un nouvel IV</p>
             </div>
+            <span class="s-chip s-chip-ok"><span class="s-dot" aria-hidden="true"></span>Rechiffrement à la sauvegarde</span>
         </div>
 
-        <div class="card">
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; max-width: 1100px;">
+        <div class="card s-hud" style="flex: 999 1 560px; min-width: 0;">
             <form method="POST" action="{{ route('services.mettreAJour', $element->id) }}">
                 @csrf @method('PUT')
                 <input type="hidden" name="type" value="{{ $donnees['type'] }}">
 
-                <div style="background: rgba(107,127,138,0.5); border: 1px solid rgba(33,126,170,0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;">
-                    <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(107,127,138,0.6); border: 1px solid rgba(33,126,170,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; color: var(--accent-bright);">
+                <div style="background: rgba(4,10,16,0.9); border: 1px solid #1a2b3c; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 46px; height: 46px; border-radius: 12px; background: #0e1a27; border: 1px solid rgba(79,195,247,0.4); box-shadow: 0 0 18px rgba(79,195,247,.3); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; color: var(--accent-bright);">
                         <img x-show="faviconUrl" :src="faviconUrl" style="width: 28px; height: 28px; object-fit: contain;" x-on:error="faviconUrl = ''">
                         <div x-show="!faviconUrl" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                             @php
@@ -40,7 +45,7 @@
                         <div style="font-weight: 700; font-size: 0.9375rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" x-text="label || 'Nom du service'"></div>
                         <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;" x-text="urlAffichee || '{{ ucfirst($donnees['type']) }}'"></div>
                     </div>
-                    <span style="display: inline-flex; align-items: center; background: rgba(33,126,170,0.15); border: 1px solid rgba(33,126,170,0.3); border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700; color: var(--accent-bright); flex-shrink: 0;">Modification</span>
+                    <span style="display: inline-flex; align-items: center; background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.3); border-radius: 20px; padding: 3px 10px; font-size: 0.72rem; font-weight: 700; color: var(--accent-bright); flex-shrink: 0;">Modification</span>
                 </div>
 
                 <div style="margin-bottom: 18px;">
@@ -82,7 +87,7 @@
                     <div style="margin-bottom: 18px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                             <label style="margin-bottom: 0;">Mot de passe</label>
-                            <button type="button" @click="genererMdp()" style="font-size: 0.775rem; color: var(--accent-bright); background: rgba(33,126,170,0.12); border: 1px solid rgba(33,126,170,0.3); padding: 3px 10px; border-radius: 20px; cursor: pointer; font-weight: 600; font-family: 'Audiowide', sans-serif; transition: all 0.15s;">Générer</button>
+                            <button type="button" @click="genererMdp()" class="s-gen-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Générer</button>
                         </div>
                         <div style="position: relative;">
                             <svg style="position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -104,7 +109,7 @@
                         <div x-show="motDePasse.length > 0" style="margin-top: 8px;" x-transition>
                             <div style="display: flex; gap: 3px; height: 4px; margin-bottom: 5px;">
                                 <template x-for="i in 5" :key="i">
-                                    <div style="flex: 1; border-radius: 3px; transition: background 0.3s;" :style="'background: ' + (i <= forceSegments ? forceColor : 'rgba(33,126,170,0.15)')"></div>
+                                    <div style="flex: 1; border-radius: 3px; transition: background 0.35s, box-shadow 0.35s;" :style="i <= forceSegments ? 'background: ' + forceColor + '; box-shadow: 0 0 10px ' + forceColor : 'background: #16283a'"></div>
                                 </template>
                             </div>
                             <div style="display: flex; justify-content: space-between; font-size: 0.72rem;">
@@ -226,7 +231,7 @@
                     </div>
                 @endif
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top: 16px; border-top: 1px solid rgba(33,126,170,0.2);">
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding-top: 18px; border-top: 1px solid #12202e;">
                     <a href="{{ route('services.afficher', $element->id) }}" class="btn-secondary">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                         Annuler
@@ -238,11 +243,16 @@
                 </div>
             </form>
         </div>
+
+        @include('dashboard.partials.stockage-chiffre')
+        </div>
     </div>
 
+    @include('dashboard.partials.form-styles')
+
     <style>
-        .icon-btn { width: 30px; height: 30px; background: rgba(107,127,138,0.5); border: 1px solid rgba(33,126,170,0.25); border-radius: 7px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
-        .icon-btn:hover { color: var(--accent-bright); border-color: var(--accent-bright); background: rgba(33,126,170,0.15); }
+        .icon-btn { width: 34px; height: 34px; background: rgba(8,16,26,0.8); border: 1px solid #22364a; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; flex-shrink: 0; }
+        .icon-btn:hover { color: #fff; border-color: var(--accent-bright); background: rgba(79,195,247,0.12); box-shadow: 0 0 14px rgba(79,195,247,.35); }
     </style>
 
 @endsection

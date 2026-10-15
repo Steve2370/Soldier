@@ -2,32 +2,46 @@
 @section('title', 'Dashboard')
 
 @section('content')
+    @php
+        $tousElements = collect($services)->flatMap(fn ($groupe) => $groupe['elements']);
+        $totalElements = $tousElements->count();
+        $motsDePasse = $tousElements
+            ->filter(fn ($e) => ($e['type'] ?? '') === 'login' && ! empty($e['donnees']['mot_de_passe'] ?? null))
+            ->map(fn ($e) => (string) $e['donnees']['mot_de_passe'])
+            ->values();
+        $classes = fn (string $p) => (int) preg_match('/[a-z]/', $p) + (int) preg_match('/[A-Z]/', $p) + (int) preg_match('/[0-9]/', $p) + (int) preg_match('/[^a-zA-Z0-9]/', $p);
+        $nbFaibles = $motsDePasse->filter(fn ($p) => mb_strlen($p) < 12 || $classes($p) < 3)->count();
+        $nbReutilises = $motsDePasse->countBy()->filter(fn ($n) => $n > 1)->sum();
+        $nbSains = max(0, $motsDePasse->count() - $motsDePasse->filter(fn ($p) => mb_strlen($p) < 12 || $classes($p) < 3 || $motsDePasse->countBy()[$p] > 1)->count());
+        $score = $motsDePasse->count() > 0 ? (int) round(100 * $nbSains / $motsDePasse->count()) : 100;
+        $nbTypes = $tousElements->pluck('type')->unique()->count();
+    @endphp
+
     <div x-data="dashboard()">
 
         @if(session('security_alert'))
-            <div x-data="{ show: true }" x-show="show" x-transition
-                 style="margin: 16px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px;">
-                <svg style="flex-shrink:0; margin-top:2px;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+            <div x-data="{ show: true }" x-show="show" x-transition role="alert"
+                 style="margin-bottom: 20px; background: rgba(255,90,100,0.08); border: 1px solid rgba(255,90,100,0.4); border-radius: 12px; padding: 14px 18px; display: flex; align-items: flex-start; gap: 12px; box-shadow: 0 0 24px rgba(255,90,100,.12);">
+                <svg style="flex-shrink:0; margin-top:2px;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff5a64" stroke-width="2.5">
                     <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
                 <div style="flex:1;">
-                    <div style="font-size:0.875rem; font-weight:700; color:#ef4444; margin-bottom:4px;">Alerte de sécurité</div>
-                    <div style="font-size:0.8rem; color:#a0a0a0; line-height:1.5;">Un ou plusieurs éléments de votre coffre n'ont pas pu être déchiffrés. Cela peut indiquer une tentative de manipulation de vos données. Contactez <a href="mailto:support@soldierkey.com" style="color:#ef4444;">support@soldierkey.com</a>.</div>
+                    <div style="font-size:0.85rem; color:#ff9aa0; margin-bottom:4px;">Alerte de sécurité</div>
+                    <div style="font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">Un ou plusieurs éléments de votre coffre n'ont pas pu être déchiffrés. Cela peut indiquer une tentative de manipulation de vos données. Contactez <a href="mailto:support@soldierkey.com" style="color:#ff9aa0;">support@soldierkey.com</a>.</div>
                 </div>
-                <button @click="show = false" style="background:none; border:none; cursor:pointer; color:#606060; flex-shrink:0;">
+                <button @click="show = false" aria-label="Fermer l'alerte" style="background:none; border:none; cursor:pointer; color:var(--text-muted); flex-shrink:0;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
         @endif
 
-        <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 30px;">
+        <div class="s-page-head">
             <div>
-                <h1 style="font-size: 1.625rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">
-                    Mes services
-                </h1>
-                <p style="color: var(--text-muted); font-size: 0.875rem;">
-                    <span style="color: var(--accent-bright); font-weight: 600;">{{ collect($services)->sum(fn($s) => count($s['elements'])) }}</span>
-                    entrées · chiffrées AES-256-GCM
+                <span class="s-tag">// Coffre personnel</span>
+                <h1 style="margin-top: 10px;">Mes services</h1>
+                <p class="s-sub s-mono">
+                    <span data-countup style="color: var(--text-primary);">{{ $totalElements }}</span>
+                    entrées · <span class="s-neon">chiffrées AES-256-GCM</span>
                 </p>
             </div>
             <a href="{{ route('services.creer') }}" class="btn-primary">
@@ -36,12 +50,44 @@
             </a>
         </div>
 
-        <div style="display: flex; gap: 12px; margin-bottom: 28px; align-items: center;">
-            <div style="position: relative; flex: 1; max-width: 380px;">
-                <svg style="position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-muted);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" class="input" placeholder="Rechercher..." x-model="recherche" style="padding-left: 40px;">
+        @if($totalElements > 0)
+            {{-- Santé du coffre, calculée localement à partir des éléments déjà déchiffrés pour cette page --}}
+            <div class="s-stagger" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 28px;">
+                <div class="card s-hud s-scan s-glow" style="padding: 20px; display: flex; align-items: center; gap: 18px;">
+                    <span class="s-scan-line"></span>
+                    <svg viewBox="0 0 84 84" role="img" aria-label="Score de sécurité {{ $score }} sur 100" style="width: 78px; height: 78px; flex-shrink: 0; transform: rotate(-90deg);">
+                        <circle cx="42" cy="42" r="36" fill="none" stroke="#12202e" stroke-width="6"/>
+                        <circle class="s-gauge-arc" data-gauge="{{ $score }}" cx="42" cy="42" r="36" fill="none" stroke="{{ $score >= 80 ? '#3df5c0' : ($score >= 50 ? '#f2b544' : '#ff5a64') }}" stroke-width="6" stroke-linecap="round"/>
+                    </svg>
+                    <div>
+                        <p class="s-tag" style="color: var(--text-muted);">Score de sécurité</p>
+                        <p style="font-size: 1.9rem; margin-top: 6px;"><span class="{{ $score >= 80 ? 's-neon' : '' }}" data-countup style="{{ $score < 80 ? 'color:' . ($score >= 50 ? '#f5c870' : '#ff9aa0') : '' }}">{{ $score }}</span><span style="font-size: 0.85rem; color: var(--text-muted);">/100</span></p>
+                    </div>
+                </div>
+                <div class="card s-glow" style="padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <p class="s-tag" style="color: var(--text-muted);">Entrées</p>
+                    <p style="font-size: 1.9rem;" data-countup>{{ $totalElements }}</p>
+                    <p style="font-size: 0.72rem; color: var(--text-muted);">{{ $nbTypes }} {{ $nbTypes > 1 ? "types d'éléments" : "type d'élément" }}</p>
+                </div>
+                <div class="card s-glow" style="padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <p class="s-tag" style="color: var(--text-muted);">Mots de passe faibles</p>
+                    <p style="font-size: 1.9rem; {{ $nbFaibles > 0 ? 'color:#f5c870; text-shadow: 0 0 18px rgba(242,181,68,.5);' : 'color: var(--neon);' }}" data-countup>{{ $nbFaibles }}</p>
+                    <p style="font-size: 0.72rem; color: var(--text-muted);">Moins de 12 caractères ou peu variés</p>
+                </div>
+                <div class="card s-glow" style="padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <p class="s-tag" style="color: var(--text-muted);">Réutilisés</p>
+                    <p style="font-size: 1.9rem; {{ $nbReutilises > 0 ? 'color:#f5c870; text-shadow: 0 0 18px rgba(242,181,68,.5);' : 'color: var(--neon);' }}" data-countup>{{ $nbReutilises }}</p>
+                    <a href="{{ route('generateur') }}" style="font-size: 0.72rem; text-decoration: none;">Générer des remplaçants →</a>
+                </div>
             </div>
-            <div style="display: flex; gap: 6px;">
+        @endif
+
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; align-items: center;">
+            <div style="position: relative; flex: 1 1 280px; max-width: 460px;">
+                <svg style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="input" placeholder="Rechercher dans le coffre..." aria-label="Rechercher dans le coffre" x-model="recherche" style="padding-left: 42px; min-height: 46px;">
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                 @foreach(['Tous', 'Favoris', 'Récents'] as $filtre)
                     <button
                         @click="filtreActif = '{{ $filtre }}'"
@@ -51,10 +97,8 @@
             </div>
         </div>
 
-        @php $totalElements = collect($services)->sum(fn($s) => count($s['elements'])); @endphp
-
         @if($totalElements > 0)
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px;">
+            <div class="s-stagger" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px;">
                 @foreach($services as $groupe)
                     @foreach($groupe['elements'] as $element)
                         <div
@@ -74,7 +118,7 @@
                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                                         >
                                     @endif
-                                        <div class="favicon-fallback" style="{{ $element['favicon_url'] ? 'display:none;' : '' }}; color: var(--accent-bright);">
+                                        <div class="favicon-fallback" style="{{ $element['favicon_url'] ? 'display:none;' : '' }}">
                                             @php
                                                 $typeIcons = [
                                                     'login' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
@@ -94,15 +138,19 @@
                                 </div>
 
                                 <div style="flex: 1; min-width: 0;">
-                                    <div style="font-weight: 700; font-size: 0.9375rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <div style="font-size: 0.9rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                         {{ $element['label'] }}
                                     </div>
                                     @if($element['url'])
-                                        <div style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">
+                                        <div class="s-mono" style="font-size: 0.72rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px;">
                                             {{ parse_url($element['url'], PHP_URL_HOST) ?? $element['url'] }}
                                         </div>
                                     @endif
                                 </div>
+
+                                @if($groupe['partage'] ?? false)
+                                    <span class="s-chip s-chip-b" title="Partagé avec vous">Partagé</span>
+                                @endif
 
                                 <button
                                     @click="toggleFavori({{ $element['id'] }}, $el)"
@@ -113,11 +161,12 @@
                                 </button>
                             </div>
 
-                            <div style="background: rgba(107,127,138,0.5); border: 1px solid rgba(33,126,170,0.2); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                            <div class="service-ident">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                <span style="font-size: 0.8125rem; color: var(--text-secondary); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <span class="s-mono" style="font-size: 0.78rem; color: var(--text-secondary); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 {{ $element['donnees']['identifiant'] ?? '—' }}
                             </span>
+                                <span class="s-mono" aria-hidden="true" style="font-size: 0.72rem; color: #4e6a82; letter-spacing: .18em;">••••••</span>
                             </div>
 
                             <div style="display: flex; gap: 6px;">
@@ -153,14 +202,10 @@
             </div>
 
         @else
-            <div style="text-align: center; padding: 100px 20px;">
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <img src="{{ asset('assets/Soldier-Logo.png') }}"
-                         alt="Logo"
-                         style="width: 90px; height: auto;">
-                </div>
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;">Coffre vide</h2>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 28px; max-width: 300px; margin-left: auto; margin-right: auto;">
+            <div class="card s-hud" style="text-align: center; padding: 72px 20px; display: flex; flex-direction: column; align-items: center; gap: 18px;">
+                <x-soldier.emblem :size="120" />
+                <h2 style="font-size: 1.3rem; font-weight: 400; color: var(--text-primary); margin-top: 10px;">Coffre vide</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 340px; line-height: 1.6;">
                     Commencez par ajouter votre premier service. Les données seront chiffrées avant leur stockage.
                 </p>
                 <a href="{{ route('services.creer') }}" class="btn-primary">
@@ -176,136 +221,145 @@
 
     <style>
         .service-card {
-            background: var(--bg-surface);
-            border: 1px solid rgba(33,126,170,0.25);
-            border-radius: 12px;
+            position: relative;
+            background: rgba(8,15,23,0.86);
+            border: 1px solid var(--border);
+            border-radius: 14px;
             padding: 16px;
-            transition: border-color 0.2s, transform 0.2s;
+            transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
             cursor: default;
+            overflow: hidden;
+        }
+        .service-card::before {
+            content: ""; position: absolute; left: 0; right: 0; height: 60px; top: -60px;
+            background: linear-gradient(to bottom, transparent, rgba(79,195,247,.08), rgba(79,195,247,.35) 98%, transparent);
+            pointer-events: none; opacity: 0;
         }
         .service-card:hover {
-            border-color: rgba(33,126,170,0.5);
-            transform: translateY(-2px);
+            border-color: rgba(79,195,247,0.55);
+            transform: translateY(-3px);
+            box-shadow: 0 0 0 1px rgba(79,195,247,.15), 0 16px 44px rgba(79,195,247,.14);
+        }
+        .service-card:hover::before { opacity: 1; animation: s-scan 1.6s linear infinite; }
+
+        .service-ident {
+            background: rgba(4,10,16,0.9); border: 1px solid #1a2b3c; border-radius: 9px;
+            padding: 9px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
         }
 
         .favicon-wrapper {
             width: 44px; height: 44px;
             border-radius: 11px;
-            background: rgba(107,127,138,0.6);
-            border: 1px solid rgba(33,126,170,0.3);
+            background: #0e1a27;
+            border: 1px solid rgba(79,195,247,0.3);
             display: flex; align-items: center; justify-content: center;
             overflow: hidden; flex-shrink: 0;
+            transition: box-shadow .3s;
         }
+        .service-card:hover .favicon-wrapper { box-shadow: 0 0 18px rgba(79,195,247,.45); }
         .favicon-fallback {
             width: 100%; height: 100%;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.125rem;
-            color: var(--accent-bright);
-            background: rgba(33,126,170,0.15);
+            font-size: 1.1rem;
+            color: var(--accent-ultra);
+            background: rgba(79,195,247,0.12);
         }
 
         .favori-btn {
+            width: 36px; height: 36px; display: grid; place-items: center;
             background: none; border: none; cursor: pointer;
-            color: var(--text-muted); padding: 4px;
-            border-radius: 6px; transition: all 0.15s; flex-shrink: 0;
+            color: var(--text-muted);
+            border-radius: 8px; transition: all 0.2s; flex-shrink: 0;
         }
-        .favori-btn:hover { color: #f59e0b; }
-        .favori-active { color: #f59e0b !important; }
+        .favori-btn:hover { color: #f5c870; filter: drop-shadow(0 0 6px rgba(242,181,68,.8)); }
+        .favori-active { color: #f5c870 !important; filter: drop-shadow(0 0 6px rgba(242,181,68,.7)); }
 
         .action-chip {
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-            background: rgba(107,127,138,0.5);
-            border: 1px solid rgba(33,126,170,0.25);
-            border-radius: 8px; padding: 7px 10px;
-            font-size: 0.8rem; color: var(--text-secondary);
-            cursor: pointer; transition: all 0.15s;
+            min-height: 38px; min-width: 38px;
+            background: rgba(8,16,26,0.8);
+            border: 1px solid #22364a;
+            border-radius: 8px; padding: 0 12px;
+            font-size: 0.75rem; color: var(--text-secondary);
+            cursor: pointer; transition: all 0.2s;
             text-decoration: none;
-            font-family: 'Audiowide', sans-serif;
-            font-weight: 500;
+            font-family: var(--font-display);
         }
         .action-chip:hover {
-            background: rgba(33,126,170,0.15);
+            background: rgba(79,195,247,0.12);
             border-color: var(--accent-bright);
-            color: var(--accent-bright);
+            color: var(--accent-ultra);
+            box-shadow: 0 0 14px rgba(79,195,247,.3);
         }
         .action-chip-danger:hover {
-            background: rgba(239,68,68,0.1) !important;
-            border-color: rgba(239,68,68,0.4) !important;
-            color: #ef4444 !important;
+            background: rgba(255,90,100,0.1) !important;
+            border-color: rgba(255,90,100,0.5) !important;
+            color: #ff9aa0 !important;
+            box-shadow: 0 0 14px rgba(255,90,100,.25) !important;
         }
 
         .filtre-btn, .filtre-btn-active {
-            padding: 7px 14px; border-radius: 8px;
-            font-size: 0.8125rem; font-weight: 500;
-            cursor: pointer; transition: all 0.15s;
-            font-family: 'Audiowide', sans-serif;
+            min-height: 40px; padding: 0 16px; border-radius: 999px;
+            font-size: 0.75rem;
+            cursor: pointer; transition: all 0.2s;
+            font-family: var(--font-display);
         }
         .filtre-btn {
-            background: rgba(107,127,138,0.5);
-            border: 1px solid rgba(33,126,170,0.25);
+            background: transparent;
+            border: 1px solid #22364a;
             color: var(--text-secondary);
         }
-        .filtre-btn:hover { border-color: var(--accent-bright); color: var(--text-primary); }
+        .filtre-btn:hover { border-color: var(--accent-bright); color: #fff; box-shadow: 0 0 14px rgba(79,195,247,.25); }
         .filtre-btn-active {
-            background: rgba(33,126,170,0.2);
-            color: var(--accent-bright);
-            border: 1px solid rgba(33,126,170,0.4);
+            background: var(--accent-bright);
+            color: #02121b;
+            border: 1px solid var(--accent-bright);
+            box-shadow: 0 0 18px rgba(79,195,247,.45);
         }
-
-        .btn-danger {
-            background: rgba(239,68,68,0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239,68,68,0.3);
-            border-radius: 9px; padding: 10px 20px;
-            font-size: 0.875rem; cursor: pointer; transition: all 0.15s;
-            display: inline-flex; align-items: center; gap: 8px;
-            font-family: 'Audiowide', sans-serif;
-        }
-        .btn-danger:hover { background: rgba(239,68,68,0.2); border-color: #ef4444; }
     </style>
 
     {{-- Behavior is supplied once by the tested TypeScript module. --}}
 
-    @if(!auth()->user()->hasFamilyPlan())
-        <div style="margin-top: 32px; padding: 20px 24px; background: linear-gradient(135deg, rgba(45,159,212,0.08), rgba(33,126,170,0.05)); border: 1px solid rgba(45,159,212,0.25); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <div style="width: 40px; height: 40px; background: rgba(45,159,212,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <div class="s-stagger" style="margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px;">
+        @if(!auth()->user()->hasFamilyPlan())
+            <div class="card s-hud s-glow" style="padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: rgba(9,22,34,0.9); border-color: rgba(79,195,247,0.35);">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 46px; height: 46px; background: rgba(79,195,247,0.12); border: 1px solid rgba(79,195,247,0.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 20px rgba(79,195,247,.3);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-ultra)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.88rem; color: var(--text-primary); margin-bottom: 4px;">Plan Famille disponible</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Partagez Soldier avec jusqu'à 6 membres pour 3,99$/mois</div>
+                    </div>
                 </div>
-                <div>
-                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 2px;">Plan Famille disponible</div>
-                    <div style="font-size: 0.78rem; color: var(--text-muted);">Partagez Soldier avec jusqu'à 6 membres pour 3,99$/mois</div>
-                </div>
+                <a href="{{ route('pricing') }}" class="btn-primary" style="min-height: 40px; font-size: 0.75rem;">
+                    Découvrir →
+                </a>
             </div>
-            <a href="{{ route('pricing') }}" style="background: linear-gradient(135deg,#217eaa,#2d9fd4); color: #fff; border: none; border-radius: 9px; padding: 9px 20px; font-size: 0.8rem; font-weight: 700; text-decoration: none; white-space: nowrap; font-family: 'Audiowide', sans-serif;">
-                Découvrir →
-            </a>
-        </div>
-    @else
-        <div style="margin-top: 32px; padding: 20px 24px; background: linear-gradient(135deg, rgba(34,197,94,0.06), rgba(34,197,94,0.03)); border: 1px solid rgba(34,197,94,0.2); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-                <div style="width: 40px; height: 40px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        @else
+            <div class="card s-glow" style="padding: 22px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-color: rgba(61,245,192,0.35); background: rgba(6,20,15,0.85);">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 46px; height: 46px; background: rgba(61,245,192,0.1); border: 1px solid rgba(61,245,192,0.4); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 20px rgba(61,245,192,.25);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.88rem; color: var(--neon-soft); margin-bottom: 4px;">Plan Famille actif</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Gérez votre groupe famille et invitez vos membres</div>
+                    </div>
                 </div>
-                <div>
-                    <div style="font-weight: 700; font-size: 0.9rem; color: #22c55e; margin-bottom: 2px;">Plan Famille actif</div>
-                    <div style="font-size: 0.78rem; color: var(--text-muted);">Gérez votre groupe famille et invitez vos membres</div>
-                </div>
+                <a href="{{ route('famille.index') }}" class="btn-secondary" style="min-height: 40px; font-size: 0.75rem; border-color: rgba(61,245,192,0.4); color: var(--neon-soft);">
+                    Gérer le groupe →
+                </a>
             </div>
-            <a href="{{ route('famille.index') }}" style="background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); border-radius: 9px; padding: 9px 20px; font-size: 0.8rem; font-weight: 700; text-decoration: none; white-space: nowrap; font-family: 'Audiowide', sans-serif;">
-                Gérer le groupe →
-            </a>
-        </div>
-    @endif
+        @endif
 
-    <div style="margin-top: 16px; padding: 20px 24px; background: linear-gradient(135deg, rgba(33,126,170,0.06), rgba(45,159,212,0.04)); border: 1px solid rgba(33,126,170,0.15); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: 14px;">
-            <div style="width: 40px; height: 40px; background: rgba(33,126,170,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <div class="card s-glow" style="padding: 22px 24px; display: flex; align-items: center; gap: 14px;">
+            <div style="width: 46px; height: 46px; background: rgba(242,181,68,0.1); border: 1px solid rgba(242,181,68,0.35); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f5c870" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </div>
             <div>
-                <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 2px;">Soldier est gratuit</div>
-                <div style="font-size: 0.78rem; color: var(--text-muted);">Si vous aimez le projet, vous pouvez m'encourager</div>
+                <div style="font-size: 0.88rem; color: var(--text-primary); margin-bottom: 4px;">Soldier est gratuit</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Si vous aimez le projet, vous pouvez m'encourager</div>
             </div>
         </div>
     </div>

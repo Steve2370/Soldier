@@ -12,10 +12,11 @@
     @endphp
     <div x-data="partage({{ $errors->any() ? 'true' : 'false' }}, @js($initialPermission))">
 
-    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px;">
+        <div class="s-page-head">
             <div>
-                <h1 style="font-size: 1.625rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">Partage</h1>
-                <p style="color: var(--text-muted); font-size: 0.875rem;">Partage chiffré avec enveloppe RSA-4096</p>
+                <span class="s-tag">// Transmission chiffrée</span>
+                <h1 style="margin-top: 10px;">Partage</h1>
+                <p class="s-sub">Partage chiffré avec enveloppe RSA-4096</p>
             </div>
             <button @click="showFormulaire = !showFormulaire" class="btn-primary">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -23,9 +24,20 @@
             </button>
         </div>
 
+        {{-- Fonctionnement du partage, purement illustratif --}}
+        <div class="card s-hud" aria-label="Fonctionnement du partage" style="padding: 24px 28px; margin-bottom: 22px; background: rgba(7,18,28,0.92);">
+            <div class="s-pipeline">
+                <div class="s-pipe-node"><span class="s-node s-node-1"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2M17 6l2 2M15 8l2 2"/></svg></span><span class="s-mono">clé du coffre</span></div>
+                <span class="s-pipe" aria-hidden="true"><span class="s-packet"></span></span>
+                <div class="s-pipe-node"><span class="s-node s-node-2"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="s-mono">enveloppe RSA-4096</span></div>
+                <span class="s-pipe" aria-hidden="true"><span class="s-packet" style="animation-delay: .9s;"></span></span>
+                <div class="s-pipe-node"><span class="s-node s-node-3"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg></span><span class="s-mono">destinataire</span></div>
+            </div>
+        </div>
+
         <div x-show="showFormulaire" x-transition style="margin-bottom: 24px;">
-            <div class="card" style="border-color: var(--accent); box-shadow: 0 0 0 1px rgba(3,166,60,0.15);">
-                <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+            <div class="card s-orbit-border" style="border-color: transparent;">
+                <h3 style="font-size: 0.9375rem;  color: var(--text-primary); margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                     Partager un coffre
                 </h3>
@@ -50,8 +62,8 @@
 
                         @foreach($coffres as $coffre)
                             <div x-show="coffreSelectionne == '{{ $coffre->id }}'" x-transition
-                                 style="margin-top:10px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:6px;">
-                                <div style="font-size:0.72rem; font-weight:700; color:var(--text-muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:2px;">
+                                 style="margin-top:10px; background:var(--bg-elevated); border:1px solid rgba(79,195,247,0.2); border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:6px;">
+                                <div style="font-size:0.72rem;  color:var(--text-muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:2px;">
                                     Éléments inclus dans ce partage
                                 </div>
                                 @foreach($coffre->elements as $el)
@@ -59,16 +71,16 @@
                                         <input type="checkbox" name="element_ids[]" value="{{ $el->id }}"
                                                @checked(! $hasPreviousSelection || in_array((string) $el->id, $selectedElementIds, true))
                                                disabled :disabled="coffreSelectionne !== '{{ $coffre->id }}'"
-                                               style="width:16px; height:16px; accent-color:var(--accent); flex-shrink:0;">
-                                        <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
+                                               style="width:16px; height:16px; accent-color:var(--neon); flex-shrink:0;">
+                                        <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(79,195,247,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
                                                 <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;">
                                             @else
-                                                <span style="font-size:0.7rem; font-weight:700; color:var(--accent-bright);">{{ strtoupper(substr($el->label, 0, 1)) }}</span>
+                                                <span style="font-size:0.7rem;  color:var(--accent-bright);">{{ strtoupper(substr($el->label, 0, 1)) }}</span>
                                             @endif
                                         </div>
                                         <div style="flex:1; min-width:0;">
-                                            <div style="font-size:0.8125rem; font-weight:600; color:var(--text-primary);">{{ $el->label }}</div>
+                                            <div style="font-size:0.8125rem;  color:var(--text-primary);">{{ $el->label }}</div>
                                             <div style="font-size:0.72rem; color:var(--text-muted);">{{ ucfirst($el->type) }}</div>
                                         </div>
                                     </label>
@@ -82,11 +94,11 @@
 
                     <div style="margin-bottom:18px;" x-data="{ modePartage: @js($initialMode) }">
 
-                        <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:10px;">Partager avec</label>
+                        <label style="font-size:0.8rem;  color:var(--text-muted); display:block; margin-bottom:10px;">Partager avec</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="radio" name="partage_groupe" value="0" x-model="modePartage" @checked($initialMode === '0')
-                                       style="width:18px; height:18px; accent-color:var(--accent); flex-shrink:0;">
+                                       style="width:18px; height:18px; accent-color:var(--neon); flex-shrink:0;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Un utilisateur</span>
                             </label>
@@ -94,17 +106,17 @@
                         @if($canShareFamily)
                                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                     <input type="radio" name="partage_groupe" value="1" x-model="modePartage" @checked($initialMode === '1')
-                                           style="width:18px; height:18px; accent-color:var(--accent); flex-shrink:0;">
+                                           style="width:18px; height:18px; accent-color:var(--neon); flex-shrink:0;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                     <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Groupe famille</span>
-                                    <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:1px 6px; font-size:0.65rem; font-weight:700;">{{ $familyGroup->members->where('role','member')->count() }} membres</span>
+                                    <span class="s-chip s-chip-ok">{{ $familyGroup->members->where('role','member')->count() }} membres</span>
                                 </label>
                             @endif
                         </div>
 
                         @error('partage_groupe') <p class="error-msg" role="alert">{{ $message }}</p> @enderror
                         <div x-show="modePartage==='0'" x-transition>
-                            <label for="email" style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">
+                            <label for="email" style="font-size:0.8rem;  color:var(--text-muted); display:block; margin-bottom:6px;">
                                 Email du destinataire <span style="color:var(--danger);">*</span>
                             </label>
                             <div style="position:relative;">
@@ -122,13 +134,13 @@
                         @if($canShareFamily)
                             <div x-show="modePartage==='1'" x-transition>
                                 <div style="background:rgba(45,159,212,0.05); border:1px solid rgba(45,159,212,0.2); border-radius:10px; padding:14px;">
-                                    <div style="font-size:0.78rem; color:#2d9fd4; font-weight:700; margin-bottom:10px;">
+                                    <div style="font-size:0.78rem; color:#2d9fd4;  margin-bottom:10px;">
                                         Membres du groupe (les accès existants sont conservés) :
                                     </div>
                                     <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
                                         @foreach($familyGroup->members->where('role','member') as $membre)
                                             <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:var(--bg-card); border-radius:8px;">
-                                                <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; overflow:hidden; flex-shrink:0;">
+                                                <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem;  color:#fff; overflow:hidden; flex-shrink:0;">
                                                     @if($membre->user->avatar)
                                                         <img src="{{ Storage::url($membre->user->avatar) }}" style="width:100%; height:100%; object-fit:cover;">
                                                     @elseif($membre->user->avatar_url)
@@ -138,16 +150,16 @@
                                                     @endif
                                                 </div>
                                                 <div style="flex:1;">
-                                                    <div style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">{{ $membre->user->name }}</div>
+                                                    <div style="font-size:0.85rem;  color:var(--text-primary);">{{ $membre->user->name }}</div>
                                                     <div style="font-size:0.72rem; color:var(--text-muted);">{{ $membre->user->email }}</div>
                                                 </div>
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                                             </div>
                                         @endforeach
                                     </div>
-                                    <div style="background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:10px 12px; display:flex; align-items:center; gap:8px;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                                        <p style="font-size:0.75rem; color:#22c55e; margin:0; font-weight:600;">
+                                    <div style="background:rgba(61,245,192,0.05); border:1px solid rgba(61,245,192,0.2); border-radius:8px; padding:10px 12px; display:flex; align-items:center; gap:8px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                        <p style="font-size:0.75rem; color:var(--neon); margin:0; ">
                                             Une invitation sera créée pour chaque membre sans accès existant à ce coffre.
                                         </p>
                                     </div>
@@ -162,14 +174,14 @@
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="radio" name="permission" value="lecture"
                                        @checked($initialPermission === 'lecture')
-                                       style="width:18px; height:18px; cursor:pointer; accent-color:var(--accent);">
+                                       style="width:18px; height:18px; cursor:pointer; accent-color:var(--neon);">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Lecture</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="radio" name="permission" value="ecriture"
                                        @checked($initialPermission === 'ecriture')
-                                       style="width:18px; height:18px; cursor:pointer; accent-color:var(--accent);">
+                                       style="width:18px; height:18px; cursor:pointer; accent-color:var(--neon);">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                 <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Écriture</span>
                             </label>
@@ -197,7 +209,7 @@
 
         @if($invitationsEnAttente->isNotEmpty())
             <div style="margin-bottom: 28px;">
-                <h2 style="font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <h2 style="font-size: 1rem;  color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     Invitations en attente ({{ $invitationsEnAttente->count() }})
                 </h2>
@@ -209,7 +221,7 @@
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                 </div>
                                 <div style="flex: 1; min-width: 0;">
-                                    <div style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">{{ $invitation->coffre->nom }}</div>
+                                    <div style=" font-size: 0.875rem; color: var(--text-primary);">{{ $invitation->coffre->nom }}</div>
                                     <div style="font-size: 0.78rem; color: var(--text-muted);">→ {{ $invitation->email_destinataire }} · {{ ucfirst($invitation->permission) }} · Expire {{ $invitation->expire_le->diffForHumans() }}</div>
                                 </div>
                                 <form method="POST" action="{{ route('partage.annuler', $invitation->id) }}">
@@ -224,7 +236,7 @@
         @endif
 
         <div style="margin-bottom: 28px;">
-            <h2 style="font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <h2 style="font-size: 1rem;  color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 Partagés par moi ({{ $partagesEnvoyes->where('statut', 'accepte')->count() }})
             </h2>
@@ -232,11 +244,11 @@
             @forelse($partagesEnvoyes->where('statut', 'accepte') as $share)
                 <div class="card" style="border-color: var(--border-bright); padding: 14px 16px; margin-bottom: 8px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 36px; height: 36px; background: var(--accent-dim); border: 1px solid var(--border-bright); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.875rem; color: var(--accent-bright); flex-shrink: 0;">
+                        <div style="width: 36px; height: 36px; background: var(--accent-dim); border: 1px solid var(--border-bright); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; color: var(--accent-bright); flex-shrink: 0;">
                             {{ strtoupper(substr($share->destinataire->name, 0, 1)) }}
                         </div>
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">{{ $share->destinataire->name }}</div>
+                            <div style=" font-size: 0.875rem; color: var(--text-primary);">{{ $share->destinataire->name }}</div>
                             <div style="font-size: 0.78rem; color: var(--text-muted);">{{ $share->coffre->nom }} · {{ ucfirst($share->permission) }} · Depuis {{ $share->accepte_le?->diffForHumans() }}</div>
                         </div>
                         <span class="badge {{ $share->permission === 'ecriture' ? 'badge-warning' : 'badge-info' }}">
@@ -256,7 +268,7 @@
         </div>
 
         <div>
-            <h2 style="font-size: 1rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <h2 style="font-size: 1rem;  color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
                 Partagés avec moi ({{ $partagesRecus->count() }})
             </h2>
@@ -264,11 +276,11 @@
             @forelse($partagesRecus as $share)
                 <div class="card" style="border-color: var(--border-bright); padding: 14px 16px; margin-bottom: 8px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <div style="width: 36px; height: 36px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 0.875rem; color: var(--text-secondary); flex-shrink: 0;">
+                        <div style="width: 36px; height: 36px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; color: var(--text-secondary); flex-shrink: 0;">
                             {{ strtoupper(substr($share->proprietaire->name, 0, 1)) }}
                         </div>
                         <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary);">{{ $share->coffre->nom }}</div>
+                            <div style=" font-size: 0.875rem; color: var(--text-primary);">{{ $share->coffre->nom }}</div>
                             <div style="font-size: 0.78rem; color: var(--text-muted);">Partagé par {{ $share->proprietaire->name }} · {{ ucfirst($share->permission) }}</div>
                         </div>
                         <span class="badge badge-success">Accès actif</span>
@@ -284,10 +296,19 @@
     </div>
 
     <style>
-        .input-error { border-color: #ef4444 !important; }
+        .s-pipeline { display: flex; align-items: center; gap: 14px; }
+        .s-pipe-node { display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.68rem; color: var(--text-muted); text-align: center; flex-shrink: 0; }
+        .s-node { width: 70px; height: 70px; border-radius: 18px; display: grid; place-items: center; background: #06101a; border: 1px solid #23415a; color: var(--accent-ultra); }
+        .s-node-1 { animation: s-lit 3.6s infinite; } .s-node-2 { animation: s-lit 3.6s 1.2s infinite; } .s-node-3 { animation: s-lit 3.6s 2.4s infinite; }
+        @keyframes s-lit { 0%, 100% { box-shadow: none; border-color: #23415a; } 10%, 30% { box-shadow: 0 0 34px rgba(61,245,192,.5); border-color: var(--neon); color: var(--neon); } }
+        .s-pipe { position: relative; flex: 1; min-width: 30px; height: 2px; background: linear-gradient(90deg, rgba(79,195,247,.15), rgba(79,195,247,.5), rgba(79,195,247,.15)); }
+        .s-packet { position: absolute; top: -5px; width: 44px; height: 12px; border-radius: 6px; background: radial-gradient(closest-side, #fff, var(--neon) 40%, transparent); animation: s-packet 1.8s cubic-bezier(.6,0,.4,1) infinite; }
+        @media (max-width: 560px) { .s-node { width: 52px; height: 52px; } .s-pipe-node .s-mono { display: none; } }
+        .input-error { border-color: #ff5a64 !important; }
         select.input option { background: var(--bg-elevated); color: var(--text-primary); }
-        .share-element-choice { display:flex; align-items:center; gap:10px; padding:8px; background:var(--bg-card); border-radius:7px; border:1px solid var(--border); cursor:pointer; }
-        .share-element-choice:has(input:checked) { border-color:var(--accent); }
+        .share-element-choice { display:flex; align-items:center; gap:12px; min-height:52px; padding:8px 12px; background:var(--bg-card); border-radius:10px; border:1px solid var(--border); cursor:pointer; transition: box-shadow .2s, background .2s; }
+        .share-element-choice:hover { border-color: var(--accent); }
+        .share-element-choice:has(input:checked) { border-color:var(--accent); background: rgba(45,159,212,.08); box-shadow: 0 0 16px rgba(79,195,247,.18); }
         .share-element-choice:focus-within { outline:2px solid var(--accent); outline-offset:2px; }
     </style>
 

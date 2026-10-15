@@ -2,27 +2,27 @@
 @section('title', 'Connexion')
 
 @section('content')
-    <div style="min-height: calc(100vh - 88px); display: flex; align-items: center; justify-content: center; padding: 40px 20px;">
-        <div style="width: 100%; max-width: 420px;">
-            <div style="text-align: center; margin-bottom: 40px;">
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
-                    <img src="{{ asset('assets/Soldier-Logo.png') }}"
-                         alt="Logo"
-                         style="width: 120px; height: auto;">
-                </div>
-                <h1 style="font-family: 'Audiowide', sans-serif; font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; letter-spacing: -0.02em;">Bon retour Soldat</h1>
-                <p style="color: var(--text-muted); font-size: 0.875rem;">Entrez votre adresse email pour continuer</p>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 32px; justify-content: center;">
-                <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-bright)); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: #fff; box-shadow: 0 0 16px rgba(45,159,212,0.3);">1</div>
-                <div style="flex: 1; max-width: 56px; height: 1px; background: rgba(33,126,170,0.2);"></div>
-                <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(22,37,52,0.8); border: 1px solid rgba(33,126,170,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text-muted);">2</div>
-            </div>
+    <div class="s-auth">
+        <x-soldier.auth-panel kicker="// Accès sécurisé" title="VOTRE COFFRE" neon="VOUS ATTEND">
+            <p class="s-terminal" style="max-width: 360px; width: 100%;"><span class="pr">&gt;</span> canal chiffré TLS 1.3 établi<span class="s-caret"></span></p>
+        </x-soldier.auth-panel>
 
-            <div class="card">
+        <div class="s-auth-main">
+            <div class="s-auth-box s-orbit-border">
+                <ol class="s-steps" aria-label="Étapes de connexion">
+                    <li class="s-step is-current"><span class="s-step-num">1</span>Email</li>
+                    <li class="s-step-line" aria-hidden="true"></li>
+                    <li class="s-step"><span class="s-step-num">2</span>Déverrouillage</li>
+                </ol>
+
+                <div>
+                    <h1 style="font-size: 1.75rem; font-weight: 400; color: var(--text-primary); margin-bottom: 10px;">Bon retour Soldat</h1>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Entrez votre adresse email pour continuer</p>
+                </div>
+
                 <form method="POST" action="{{ route('connexion.post') }}">
                     @csrf
-                    <div style="margin-bottom: 22px;">
+                    <div style="margin-bottom: 20px;">
                         <label for="email">Adresse email</label>
                         <input
                             type="email" id="email" name="email"
@@ -39,61 +39,48 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 13px;">
+                    <button type="submit" class="btn-primary" style="width: 100%; min-height: 50px;">
                         Continuer →
                     </button>
                 </form>
 
-                <div class="divider"></div>
-
-                <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">Ou continuer avec</p>
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <span style="flex: 1; height: 1px; background: var(--border);"></span>
+                    <span class="s-tag" style="color: var(--text-muted);">ou continuer avec</span>
+                    <span style="flex: 1; height: 1px; background: var(--border);"></span>
+                </div>
 
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-
-                    <a href="{{ route('auth.github.redirect') }}"
-                       style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: all 0.15s; font-family: 'Audiowide', sans-serif;"
-                       onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='var(--bg-hover)'"
-                       onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--bg-elevated)'">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        Continuer avec GitHub
-                    </a>
-
-                    <a href="{{ route('auth.google.redirect') }}"
-                       style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); text-decoration: none; font-size: 0.875rem; font-weight: 600; transition: all 0.15s; font-family: 'Audiowide', sans-serif;"
-                       onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='var(--bg-hover)'"
-                       onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--bg-elevated)'">
-                        <svg width="20" height="20" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        </svg>
-                        Continuer avec Google
-                    </a>
-
-                    <button onclick="connecterAvecPasskey()"
-                            style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; color: var(--text-primary); font-size: 0.875rem; font-weight: 600; transition: all 0.15s; font-family: 'Audiowide', sans-serif; width: 100%; cursor: pointer;"
-                            onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.background='var(--bg-hover)'"
-                            onmouseout="this.style.borderColor='var(--border)'; this.style.background='var(--bg-elevated)'">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+                    <button type="button" onclick="connecterAvecPasskey()" class="s-btn-oauth">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon)" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
                         Se connecter avec un Passkey
                     </button>
 
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px;">
+                        <a href="{{ route('auth.github.redirect') }}" class="s-btn-oauth">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            Continuer avec GitHub
+                        </a>
+
+                        <a href="{{ route('auth.google.redirect') }}" class="s-btn-oauth">
+                            <svg width="20" height="20" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Continuer avec Google
+                        </a>
+                    </div>
                 </div>
 
-                <div class="divider"></div>
-
-                <p style="text-align: center; font-size: 0.875rem; color: var(--text-secondary);">
+                <p style="text-align: center; font-size: 0.82rem; color: var(--text-secondary);">
                     Pas encore de compte ?
-                    <a href="{{ route('inscription') }}" style="color: var(--accent-bright); font-weight: 600; text-decoration: none;">Créer un compte →</a>
+                    <a href="{{ route('inscription') }}" style="color: var(--accent-bright); text-decoration: none;">Créer un compte →</a>
                 </p>
             </div>
-
-            <p style="text-align: center; margin-top: 22px; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.04em;">
-                AES-256-GCM · Argon2id · Session sécurisée
-            </p>
         </div>
     </div>
 @endsection

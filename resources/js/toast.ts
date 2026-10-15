@@ -34,10 +34,10 @@ const ICONS: Record<ToastType, string> = {
 }
 
 const COLORS: Record<ToastType, { bg: string; border: string; icon: string; bar: string }> = {
-    success: { bg: 'rgba(15,15,15,0.97)', border: 'rgba(34,197,94,0.35)',   icon: '#22c55e', bar: '#22c55e' },
-    error: { bg: 'rgba(15,15,15,0.97)', border: 'rgba(239,68,68,0.35)',   icon: '#ef4444', bar: '#ef4444' },
-    warning: { bg: 'rgba(15,15,15,0.97)', border: 'rgba(245,158,11,0.35)',  icon: '#f59e0b', bar: '#f59e0b' },
-    info: { bg: 'rgba(15,15,15,0.97)', border: 'rgba(45,159,212,0.4)',   icon: '#2d9fd4', bar: '#2d9fd4' },
+    success: { bg: 'rgba(4,10,16,0.96)', border: 'rgba(61,245,192,0.4)',  icon: '#3df5c0', bar: '#3df5c0' },
+    error: { bg: 'rgba(4,10,16,0.96)', border: 'rgba(255,90,100,0.45)', icon: '#ff5a64', bar: '#ff5a64' },
+    warning: { bg: 'rgba(4,10,16,0.96)', border: 'rgba(242,181,68,0.4)',  icon: '#f2b544', bar: '#f2b544' },
+    info: { bg: 'rgba(4,10,16,0.96)', border: 'rgba(79,195,247,0.45)', icon: '#4fc3f7', bar: '#4fc3f7' },
 }
 
 export function showToast(
@@ -57,7 +57,7 @@ export function showToast(
         border: 1px solid ${colors.border};
         background: ${colors.bg};
         overflow: hidden;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.7), 0 0 26px ${colors.border};
         backdrop-filter: blur(16px);
         pointer-events: all;
         transform: translateY(16px);
@@ -72,15 +72,15 @@ export function showToast(
                 ${ICONS[type]}
             </div>
             <div style="flex:1;">
-                <div class="toast-title" style="font-weight:700;font-size:0.875rem;color:#ffffff;"></div>
-                <div class="toast-message" style="font-size:0.8rem;color:#e0e0e0;margin-top:3px;"></div>
+                <div class="toast-title" style="font-size:0.85rem;color:#eef3f8;"></div>
+                <div class="toast-message" style="font-size:0.8rem;color:#c3cedb;margin-top:3px;"></div>
             </div>
-            <button class="toast-close-btn" style="background:none;border:none;color:#808080;cursor:pointer;padding:2px;display:flex;align-items:center;">
+            <button class="toast-close-btn" style="background:none;border:none;color:#8fa2b8;cursor:pointer;padding:2px;display:flex;align-items:center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
-        <div style="height:3px;background:rgba(255,255,255,0.06);">
-            <div class="toast-bar" style="height:100%;background:${colors.bar};width:100%;transition:width ${duration}ms linear;"></div>
+        <div style="height:3px;background:rgba(79,195,247,0.08);">
+            <div class="toast-bar" style="height:100%;background:${colors.bar};box-shadow:0 0 8px ${colors.bar};width:100%;transition:width ${duration}ms linear;"></div>
         </div>
     `
 

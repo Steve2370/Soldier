@@ -78,12 +78,12 @@ export function creerService(initial: { type?: string, label?: string, url?: str
             if (/[^a-zA-Z0-9]/.test(mdp)) alphabet += 32
             this.entropie = alphabet > 0 ? Math.round(mdp.length * Math.log2(alphabet)) : 0
 
-            if (this.entropie === 0) { this.forceSegments = 0; this.forceLabel = ''; this.forceColor = 'rgba(33,126,170,0.2)' }
-            else if (this.entropie < 40) { this.forceSegments = 1; this.forceLabel = 'Très faible'; this.forceColor = '#ef4444' }
-            else if (this.entropie < 60) { this.forceSegments = 2; this.forceLabel = 'Faible'; this.forceColor = '#f97316' }
-            else if (this.entropie < 80) { this.forceSegments = 3; this.forceLabel = 'Moyen'; this.forceColor = '#f59e0b' }
-            else if (this.entropie < 100) { this.forceSegments = 4; this.forceLabel = 'Fort'; this.forceColor = 'var(--accent-bright)' }
-            else { this.forceSegments = 5; this.forceLabel = 'Très fort ✓'; this.forceColor = '#2d9fd4' }
+            if (this.entropie === 0) { this.forceSegments = 0; this.forceLabel = ''; this.forceColor = '#16283a' }
+            else if (this.entropie < 40) { this.forceSegments = 1; this.forceLabel = 'Très faible'; this.forceColor = '#ff5a64' }
+            else if (this.entropie < 60) { this.forceSegments = 2; this.forceLabel = 'Faible'; this.forceColor = '#ff8a50' }
+            else if (this.entropie < 80) { this.forceSegments = 3; this.forceLabel = 'Moyen'; this.forceColor = '#f2b544' }
+            else if (this.entropie < 100) { this.forceSegments = 4; this.forceLabel = 'Fort'; this.forceColor = '#4fc3f7' }
+            else { this.forceSegments = 5; this.forceLabel = 'Très fort ✓'; this.forceColor = '#3df5c0' }
         },
     }
 }

@@ -8,6 +8,7 @@ import { settings, avatarUpload } from './pages/settings'
 import { partage } from './pages/partage'
 import { creerService } from './pages/creer'
 import { inscrirePasskey, connecterAvecPasskey } from './pages/passkey'
+import { initEffects, scramble, crackTime } from './ui/effects'
 
 declare global {
     interface Window {
@@ -19,6 +20,8 @@ declare global {
         partage: typeof partage
         inscrirePasskey: typeof inscrirePasskey
         connecterAvecPasskey: typeof connecterAvecPasskey
+        soldierScramble: typeof scramble
+        soldierCrackTime: typeof crackTime
     }
 }
 
@@ -30,6 +33,8 @@ window.avatarUpload = avatarUpload
 window.partage = partage
 window.inscrirePasskey = inscrirePasskey
 window.connecterAvecPasskey = connecterAvecPasskey
+window.soldierScramble = scramble
+window.soldierCrackTime = crackTime
 
 Alpine.data('dashboard', dashboard)
 Alpine.data('afficherService', afficherService)
@@ -44,3 +49,5 @@ window.addEventListener('toast', (e: Event) => {
 })
 
 Alpine.start()
+
+initEffects()

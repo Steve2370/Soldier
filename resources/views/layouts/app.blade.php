@@ -4,256 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#02050a">
     <title>@yield('title', 'Soldier') Password Manager</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=999">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=999">
     <link rel="apple-touch-icon" href="{{ asset('assets/Soldier-Logotype.png') }}">
     @vite(['resources/css/app.css', 'resources/js/app.ts'])
-    <style>
-        :root {
-            --bg-base: #000000;
-            --bg-surface: #202020;
-            --bg-elevated: #404040;
-            --bg-hover: #606060;
-            --border: #404040;
-            --border-bright: #606060;
-            --accent: #217eaa;
-            --accent-bright: #2d9fd4;
-            --accent-dim: rgba(33,126,170,0.15);
-            --text-primary: #ffffff;
-            --text-secondary:#e0e0e0;
-            --text-muted: #808080;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #22c55e;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Audiowide', sans-serif;
-            background: var(--bg-base);
-            color: var(--text-primary);
-            min-height: 100vh;
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #404040; border-radius: 3px; }
-
-        .sidebar {
-            background: var(--bg-surface);
-            border-right: 1px solid #303030;
-            width: 252px;
-            min-height: 100vh;
-            position: fixed;
-            left: 0; top: 0;
-            display: flex;
-            flex-direction: column;
-            z-index: 40;
-        }
-
-        .sidebar-logo {
-            padding: 22px 20px;
-            border-bottom: 1px solid #303030;
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        .logo-icon {
-            width: 36px; height: 36px;
-            background: var(--accent);
-            border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .nav-section-label {
-            font-size: 0.68rem; font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 0.1em;
-            padding: 12px 16px 4px;
-        }
-
-        .nav-item {
-            position: relative;
-            display: flex; align-items: center; gap: 10px;
-            padding: 9px 12px; margin: 1px 6px;
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 0.9rem; font-weight: 500;
-            text-decoration: none;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .nav-item:hover {
-            background: rgba(255,255,255,0.06);
-            color: var(--text-primary);
-        }
-
-        .nav-item.active {
-            background: rgba(33,126,170,0.2);
-            color: var(--accent-bright);
-        }
-
-        .nav-item.active::before {
-            content: '';
-            position: absolute;
-            left: -6px; top: 25%; bottom: 25%;
-            width: 3px;
-            background: var(--accent-bright);
-            border-radius: 0 2px 2px 0;
-        }
-
-        .nav-item svg {
-            width: 17px; height: 17px;
-            flex-shrink: 0; opacity: 0.6;
-            transition: opacity 0.15s;
-        }
-
-        .nav-item:hover svg, .nav-item.active svg { opacity: 1; }
-
-        .main-content {
-            margin-left: 252px;
-            min-height: 100vh;
-            padding: 32px 36px;
-            position: relative;
-            z-index: 1;
-            isolation: isolate;
-        }
-
-        .card {
-            background: var(--bg-surface);
-            border: 1px solid #303030;
-            border-radius: 14px;
-            padding: 24px;
-        }
-
-        .input {
-            background: var(--bg-elevated);
-            border: 1px solid #505050;
-            border-radius: 9px;
-            color: var(--text-primary);
-            padding: 10px 14px;
-            font-size: 0.875rem;
-            font-family: 'Audiowide', sans-serif;
-            width: 100%;
-            outline: none;
-            transition: border-color 0.15s, box-shadow 0.15s;
-        }
-
-        .input:focus {
-            border-color: var(--accent-bright);
-            box-shadow: 0 0 0 3px rgba(33,126,170,0.2);
-        }
-
-        .input::placeholder { color: var(--text-muted); }
-
-        label {
-            display: block;
-            font-size: 0.8125rem; font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-            border: none; border-radius: 9px;
-            padding: 10px 20px;
-            font-size: 0.875rem; font-weight: 700;
-            font-family: 'Audiowide', sans-serif;
-            cursor: pointer; transition: all 0.15s;
-            display: inline-flex; align-items: center; gap: 8px;
-            text-decoration: none;
-        }
-        .btn-primary:hover { background: var(--accent-bright); }
-
-        .btn-secondary {
-            background: var(--bg-elevated);
-            color: var(--text-secondary);
-            border: 1px solid #505050;
-            border-radius: 9px; padding: 10px 20px;
-            font-size: 0.875rem; font-weight: 500;
-            font-family: 'Audiowide', sans-serif;
-            cursor: pointer; transition: all 0.15s;
-            display: inline-flex; align-items: center; gap: 8px;
-            text-decoration: none;
-        }
-        .btn-secondary:hover {
-            border-color: var(--accent-bright);
-            color: var(--text-primary);
-            background: rgba(255,255,255,0.06);
-        }
-
-        .error-msg {
-            color: #fca5a5; font-size: 0.8rem;
-            margin-top: 5px;
-            display: flex; align-items: center; gap: 5px;
-        }
-
-        .divider { height: 1px; background: #303030; margin: 14px 0; }
-        .input-error { border-color: #ef4444 !important; }
-
-        .eye-btn {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.15s;
-        }
-        .eye-btn:hover { color: var(--accent-bright); }
-
-        .mobile-topbar {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 56px;
-            background: var(--bg-surface);
-            border-bottom: 1px solid #303030;
-            z-index: 50;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-        }
-
-        .mobile-menu-btn {
-            background: none;
-            border: none;
-            color: #ffffff;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mobile-menu-btn:hover {
-            background: rgba(255,255,255,0.06);
-        }
-
-        @media (max-width: 768px) {
-            .mobile-topbar { display: flex; }
-
-            .sidebar {
-                transform: translateX(-100%);
-                transition: transform 0.25s ease;
-                z-index: 40;
-            }
-
-            .sidebar-open {
-                transform: translateX(0) !important;
-            }
-
-            .main-content {
-                margin-left: 0 !important;
-                padding: 80px 16px 32px !important;
-            }
-        }
-    </style>
 </head>
 
-<body x-data="{ ...toastManager(), mobileMenu: false }" @toast.window="addToast($event.detail)">
+<body x-data="{ ...toastManager(), mobileMenu: false }" @toast.window="addToast($event.detail)" class="s-grid-bg">
 
-<x-rain-background />
+<x-soldier.backdrop fixed :floor="false" :locks="4" opacity="0.14" />
 
 @auth
     <div class="mobile-topbar">
@@ -263,12 +24,15 @@
                 <g x-show="mobileMenu"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></g>
             </svg>
         </button>
-        <img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Soldier" style="height: 36px;">
-        <div style="width: 40px;"></div>
+        <div class="sidebar-brand" style="padding: 0;">
+            <span class="s-logo-ring"><img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Soldier" style="width: 32px; height: 32px; border-radius: 50%;"></span>
+            <span style="font-size: 15px; letter-spacing: .14em;">SOLDIER</span>
+        </div>
+        <span class="s-dot" style="margin-right: 14px;" aria-hidden="true"></span>
     </div>
 
     <div x-show="mobileMenu" @click="mobileMenu = false"
-         style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 39;"
+         style="position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: 39;"
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
@@ -278,82 +42,88 @@
     </div>
 
     <aside class="sidebar" :class="mobileMenu ? 'sidebar-open' : ''">
-        <div style="display: flex; justify-content: flex-start; margin: 20px 0 10px 20px;">
-            <img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Logo" style="width: 90px; height: auto;">
+        <div class="sidebar-brand">
+            <span class="s-logo-ring"><img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Logo" style="width: 34px; height: 34px; border-radius: 50%;"></span>
+            <span style="font-size: 16px; letter-spacing: .14em;">SOLDIER</span>
         </div>
 
-        <nav style="padding: 10px 0; flex: 1; overflow-y: auto;">
+        <nav style="padding: 4px 0 10px; flex: 1; overflow-y: auto;">
             <div class="nav-section-label">Principal</div>
 
-            <a href="{{ route('dashboard') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            <a href="{{ route('dashboard') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('dashboard') || request()->routeIs('services.*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
                 Tableau de bord
             </a>
 
-            <a href="{{ route('corbeille') }}" class="nav-item {{ request()->routeIs('corbeille*') ? 'active' : '' }}">Corbeille</a>
-
-            <a href="{{ route('generateur') }}" class="nav-item {{ request()->routeIs('generateur') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <a href="{{ route('generateur') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('generateur') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>
                 Générateur
             </a>
 
-            <a href="{{ route('partage.index') }}" class="nav-item {{ request()->routeIs('partage.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <a href="{{ route('partage.index') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('partage.*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>
                 Partage
             </a>
 
-            <a href="{{ route('famille.index') }}" class="nav-item {{ request()->routeIs('famille.*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <a href="{{ route('famille.index') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('famille.*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-7 7-7s7 3 7 7"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5.5-5-6.5"/></svg>
                 Famille
-                        @if(!auth()->user()->hasFamilyPlan() && !auth()->user()->familyMembership)
-                    <span style="background:rgba(45,159,212,0.15); color:#2d9fd4; border-radius:20px; padding:1px 6px; font-size:0.6rem; font-weight:700; margin-left:auto;">NEW</span>
+                @if(!auth()->user()->hasFamilyPlan() && !auth()->user()->familyMembership)
+                    <span class="nav-badge">NEW</span>
                 @endif
+            </a>
+
+            <a href="{{ route('corbeille') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('corbeille*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/></svg>
+                Corbeille
+            </a>
+
+            <div class="nav-section-label">Compte</div>
+
+            <a href="{{ route('settings') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('settings*') ? 'active' : '' }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+                Paramètres
             </a>
 
             @if(auth()->user()->is_admin)
                 <div class="nav-section-label">Administration</div>
-                <a href="{{ route('admin.index') }}" class="nav-item {{ request()->routeIs('admin.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <a href="{{ route('admin.index') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('admin.index') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/></svg>
                     Panel Admin
                 </a>
+                <a href="{{ route('admin.logs') }}" @click="mobileMenu = false" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+                    Logs d'activité
+                </a>
             @endif
-
-            <div class="nav-section-label">Compte</div>
-
-            <a href="{{ route('settings') }}" class="nav-item {{ request()->routeIs('settings*') ? 'active' : '' }}">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                Paramètres
-            </a>
         </nav>
 
-        <div style="padding: 14px; border-top: 1px solid #303030;">
-            <div style="background: var(--bg-elevated); border-radius: 9px; padding: 10px; display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; color: #fff; flex-shrink: 0;">
-                    @if(auth()->user()->avatar)
-                        <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    @elseif(auth()->user()->avatar_url)
-                        <img src="{{ auth()->user()->avatar_url }}" style="width: 100%; height: 100%; object-fit: cover;">
-                    @else
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    @endif
+        <div style="padding: 12px 12px 16px; border-top: 1px solid #12202e; display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 1;">
+            <a href="https://paypal.me/BriceSteve" target="_blank" rel="noopener noreferrer" class="card s-glow" style="padding: 12px 14px; display: flex; gap: 12px; align-items: center; color: var(--text-secondary); font-size: 0.72rem; line-height: 1.5; text-decoration: none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f5c870" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8zM17 10h2a2 2 0 0 1 0 4h-2M8 3v2M12 3v2"/></svg>
+                <span>Soldier est gratuit.<br><span style="color: #8fd8ff;">Offrez moi un café 😄</span></span>
+            </a>
+            <div style="display: flex; align-items: center; gap: 10px; padding: 6px 4px 0;">
+                <div style="position: relative; width: 36px; height: 36px; border-radius: 50%; background: #12263a; color: #8fd8ff; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;">
+                    <div style="width: 100%; height: 100%; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        @elseif(auth()->user()->avatar_url)
+                            <img src="{{ auth()->user()->avatar_url }}" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        @endif
+                    </div>
+                    <span style="position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon); border: 2px solid #03080e;"></span>
                 </div>
-                <div style="overflow: hidden; flex: 1;">
-                    <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ auth()->user()->name }}</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ auth()->user()->email }}</div>
+                <div style="overflow: hidden; flex: 1; min-width: 0;">
+                    <div style="font-size: 0.78rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ auth()->user()->name }}</div>
+                    <div class="s-mono" style="font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;">{{ auth()->user()->email }}</div>
                 </div>
-            </div>
-            <div style="margin-bottom: 10px;">
-                <a href="https://paypal.me/BriceSteve" target="_blank" rel="noopener noreferrer"
-                   style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; transition: background 0.15s; flex-shrink: 0;"
-                   onmouseover="this.style.background='#005ea6'"
-                   onmouseout="this.style.background='#0070ba'">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.59 3.025-2.566 6.643-8.993 6.643H9.38l-1.165 7.388h3.114l.777-4.927h2.19c5.146 0 8.132-2.87 9.05-7.132a5.918 5.918 0 0 0-.124-1.685z"/></svg>
-                    Offrez moi un café 😄
-                </a>
             </div>
             <form method="POST" action="{{ route('deconnexion') }}">
                 @csrf
-                <button type="submit" class="btn-secondary" style="width: 100%; justify-content: center; padding: 8px 12px; font-size: 0.8rem;">
+                <button type="submit" class="btn-secondary" style="width: 100%; min-height: 40px; font-size: 0.75rem;">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     Déconnexion
                 </button>
@@ -363,6 +133,20 @@
 @endauth
 
 <main class="{{ Auth::check() ? 'main-content' : '' }}">
+    @auth
+        <div class="app-topbar">
+            <span class="s-chip s-chip-ok"><span class="s-dot" aria-hidden="true"></span>Coffre déverrouillé</span>
+            <span class="s-session-label">Verrouillage auto <b id="s-session-left">60:00</b></span>
+            <form method="POST" action="{{ route('deconnexion') }}">
+                @csrf
+                <button type="submit" class="btn-secondary" style="min-height: 38px; padding: 0 14px; font-size: 0.72rem;" title="Verrouiller le coffre et se déconnecter">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    Verrouiller
+                </button>
+            </form>
+        </div>
+        <div class="s-session-bar" aria-hidden="true" style="margin-bottom: 30px;"><span id="s-session-bar"></span></div>
+    @endauth
     @yield('content')
 </main>
 
@@ -387,10 +171,10 @@
                     <template x-if="toast.type === 'info'"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></template>
                 </div>
                 <div style="flex: 1;">
-                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-primary);" x-text="toast.titre"></div>
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;" x-text="toast.message" x-show="toast.message"></div>
+                    <div style="font-size: 0.85rem; color: var(--text-primary);" x-text="toast.titre"></div>
+                    <div style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 3px;" x-text="toast.message" x-show="toast.message"></div>
                 </div>
-                <button @click="removeToast(toast.id)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px;">
+                <button @click="removeToast(toast.id)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px;" aria-label="Fermer">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
@@ -410,24 +194,6 @@
         });
     </script>
 @endif
-
-<style>
-    .toast-item { border-radius: 12px; border: 1px solid; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.7); backdrop-filter: blur(12px); }
-    .toast-success { background: rgba(20,20,20,0.97); border-color: rgba(34,197,94,0.4); }
-    .toast-error { background: rgba(20,20,20,0.97); border-color: rgba(239,68,68,0.4); }
-    .toast-warning { background: rgba(20,20,20,0.97); border-color: rgba(245,158,11,0.4); }
-    .toast-info { background: rgba(20,20,20,0.97); border-color: rgba(33,126,170,0.5); }
-    .toast-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .toast-icon-success { background: rgba(34,197,94,0.15); color: #22c55e; }
-    .toast-icon-error { background: rgba(239,68,68,0.15); color: #ef4444; }
-    .toast-icon-warning { background: rgba(245,158,11,0.15); color: #f59e0b; }
-    .toast-icon-info { background: rgba(33,126,170,0.15); color: var(--accent-bright); }
-    .toast-bar-success { background: #22c55e; }
-    .toast-bar-error { background: #ef4444; }
-    .toast-bar-warning { background: #f59e0b; }
-    .toast-bar-info { background: var(--accent-bright); }
-    @keyframes toast-shrink { from { transform: scaleX(1); transform-origin: left; } to { transform: scaleX(0); transform-origin: left; } }
-</style>
 
 <script>
     function toastManager() {
@@ -451,14 +217,14 @@
     }
 </script>
 
-<div id="session-warning" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#141414; border:1px solid #2a2a2a; border-radius:16px; padding:32px; max-width:400px; width:90%; text-align:center;">
-        <div style="width:56px; height:56px; border-radius:14px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+<div id="session-warning" style="display:none; position:fixed; inset:0; background:rgba(2,5,10,0.8); backdrop-filter: blur(6px); z-index:9999; align-items:center; justify-content:center;">
+    <div class="card s-orbit-border" style="padding:34px; max-width:420px; width:90%; text-align:center; border-radius: 16px; border-color: transparent;">
+        <div style="width:60px; height:60px; border-radius:16px; background:rgba(242,181,68,0.1); border:1px solid rgba(242,181,68,0.4); display:flex; align-items:center; justify-content:center; margin:0 auto 20px; box-shadow: 0 0 24px rgba(242,181,68,.25);">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f2b544" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
         </div>
-        <h2 style="color:#fff; font-size:1.1rem; margin-bottom:10px;">Session sur le point d'expirer</h2>
-        <p style="color:#808080; font-size:0.875rem; margin-bottom:24px;">Vous serez déconnecté dans <span id="countdown" style="color:#f59e0b; font-weight:700;">2:00</span> en raison d'inactivité.</p>
-        <button onclick="resetSessionTimer()" style="background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border:none; border-radius:10px; padding:12px 32px; font-size:0.9rem; font-weight:700; cursor:pointer; width:100%;">
+        <h2 style="color:#fff; font-size:1.1rem; font-weight: 400; margin-bottom:10px;">Session sur le point d'expirer</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; line-height: 1.6; margin-bottom:24px;">Vous serez déconnecté dans <span id="countdown" class="s-mono" style="color:#f2b544;">2:00</span> en raison d'inactivité.</p>
+        <button onclick="resetSessionTimer()" class="btn-primary" style="width:100%;">
             Rester connecté
         </button>
     </div>
@@ -470,6 +236,7 @@
         const WARNING = 2 * 60 * 1000;
         let warningTimer, logoutTimer, countdownInterval;
         let countdownSec = 120;
+        let deadline = Date.now() + TIMEOUT;
 
         function resetSessionTimer() {
             clearTimeout(warningTimer);
@@ -477,6 +244,7 @@
             clearInterval(countdownInterval);
             document.getElementById('session-warning').style.display = 'none';
             countdownSec = 120;
+            deadline = Date.now() + TIMEOUT;
             warningTimer = setTimeout(showWarning, TIMEOUT - WARNING);
             logoutTimer = setTimeout(doLogout, TIMEOUT);
         }
@@ -506,12 +274,25 @@
             form.submit();
         }
 
+        function paintSessionIndicator() {
+            const left = Math.max(0, deadline - Date.now());
+            const label = document.getElementById('s-session-left');
+            const bar = document.getElementById('s-session-bar');
+            if (label) {
+                const total = Math.floor(left / 1000);
+                label.textContent = Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0');
+            }
+            if (bar) bar.style.transform = 'scaleX(' + (left / TIMEOUT).toFixed(4) + ')';
+        }
+
         window.resetSessionTimer = resetSessionTimer;
         ['mousemove','mousedown','keydown','touchstart','scroll','click'].forEach(ev => {
             document.addEventListener(ev, resetSessionTimer, { passive: true });
         });
 
         resetSessionTimer();
+        paintSessionIndicator();
+        setInterval(paintSessionIndicator, 1000);
     })();
 </script>
 

@@ -3,415 +3,109 @@
 @section('title', 'Politique de confidentialité Soldier')
 
 @section('content')
-    <!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Politique de confidentialité — Soldier Password Manager</title>
-    <style>
-        :root {
-            --bg: #050a14;
-            --bg-mid: #0a1223;
-            --bg-card: #0c1630;
-            --cyan: #00c8ff;
-            --teal: #00ffb4;
-            --gold: #ffc83c;
-            --white: #ffffff;
-            --dim: #a0c8e0;
-            --border: rgba(0,200,255,0.15);
-            --font-head: 'Courier New', 'Lucida Console', monospace;
-            --font-body: Georgia, 'Times New Roman', serif;
-        }
+<style>
+    .privacy-doc {
+        --cyan: var(--accent-bright);
+        --teal: var(--neon);
+        --gold: var(--warning);
+        --white: var(--text-primary);
+        --dim: var(--text-secondary);
+        --p-card: rgba(4, 10, 16, 0.88);
+        --p-border: rgba(79, 195, 247, 0.16);
+        position: relative;
+        padding: 0 16px;
+        color: var(--dim);
+        line-height: 1.8;
+    }
+    .privacy-guest-nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--p-border); background: rgba(2,5,10,.85); backdrop-filter: blur(12px); }
+    .privacy-guest-nav nav { display: flex; flex-wrap: wrap; gap: 18px; }
+    .privacy-guest-nav nav a { color: var(--dim); text-decoration: none; font-size: 13px; transition: color .2s; }
+    .privacy-guest-nav nav a:hover { color: var(--cyan); }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .privacy-doc .hero { position: relative; z-index: 1; text-align: center; padding: 3rem 1rem 2.5rem; }
+    .privacy-doc .hero-tag { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--cyan); border: 1px solid rgba(79,195,247,.35); padding: 4px 14px; border-radius: 999px; margin-bottom: 1.4rem; box-shadow: 0 0 16px rgba(79,195,247,.15); }
+    .privacy-doc .hero h1 { font-size: clamp(1.8rem, 5vw, 3.1rem); font-weight: 400; color: var(--white); letter-spacing: .03em; line-height: 1.15; margin-bottom: 1rem; }
+    .privacy-doc .hero h1 span { color: var(--accent-ultra); text-shadow: 0 0 10px rgba(79,195,247,.75), 0 0 32px rgba(79,195,247,.3); }
+    .privacy-doc .hero-meta { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: .05em; }
 
-        body {
-            background: var(--bg);
-            color: var(--dim);
-            font-family: 'Audiowide', sans-serif;
-            font-size: 16px;
-            line-height: 1.8;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    .privacy-doc .privacy-container { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 0 5rem; }
 
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
-        }
+    .privacy-doc .toc { position: relative; background: var(--p-card); border: 1px solid var(--p-border); border-left: 3px solid var(--cyan); padding: 1.5rem 2rem; margin-bottom: 3rem; border-radius: 14px; }
+    .privacy-doc .toc-title { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--cyan); margin-bottom: 1rem; }
+    .privacy-doc .toc ol { list-style: decimal; padding-left: 1.2rem; display: grid; grid-template-columns: 1fr 1fr; gap: .3rem 2rem; }
+    .privacy-doc .toc li::marker { color: var(--cyan); font-family: var(--font-mono); }
+    .privacy-doc .toc li a { color: var(--dim); text-decoration: none; font-size: 14px; transition: color .2s, text-shadow .2s; }
+    .privacy-doc .toc li a:hover { color: var(--accent-ultra); text-shadow: 0 0 10px rgba(79,195,247,.6); }
 
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 3px,
-                rgba(0,200,255,0.02) 3px,
-                rgba(0,200,255,0.02) 4px
-            );
-            pointer-events: none;
-            z-index: 0;
-        }
+    .privacy-doc .section { margin-bottom: 3rem; scroll-margin-top: 90px; animation: s-boot .5s backwards; }
+    .privacy-doc .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; padding-bottom: .8rem; border-bottom: 1px solid var(--p-border); }
+    .privacy-doc .section-num { width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 10px; background: rgba(79,195,247,.1); border: 1px solid rgba(79,195,247,.35); box-shadow: 0 0 14px rgba(79,195,247,.18); }
+    .privacy-doc .section-num svg { width: 18px; height: 18px; stroke: var(--cyan); stroke-width: 1.5px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .privacy-doc .section:target .section-num { border-color: var(--neon); box-shadow: 0 0 22px rgba(61,245,192,.45); }
+    .privacy-doc .section h2 { font-size: 1.12rem; font-weight: 400; color: var(--white); letter-spacing: .04em; }
+    .privacy-doc .section p { margin-bottom: 1rem; color: var(--dim); }
+    .privacy-doc .section ul, .privacy-doc .section ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+    .privacy-doc .section li { margin-bottom: .4rem; color: var(--dim); }
 
-        header {
-            position: relative;
-            z-index: 10;
-            border-bottom: 1px solid var(--border);
-            background: rgba(5,10,20,0.95);
-            backdrop-filter: blur(10px);
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            height: 64px;
-        }
+    .privacy-doc .highlight-icon { flex-shrink: 0; margin-right: .5rem; display: inline-flex; vertical-align: middle; }
+    .privacy-doc .highlight-icon svg { width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke: var(--cyan); }
+    .privacy-doc .highlight.green .highlight-icon svg { stroke: var(--teal); }
+    .privacy-doc .highlight.gold .highlight-icon svg { stroke: var(--gold); }
+    .privacy-doc .highlight { background: rgba(79,195,247,.05); border: 1px solid rgba(79,195,247,.2); border-left: 3px solid var(--cyan); padding: 1rem 1.4rem; border-radius: 12px; margin: 1.2rem 0; }
+    .privacy-doc .highlight.green { background: rgba(61,245,192,.05); border-color: rgba(61,245,192,.22); border-left-color: var(--teal); }
+    .privacy-doc .highlight.gold { background: rgba(242,181,68,.05); border-color: rgba(242,181,68,.22); border-left-color: var(--gold); }
+    .privacy-doc .highlight p { margin: 0; }
 
-        .logo-badge {
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            background: rgba(0,200,255,0.15);
-            border: 1.5px solid var(--cyan);
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Audiowide', sans-serif;
-            font-weight: 700;
-            color: var(--white);
-            font-size: 18px;
-            flex-shrink: 0;
-        }
+    .privacy-doc .data-table { width: 100%; border-collapse: collapse; margin: 1.2rem 0; font-size: 14px; display: block; overflow-x: auto; }
+    .privacy-doc .data-table th { font-family: var(--font-mono); font-weight: 400; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); background: rgba(79,195,247,.07); padding: .6rem 1rem; text-align: left; border-bottom: 1px solid var(--p-border); }
+    .privacy-doc .data-table td { padding: .7rem 1rem; border-bottom: 1px solid rgba(79,195,247,.07); color: var(--dim); vertical-align: top; }
+    .privacy-doc .data-table tr:last-child td { border-bottom: none; }
 
-        .logo-text {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 18px;
-            letter-spacing: 0.15em;
-            color: var(--white);
-            text-decoration: none;
-        }
+    .privacy-doc .badge { display: inline-block; font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; padding: 2px 8px; border-radius: 999px; border: 1px solid; text-transform: none; }
+    .privacy-doc .badge.never { color: var(--teal); border-color: rgba(61,245,192,.4); background: rgba(61,245,192,.08); }
+    .privacy-doc .badge.local { color: var(--cyan); border-color: rgba(79,195,247,.4); background: rgba(79,195,247,.08); }
+    .privacy-doc .badge.server { color: var(--gold); border-color: rgba(242,181,68,.4); background: rgba(242,181,68,.08); }
 
-        .logo-sub {
-            font-size: 11px;
-            color: rgba(0,200,255,0.7);
-            letter-spacing: 0.08em;
-            display: block;
-            line-height: 1;
-        }
+    .privacy-doc .contact-card { background: var(--p-card); border: 1px solid var(--p-border); padding: 1.5rem 2rem; border-radius: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+    .privacy-doc .contact-icon { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: rgba(79,195,247,.1); border: 1px solid rgba(79,195,247,.35); border-radius: 12px; }
+    .privacy-doc .contact-icon svg { width: 24px; height: 24px; stroke: var(--cyan); }
+    .privacy-doc .contact-card a { color: var(--cyan); text-decoration: none; }
+    .privacy-doc .contact-card a:hover { text-decoration: underline; }
 
-        nav { margin-left: auto; display: flex; gap: 2rem; }
-        nav a {
-            color: var(--dim);
-            text-decoration: none;
-            font-family: 'Audiowide', sans-serif;
-            font-size: 13px;
-            letter-spacing: 0.05em;
-            transition: color .2s;
-        }
-        nav a:hover { color: var(--cyan); }
+    .privacy-doc .privacy-footer { position: relative; z-index: 1; border-top: 1px solid var(--p-border); padding: 2rem 1rem; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing: .05em; }
 
-        .hero {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 5rem 2rem 3rem;
-        }
+    @media (max-width: 640px) {
+        .privacy-doc .toc { padding: 1.2rem 1.2rem; }
+        .privacy-doc .toc ol { grid-template-columns: 1fr; }
+        .privacy-doc .contact-card { padding: 1.2rem; }
+    }
+</style>
 
-        .hero-tag {
-            display: inline-block;
-            font-family: 'Audiowide', sans-serif;
-            font-size: 11px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--cyan);
-            border: 1px solid rgba(0,200,255,0.3);
-            padding: 4px 14px;
-            border-radius: 2px;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero h1 {
-            font-family: 'Audiowide', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 700;
-            color: var(--white);
-            letter-spacing: 0.05em;
-            line-height: 1.1;
-            margin-bottom: 1rem;
-        }
-
-        .hero h1 span { color: var(--cyan); }
-
-        .hero-meta {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 13px;
-            color: rgba(160,200,224,0.6);
-            letter-spacing: 0.05em;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 860px;
-            margin: 0 auto;
-            padding: 0 2rem 6rem;
-        }
-
-        .toc {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-left: 3px solid var(--cyan);
-            padding: 1.5rem 2rem;
-            margin-bottom: 3rem;
-            border-radius: 2px;
-        }
-
-        .toc-title {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 12px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--cyan);
-            margin-bottom: 1rem;
-        }
-
-        .toc ol {
-            list-style: decimal;
-            padding-left: 1.2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.3rem 2rem;
-        }
-
-        .toc li a {
-            color: var(--dim);
-            text-decoration: none;
-            font-size: 14px;
-            font-family: 'Audiowide', sans-serif;
-            transition: color .2s;
-        }
-        .toc li a:hover { color: var(--cyan); }
-
-        .section {
-            margin-bottom: 3rem;
-            animation: fadeUp .5s ease both;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .section-num {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 11px;
-            color: var(--cyan);
-            background: rgba(0,200,255,0.1);
-            border: 1px solid rgba(0,200,255,0.3);
-            width: 36px; height: 36px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 2px;
-            flex-shrink: 0;
-        }
-        .section-num svg {
-            width: 18px; height: 18px;
-            stroke: var(--cyan);
-            stroke-width: 1.5px;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        .highlight-icon {
-            flex-shrink: 0;
-            margin-right: .5rem;
-            display: inline-flex;
-            vertical-align: middle;
-        }
-        .highlight-icon svg {
-            width: 16px; height: 16px;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        .highlight.green .highlight-icon svg { stroke: var(--teal); }
-        .highlight .highlight-icon svg       { stroke: var(--cyan); }
-        .highlight.gold .highlight-icon svg  { stroke: var(--gold); }
-
-        .section h2 {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--white);
-            letter-spacing: 0.05em;
-        }
-
-        .section p {
-            margin-bottom: 1rem;
-            color: var(--dim);
-        }
-
-        .section ul, .section ol {
-            padding-left: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .section li {
-            margin-bottom: 0.4rem;
-            color: var(--dim);
-        }
-
-        .highlight {
-            background: rgba(0,200,255,0.05);
-            border: 1px solid rgba(0,200,255,0.2);
-            border-left: 3px solid var(--cyan);
-            padding: 1rem 1.4rem;
-            border-radius: 2px;
-            margin: 1.2rem 0;
-        }
-
-        .highlight.green {
-            background: rgba(0,255,180,0.05);
-            border-color: rgba(0,255,180,0.2);
-            border-left-color: var(--teal);
-        }
-
-        .highlight.gold {
-            background: rgba(255,200,60,0.05);
-            border-color: rgba(255,200,60,0.2);
-            border-left-color: var(--gold);
-        }
-
-        .highlight p { margin: 0; }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.2rem 0;
-            font-size: 14px;
-        }
-
-        .data-table th {
-            font-family: 'Audiowide', sans-serif;
-            font-size: 11px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--cyan);
-            background: rgba(0,200,255,0.07);
-            padding: 0.6rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .data-table td {
-            padding: 0.7rem 1rem;
-            border-bottom: 1px solid rgba(0,200,255,0.07);
-            color: var(--dim);
-            vertical-align: top;
-        }
-
-        .data-table tr:last-child td { border-bottom: none; }
-
-        .badge {
-            display: inline-block;
-            font-family: 'Audiowide', sans-serif;
-            font-size: 10px;
-            letter-spacing: 0.08em;
-            padding: 2px 8px;
-            border-radius: 2px;
-            border: 1px solid;
-        }
-        .badge.never  { color: var(--teal); border-color: rgba(0,255,180,0.4); background: rgba(0,255,180,0.08); }
-        .badge.local  { color: var(--cyan); border-color: rgba(0,200,255,0.4); background: rgba(0,200,255,0.08); }
-        .badge.server { color: var(--gold); border-color: rgba(255,200,60,0.4); background: rgba(255,200,60,0.08); }
-
-        .contact-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            padding: 1.5rem 2rem;
-            border-radius: 2px;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .contact-icon {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px; height: 48px;
-            background: rgba(0,200,255,0.1);
-            border: 1px solid rgba(0,200,255,0.3);
-            border-radius: 4px;
-        }
-        .contact-icon svg { width: 24px; height: 24px; stroke: var(--cyan); }
-
-        .contact-card a {
-            color: var(--cyan);
-            text-decoration: none;
-            font-family: 'Audiowide', sans-serif;
-        }
-        .contact-card a:hover { text-decoration: underline; }
-
-        footer {
-            position: relative;
-            z-index: 1;
-            border-top: 1px solid var(--border);
-            padding: 2rem;
-            text-align: center;
-            font-family: 'Audiowide', sans-serif;
-            font-size: 12px;
-            color: rgba(160,200,224,0.4);
-            letter-spacing: 0.05em;
-        }
-
-        @media (max-width: 640px) {
-            .toc ol { grid-template-columns: 1fr; }
-            nav { display: none; }
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-        <img src="{{ asset('assets/Soldier-Logo.png') }}"
-             alt="Logo"
-             style="width: 40px; height: 40px; object-fit: contain;">
+@guest
+    <div class="privacy-guest-nav">
+        <a href="{{ route('welcome') }}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+            <img src="{{ asset('assets/Soldier-Logo.png') }}" alt="Logo" style="width: 36px; height: 36px; object-fit: contain;">
+            <span style="color: var(--text-primary); letter-spacing: .16em;">SOLDIER</span>
+        </a>
         <nav>
             <a href="{{ route('welcome') }}">Accueil</a>
             <a href="{{ route('connexion') }}">Connexion</a>
             <a href="{{ route('inscription') }}">S'inscrire</a>
         </nav>
     </div>
-</header>
+@endguest
 
+<div class="privacy-doc">
 <div class="hero">
     <div class="hero-tag">Légal &amp; Confidentialité</div>
     <h1>Politique de <span>confidentialité</span></h1>
     <p class="hero-meta">Dernière mise à jour : {{ date('d F Y') }} &nbsp;·&nbsp; soldierkey.com</p>
 </div>
 
-<div class="container">
+<div class="privacy-container">
 
     <div class="highlight green">
-        <p><span class="highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span><strong style="color:#00ffb4">Résumé en une phrase :</strong> Soldier ne peut pas lire vos mots de passe. Tout est chiffré sur votre appareil avant d'atteindre nos serveurs. Même nous, nous ne pouvons pas y accéder.</p>
+        <p><span class="highlight-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span><strong style="color:var(--teal)">Résumé en une phrase :</strong> Soldier ne peut pas lire vos mots de passe. Tout est chiffré sur votre appareil avant d'atteindre nos serveurs. Même nous, nous ne pouvons pas y accéder.</p>
     </div>
 
     <div class="toc">
@@ -637,11 +331,10 @@
 
 </div>
 
-<footer>
+<footer class="privacy-footer">
     © {{ date('Y') }} Soldier Password Manager &nbsp;·&nbsp; Tous droits réservés &nbsp;·&nbsp;
-    <a href="/" style="color:rgba(0,200,255,0.5); text-decoration:none;">soldierkey.com</a>
+    <a href="/" style="color: var(--accent-bright); text-decoration: none;">soldierkey.com</a>
 </footer>
 
-</body>
-</html>
+</div>
 @endsection

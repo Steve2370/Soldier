@@ -4,26 +4,70 @@
 @section('content')
     <div x-data="settings('{{ session('tab', 'securite') }}', {{ $errors->has('master_password') ? 'true' : 'false' }})">
 
-        <div style="margin-bottom: 28px;">
-            <h1 style="font-size: 1.625rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">Paramètres</h1>
-            <p style="color: var(--text-muted); font-size: 0.875rem;">Gérez la sécurité et les préférences de votre compte</p>
+        @php
+            $niveauProtection = 40
+                + ($mfaEmail?->actif ? 20 : 0)
+                + ($mfaTotp?->actif ? 20 : 0)
+                + ($passkeys->isNotEmpty() ? 20 : 0);
+        @endphp
+
+        <div class="s-page-head">
+            <div>
+                <span class="s-tag">// Centre de contrôle</span>
+                <h1 style="margin-top: 10px;">Paramètres</h1>
+                <p class="s-sub">Gérez la sécurité et les préférences de votre compte</p>
+            </div>
+            <span class="s-chip {{ $niveauProtection >= 80 ? 's-chip-ok' : 's-chip-w' }}"><span class="s-dot" aria-hidden="true"></span> Protection {{ $niveauProtection }} %</span>
         </div>
 
-        <div style="display: flex; gap: 6px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0;">
+        <div class="settings-tabs" role="tablist">
             @foreach(['securite' => 'Sécurité', 'compte' => 'Compte', 'sessions' => 'Sessions'] as $id => $label)
                 <button
+                    type="button"
                     @click="onglet = '{{ $id }}'"
                     :class="onglet === '{{ $id }}' ? 'onglet-active' : 'onglet'"
-                    style="font-family: 'Audiowide', sans-serif;"
                 >{{ $label }}</button>
             @endforeach
         </div>
 
         <div x-show="onglet === 'securite'" x-transition>
 
-            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
-                    <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1;">
+            <div class="card s-hud s-scan settings-shield" style="margin-bottom: 14px;">
+                <span class="s-scan-line" aria-hidden="true"></span>
+                <div style="position: relative; width: 112px; height: 112px; flex-shrink: 0;">
+                    <svg width="112" height="112" viewBox="0 0 112 112" style="transform: rotate(-90deg);" aria-hidden="true">
+                        <circle cx="56" cy="56" r="46" fill="none" stroke="#12202e" stroke-width="8"/>
+                        <circle class="s-gauge-arc" cx="56" cy="56" r="46" fill="none" stroke="{{ $niveauProtection >= 80 ? 'var(--neon)' : 'var(--warning)' }}" stroke-width="8" stroke-linecap="round" data-gauge="{{ $niveauProtection }}"/>
+                    </svg>
+                    <div style="position: absolute; inset: 0; display: grid; place-items: center; text-align: center;">
+                        <div>
+                            <div style="font-size: 1.6rem;"><span data-countup>{{ $niveauProtection }}</span><span style="font-size: 0.8rem; color: var(--text-muted);">%</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 220px;">
+                    <p class="s-tag" style="color: var(--text-muted);">Niveau de protection du compte</p>
+                    <h2 style="font-size: 1.15rem; font-weight: 400; margin: 10px 0 14px;">
+                        @if($niveauProtection >= 100)
+                            <span class="s-neon">Blindage maximal</span>
+                        @elseif($niveauProtection >= 80)
+                            <span class="s-neon">Très bien protégé</span>
+                        @else
+                            <span style="color: var(--warning);">Renforcez votre accès</span>
+                        @endif
+                    </h2>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <span class="s-chip s-chip-ok">Chiffrement de bout en bout</span>
+                        <span class="s-chip {{ $mfaEmail?->actif ? 's-chip-ok' : 's-chip-w' }}">MFA email {{ $mfaEmail?->actif ? '✓' : '—' }}</span>
+                        <span class="s-chip {{ $mfaTotp?->actif ? 's-chip-ok' : 's-chip-b' }}">TOTP {{ $mfaTotp?->actif ? '✓' : '—' }}</span>
+                        <span class="s-chip {{ $passkeys->isNotEmpty() ? 's-chip-ok' : 's-chip-b' }}">Passkey {{ $passkeys->isNotEmpty() ? '✓' : '—' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card s-hud" style="margin-bottom: 14px;">
+                <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px;">
+                    <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1 1 240px; min-width: 0;">
                         <div style="width: 42px; height: 42px; background: {{ $mfaEmail?->actif ? 'var(--accent-dim)' : 'var(--bg-elevated)' }}; border: 1px solid {{ $mfaEmail?->actif ? 'var(--border-bright)' : 'var(--border)' }}; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ $mfaEmail?->actif ? 'var(--accent-bright)' : 'var(--text-muted)' }}" stroke-width="2">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -32,7 +76,7 @@
                         </div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">MFA par email</span>
+                                <span style="color: var(--text-primary); font-size: 0.9375rem;">MFA par email</span>
                                 @if($mfaEmail?->actif)
                                     <span class="badge badge-success">Actif</span>
                                 @else
@@ -75,9 +119,9 @@
                 </div>
             </div>
 
-            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
-                    <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1;">
+            <div class="card s-hud" style="margin-bottom: 14px;">
+                <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px;">
+                    <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1 1 240px; min-width: 0;">
                         <div style="width: 42px; height: 42px; background: {{ $mfaTotp?->actif ? 'var(--accent-dim)' : 'var(--bg-elevated)' }}; border: 1px solid {{ $mfaTotp?->actif ? 'var(--border-bright)' : 'var(--border)' }}; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="{{ $mfaTotp?->actif ? 'var(--accent-bright)' : 'var(--text-muted)' }}" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
@@ -86,7 +130,7 @@
                         </div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">Authenticator (TOTP)</span>
+                                <span style="color: var(--text-primary); font-size: 0.9375rem;">Authenticator (TOTP)</span>
                                 @if($mfaTotp?->actif)
                                     <span class="badge badge-success">Actif</span>
                                 @endif
@@ -99,7 +143,7 @@
                     @if(!$mfaTotp?->actif)
                         <button @click="configurerTotp('{{ route('settings.totp.configurer') }}')" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0;">Configurer</button>
                     @else
-                        <button type="button" @click="showDesactiverTotp = true" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0; color: var(--danger); border-color: rgba(239,68,68,0.3);">
+                        <button type="button" @click="showDesactiverTotp = true" class="btn-secondary" style="padding: 8px 16px; font-size: 0.8125rem; flex-shrink: 0; color: var(--danger); border-color: rgba(255,90,100,0.3);">
                             Désactiver
                         </button>
                     @endif
@@ -153,7 +197,7 @@
                                 <div style="display: flex; gap: 8px; margin-top: 6px;">
                                     <input type="text" name="code" maxlength="6"
                                            class="input" placeholder="000000"
-                                           style="font-family: 'DM Mono', monospace; letter-spacing: 0.3em; font-size: 1.1rem; text-align: center; max-width: 140px;">
+                                           style="font-family: var(--font-mono); letter-spacing: 0.3em; font-size: 1.1rem; text-align: center; max-width: 140px;">
                                     <button type="submit" class="btn-primary" style="padding: 10px 16px; font-size: 0.8375rem;">Vérifier</button>
                                     <button type="button" @click="showTotpSetup = false" class="btn-secondary" style="padding: 10px 12px;">✕</button>
                                 </div>
@@ -164,15 +208,15 @@
                 </div>
             </div>
 
-            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
-                <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
-                    <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1;">
+            <div class="card s-hud" style="margin-bottom: 14px;">
+                <div style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px;">
+                    <div style="display: flex; gap: 14px; align-items: flex-start; flex: 1 1 240px; min-width: 0;">
                         <div style="width: 42px; height: 42px; background: var(--accent-dim); border: 1px solid var(--border-bright); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                         </div>
                         <div>
                             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9375rem;">Passkeys</span>
+                                <span style="color: var(--text-primary); font-size: 0.9375rem;">Passkeys</span>
                                 @if($passkeys->isNotEmpty())
                                     <span class="badge badge-success">{{ $passkeys->count() }} actif{{ $passkeys->count() > 1 ? "s" : "" }}</span>
                                 @else
@@ -211,8 +255,8 @@
                 @endif
             </div>
 
-            <div class="card" style="border-color: var(--border-bright); margin-top: 20px;">
-                <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+            <div class="card s-orbit-border" style="margin-top: 20px;">
+                <h3 style="font-size: 0.9375rem; color: var(--text-primary); margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     Changer le Master Password
                 </h3>
@@ -269,69 +313,66 @@
             </div>
         </div>
 
-        <div class="card" style="margin-bottom: 14px;">
-            <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Photo de profil
-            </h3>
-
-            <div style="display: flex; align-items: center; gap: 20px;" x-data="avatarUpload()">
-
-                <div style="position: relative; flex-shrink: 0;">
-                    <div style="width: 88px; height: 88px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; background: var(--accent); font-weight: 800; font-size: 1.25rem; color: #fff; flex-shrink: 0;">
-                        @if(auth()->user()->avatar)
-                            <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
-                        @else
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        @endif
-                    </div>
-                    <div x-show="uploading" style="position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                    </div>
-                </div>
-
-                <div style="flex: 1;">
-                    <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
-                        JPG, PNG, Webp — max 2 Mo. Visible dans la sidebar et les partages.
-                    </p>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <form method="POST" action="{{ route('settings.avatar') }}" enctype="multipart/form-data" @submit="uploading = true">
-                            @csrf
-                            <label style="cursor: pointer; margin: 0;">
-                                <input type="file" name="avatar" accept="image/*" style="display: none;"
-                                       @change="previewFile($event); $el.closest('form').submit()">
-                                <span class="btn-secondary" style="font-size: 0.8375rem; padding: 8px 14px; display: inline-flex; align-items: center; gap: 7px; cursor: pointer;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                            Choisir une photo
-                        </span>
-                            </label>
-                        </form>
-
-                        @if(auth()->user()->avatar)
-                            <form method="POST" action="{{ route('settings.avatar.supprimer') }}">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn-secondary" style="font-size: 0.8375rem; padding: 8px 14px; color: var(--danger); border-color: rgba(239,68,68,0.3);">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-                                    Supprimer
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <style>
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        </style>
 
         <div x-show="onglet === 'compte'" x-transition>
 
-            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
-                <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 18px;">Informations du compte</h3>
+            <div class="card" style="margin-bottom: 14px;">
+                <h3 style="font-size: 0.9375rem; color: var(--text-primary); margin-bottom: 18px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Photo de profil
+                </h3>
+
+                <div style="display: flex; align-items: center; gap: 20px;" x-data="avatarUpload()">
+
+                    <div style="position: relative; flex-shrink: 0;">
+                        <div style="width: 88px; height: 88px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #12263a, #1d5b80); font-size: 1.25rem; color: #e6f7ff; box-shadow: 0 0 22px rgba(79,195,247,.35); flex-shrink: 0;">
+                            @if(auth()->user()->avatar)
+                                <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            @else
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            @endif
+                        </div>
+                        <div x-show="uploading" style="position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="animation: s-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                        </div>
+                    </div>
+
+                    <div style="flex: 1;">
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+                            JPG, PNG, Webp — max 2 Mo. Visible dans la sidebar et les partages.
+                        </p>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <form method="POST" action="{{ route('settings.avatar') }}" enctype="multipart/form-data" @submit="uploading = true">
+                                @csrf
+                                <label style="cursor: pointer; margin: 0;">
+                                    <input type="file" name="avatar" accept="image/*" style="display: none;"
+                                           @change="previewFile($event); $el.closest('form').submit()">
+                                    <span class="btn-secondary" style="font-size: 0.8375rem; padding: 8px 14px; display: inline-flex; align-items: center; gap: 7px; cursor: pointer;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Choisir une photo
+                            </span>
+                                </label>
+                            </form>
+
+                            @if(auth()->user()->avatar)
+                                <form method="POST" action="{{ route('settings.avatar.supprimer') }}">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn-secondary" style="font-size: 0.8375rem; padding: 8px 14px; color: var(--danger); border-color: rgba(255,90,100,0.3);">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                        Supprimer
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card s-hud" style="margin-bottom: 14px;">
+                <h3 style="font-size: 0.9375rem; color: var(--text-primary); margin-bottom: 18px;">Informations du compte</h3>
 
                 <div style="display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px;">
-                    <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; background: var(--accent); font-weight: 800; font-size: 1.25rem; color: #fff; flex-shrink: 0;">
+                    <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; border: 2px solid var(--border-bright); display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #12263a, #1d5b80); font-size: 1.25rem; color: #e6f7ff; box-shadow: 0 0 22px rgba(79,195,247,.35); flex-shrink: 0;">
                         @if(auth()->user()->avatar)
                             <img src="{{ Storage::url(auth()->user()->avatar) }}" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
@@ -339,7 +380,7 @@
                         @endif
                     </div>
                     <div>
-                        <div style="font-weight: 700; color: var(--text-primary);">{{ auth()->user()->name }}</div>
+                        <div style="color: var(--text-primary);">{{ auth()->user()->name }}</div>
                         <div style="font-size: 0.8125rem; color: var(--text-muted);">{{ auth()->user()->email }}</div>
                     </div>
                 </div>
@@ -362,7 +403,7 @@
                         <div style="position: relative;">
                             <input :type="s2 ? 'text' : 'password'" name="nouveau_mot_de_passe"
                                    class="input" placeholder="••••••••" autocomplete="new-password" style="padding-right: 44px;">
-                            <button type="button" @click="s2=!s2" class="eye-btn">...</button>
+                            <button type="button" @click="s2=!s2" class="eye-btn" aria-label="Afficher ou masquer"><svg x-show="!s2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg x-show="s2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg></button>
                         </div>
                     </div>
                     <div style="margin-bottom: 20px;">
@@ -376,8 +417,8 @@
                 </form>
             </div>
 
-            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
-                <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary); margin-bottom: 18px;">Modifier le nom</h3>
+            <div class="card s-hud" style="margin-bottom: 14px;">
+                <h3 style="font-size: 0.9375rem; color: var(--text-primary); margin-bottom: 18px;">Modifier le nom</h3>
                 <form method="POST" action="{{ route('settings.nom') }}">
                     @csrf
                     <div style="margin-bottom: 14px;">
@@ -395,18 +436,18 @@
                 </form>
             </div>
 
-            <div class="card" style="border-color: rgba(239,68,68,0.3); margin-bottom: 14px;" x-data="{ confirmer: false }">
-                <h3 style="font-size: 0.9375rem; font-weight: 700; color: #ef4444; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            <div class="card" style="border-color: rgba(255,90,100,0.3); margin-bottom: 14px;" x-data="{ confirmer: false }">
+                <h3 style="font-size: 0.9375rem; color: var(--danger); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                     Supprimer le compte
                 </h3>
                 <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.6;">
-                    Votre compte sera <strong style="color: #ef4444;">désactivé immédiatement</strong> et supprimé définitivement après <strong style="color: #ef4444;">30 jours</strong>. Pendant cette période, vos données sont conservées mais inaccessibles. Cette action ne peut pas être annulée.
+                    Votre compte sera <strong style="color: var(--danger);">désactivé immédiatement</strong> et supprimé définitivement après <strong style="color: var(--danger);">30 jours</strong>. Pendant cette période, vos données sont conservées mais inaccessibles. Cette action ne peut pas être annulée.
                 </p>
 
                 <div x-show="!confirmer">
                     <button type="button" @click="confirmer = true"
-                            class="btn-secondary" style="color: #ef4444; border-color: rgba(239,68,68,0.3); font-size: 0.875rem;">
+                            class="btn-secondary" style="color: var(--danger); border-color: rgba(255,90,100,0.3); font-size: 0.875rem;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                         Supprimer mon compte
                     </button>
@@ -438,15 +479,15 @@
         </div>
 
         <div x-show="onglet === 'sessions'" x-transition>
-            <div class="card" style="border-color: var(--border-bright); margin-bottom: 14px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+            <div class="card s-hud" style="margin-bottom: 14px;">
+                <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; margin-bottom:20px;">
                     <div>
-                        <h3 style="font-size:0.9375rem; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Sessions actives</h3>
+                        <h3 style="font-size:0.9375rem; color:var(--text-primary); margin-bottom:4px;">Sessions actives</h3>
                         <p style="font-size:0.8125rem; color:var(--text-muted); margin:0;">Appareils actuellement connectés à votre compte.</p>
                     </div>
                     <form method="POST" action="{{ route('settings.sessions.revoquer.toutes') }}">
                         @csrf @method('DELETE')
-                        <button type="submit" style="background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.3); border-radius:8px; padding:7px 14px; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                        <button type="submit" class="btn-danger" style="padding:8px 14px; font-size:0.8rem;">
                             Déconnecter tous les autres
                         </button>
                     </form>
@@ -474,21 +515,21 @@
                             elseif (str_contains($ua, 'Safari')) $browser = 'Safari';
                             else $browser = 'Navigateur inconnu';
                         @endphp
-                        <div style="background:var(--bg-elevated); border:1px solid {{ $isCurrent ? 'rgba(45,159,212,0.4)' : 'var(--border)' }}; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:14px;">
-                            <div style="width:40px; height:40px; border-radius:9px; background:rgba(45,159,212,0.1); border:1px solid rgba(45,159,212,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <div style="background:var(--bg-elevated); border:1px solid {{ $isCurrent ? 'rgba(79,195,247,0.4)' : 'var(--border)' }}; border-radius:10px; padding:14px 16px; display:flex; align-items:center; gap:14px;">
+                            <div style="width:40px; height:40px; border-radius:9px; background:rgba(79,195,247,0.1); border:1px solid rgba(79,195,247,0.2); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                                 @if($device === 'Mobile')
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                                 @elseif($device === 'Tablette')
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                                 @else
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                                 @endif
                             </div>
                             <div style="flex:1; min-width:0;">
                                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px;">
-                                    <span style="font-size:0.875rem; font-weight:700; color:var(--text-primary);">{{ $device }} — {{ $browser }}</span>
+                                    <span style="font-size:0.875rem; color:var(--text-primary);">{{ $device }} — {{ $browser }}</span>
                                     @if($isCurrent)
-                                        <span class="badge badge-success">Session actuelle</span>
+                                        <span class="badge badge-success"><span class="s-dot" aria-hidden="true"></span>Session actuelle</span>
                                     @endif
                                 </div>
                                 <div style="font-size:0.75rem; color:var(--text-muted);">
@@ -498,7 +539,7 @@
                             @if(!$isCurrent)
                                 <form method="POST" action="{{ route('settings.sessions.revoquer', $sess->id) }}">
                                     @csrf @method('DELETE')
-                                    <button type="submit" style="background:none; color:var(--text-muted); border:1px solid var(--border); border-radius:7px; padding:5px 11px; font-size:0.775rem; cursor:pointer;">
+                                    <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:0.775rem;">
                                         Révoquer
                                     </button>
                                 </form>
@@ -511,26 +552,22 @@
     </div>
 
     <style>
+        .settings-tabs { display: inline-flex; flex-wrap: wrap; gap: 6px; padding: 5px; margin-bottom: 24px; border: 1px solid var(--border); border-radius: 14px; background: rgba(4,10,16,.85); }
         .onglet, .onglet-active {
-            padding: 10px 18px;
-            font-size: 0.875rem; font-weight: 600;
-            cursor: pointer; border: none; background: none;
-            font-family: 'DM Sans', sans-serif;
-            border-bottom: 2px solid transparent;
+            min-height: 40px; padding: 8px 20px;
+            font-family: var(--font-display); font-size: 0.82rem; letter-spacing: .04em;
+            cursor: pointer; border: 1px solid transparent; border-radius: 10px; background: none;
             color: var(--text-muted);
-            transition: all 0.15s;
-            margin-bottom: -1px;
+            transition: color .2s, background .2s, border-color .2s, box-shadow .2s;
         }
-        .onglet:hover    { color: var(--text-primary); }
-        .onglet-active   { color: var(--accent-bright); border-bottom-color: var(--accent-bright); }
-
-        .eye-btn {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: var(--text-muted); cursor: pointer;
-            padding: 2px; transition: color 0.15s;
+        .onglet:hover { color: var(--text-primary); background: rgba(79,195,247,.06); }
+        .onglet-active { color: #e6f7ff; background: rgba(45,159,212,.16); border-color: rgba(79,195,247,.45); box-shadow: 0 0 18px rgba(79,195,247,.22); }
+        .settings-shield { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; padding: 24px; position: relative; overflow: hidden; }
+        .settings-shield .s-gauge-arc { transition: stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1); filter: drop-shadow(0 0 6px currentColor); }
+        @media (max-width: 640px) {
+            .settings-tabs { display: flex; }
+            .onglet, .onglet-active { flex: 1; padding: 8px 10px; }
         }
-        .eye-btn:hover { color: var(--accent-bright); }
-        .input-error { border-color: #ef4444 !important; }
     </style>
 
 @endsection
