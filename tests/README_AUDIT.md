@@ -4,6 +4,10 @@ Cette suite protège les comportements corrigés à la suite de l’audit du 14 
 
 État après corrections : [CORRECTIONS_2026-10-14.md](CORRECTIONS_2026-10-14.md). Audit historique avant corrections : [AUDIT_2026-10-14.md](AUDIT_2026-10-14.md).
 
+Complément du 15 octobre : [administration, Famille offert et paiements](ADMIN_FAMILLE_PAIEMENTS_2026-10-15.md). Les tests incluent désormais la suppression administrateur, l’attribution/retrait du forfait offert, les requêtes Cashier/Stripe simulées et les webhooks signés. Le transport Stripe refuse tout appel non simulé.
+
+Le complément inclut aussi la correction du partage individuel/familial : `SharingAudienceTest` vérifie les destinataires, les droits, les enveloppes chiffrées et les échecs partiels. Trois parcours navigateur contrôlent le formulaire réellement soumis et les invitations enregistrées, la sélection au clavier, les changements de coffre, la conservation après erreur et le mobile. Dernière exécution complète : **267 tests PHP / 986 assertions et 32 tests navigateur**, sans échec.
+
 ## Précautions
 
 - Exécuter depuis le dossier applicatif contenant `artisan`, `vendor/` et `package.json`, **sur un poste local ou une CI isolée**, jamais directement sur une base de production.

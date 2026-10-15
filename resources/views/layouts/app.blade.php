@@ -305,7 +305,7 @@
             <a href="{{ route('famille.index') }}" class="nav-item {{ request()->routeIs('famille.*') ? 'active' : '' }}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Famille
-                @if(!auth()->user()->subscribed('famille') && !auth()->user()->familyMembership)
+                        @if(!auth()->user()->hasFamilyPlan() && !auth()->user()->familyMembership)
                     <span style="background:rgba(45,159,212,0.15); color:#2d9fd4; border-radius:20px; padding:1px 6px; font-size:0.6rem; font-weight:700; margin-left:auto;">NEW</span>
                 @endif
             </a>
@@ -343,7 +343,7 @@
                 </div>
             </div>
             <div style="margin-bottom: 10px;">
-                <a href="https://paypal.me/BriceSteve" target="_blank"
+                <a href="https://paypal.me/BriceSteve" target="_blank" rel="noopener noreferrer"
                    style="display: inline-flex; align-items: center; gap: 8px; background: #0070ba; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-size: 0.8375rem; font-weight: 700; font-family: 'Audiowide', sans-serif; text-decoration: none; transition: background 0.15s; flex-shrink: 0;"
                    onmouseover="this.style.background='#005ea6'"
                    onmouseout="this.style.background='#0070ba'">

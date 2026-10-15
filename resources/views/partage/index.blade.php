@@ -2,7 +2,15 @@
 @section('title', 'Partage')
 
 @section('content')
-    <div x-data="partage({{ $errors->any() ? 'true' : 'false' }}, '{{ old('permission', 'lecture') }}')">
+    @php
+        $canShareFamily = auth()->user()->hasFamilyPlan() && $familyMembers->isNotEmpty();
+        $initialMode = $canShareFamily && in_array(old('partage_groupe'), ['1', 1, true], true) ? '1' : '0';
+        $initialPermission = old('permission') === 'ecriture' ? 'ecriture' : 'lecture';
+        $hasPreviousSelection = session()->hasOldInput('coffre_id');
+        $selectedElementIds = collect(is_array(old('element_ids')) ? old('element_ids') : [])
+            ->filter(fn ($id) => is_scalar($id))->map(fn ($id) => (string) $id)->all();
+    @endphp
+    <div x-data="partage({{ $errors->any() ? 'true' : 'false' }}, @js($initialPermission))">
 
     <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px;">
             <div>
@@ -22,12 +30,12 @@
                     Partager un coffre
                 </h3>
 
-                <form method="POST" action="{{ route('partage.envoyer') }}" @submit="preparerEnvoi($event)">
+                <form method="POST" action="{{ route('partage.envoyer') }}">
                     @csrf
 
                     <div style="margin-bottom:18px;">
                         <label for="coffre_id">Coffre à partager <span style="color: var(--danger);">*</span></label>
-                        <select id="coffre_id" name="coffre_id"
+                        <select id="coffre_id" name="coffre_id" required
                                 class="input @error('coffre_id') input-error @enderror"
                                 style="cursor: pointer;"
                                 @change="coffreSelectionne = $event.target.value">
@@ -38,7 +46,7 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('coffre_id') <p class="error-msg">...</p> @enderror
+                        @error('coffre_id') <p class="error-msg" role="alert">{{ $message }}</p> @enderror
 
                         @foreach($coffres as $coffre)
                             <div x-show="coffreSelectionne == '{{ $coffre->id }}'" x-transition
@@ -47,9 +55,11 @@
                                     Éléments inclus dans ce partage
                                 </div>
                                 @foreach($coffre->elements as $el)
-                                    <label x-data="{ checked: true }"
-                                           :style="checked ? 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.3); cursor:pointer; transition:all 0.15s;' : 'display:flex; align-items:center; gap:10px; padding:6px 8px; background:var(--bg-card); border-radius:7px; border:1px solid rgba(33,126,170,0.08); cursor:pointer; opacity:0.45; transition:all 0.15s;'">
-                                        <input type="checkbox" name="element_ids[]" value="{{ $el->id }}" x-model="checked" style="display:none;">
+                                    <label class="share-element-choice">
+                                        <input type="checkbox" name="element_ids[]" value="{{ $el->id }}"
+                                               @checked(! $hasPreviousSelection || in_array((string) $el->id, $selectedElementIds, true))
+                                               disabled :disabled="coffreSelectionne !== '{{ $coffre->id }}'"
+                                               style="width:16px; height:16px; accent-color:var(--accent); flex-shrink:0;">
                                         <div style="width:28px; height:28px; border-radius:7px; background:var(--bg-elevated); border:1px solid rgba(33,126,170,0.2); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;">
                                             @if($el->favicon_url)
                                                 <img src="{{ $el->favicon_url }}" style="width:18px; height:18px; object-fit:contain;">
@@ -61,32 +71,30 @@
                                             <div style="font-size:0.8125rem; font-weight:600; color:var(--text-primary);">{{ $el->label }}</div>
                                             <div style="font-size:0.72rem; color:var(--text-muted);">{{ ucfirst($el->type) }}</div>
                                         </div>
-                                        <div :style="checked ? 'width:36px; height:20px; border-radius:10px; background:var(--accent); position:relative; flex-shrink:0; transition:all 0.2s;' : 'width:36px; height:20px; border-radius:10px; background:rgba(255,255,255,0.1); position:relative; flex-shrink:0; transition:all 0.2s;'">
-                                            <div :style="checked ? 'position:absolute; top:3px; left:18px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;' : 'position:absolute; top:3px; left:3px; width:14px; height:14px; border-radius:50%; background:#fff; transition:left 0.2s;'"></div>
-                                        </div>
                                     </label>
                                 @endforeach
                             </div>
                         @endforeach
+                        @if($errors->has('element_ids') || $errors->has('element_ids.*'))
+                            <p class="error-msg" role="alert" data-share-selection-error>{{ $errors->first('element_ids') ?: $errors->first('element_ids.*') }}</p>
+                        @endif
                     </div>
 
-                    <div style="margin-bottom:18px;" x-data="{ modePartage: 'individuel' }">
+                    <div style="margin-bottom:18px;" x-data="{ modePartage: @js($initialMode) }">
 
                         <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:10px;">Partager avec</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
-                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;" @click="modePartage='individuel'">
-                                <div :style="modePartage==='individuel' ? 'width:18px; height:18px; border-radius:50%; border:2px solid var(--accent); background:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;' : 'width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;'">
-                                    <div x-show="modePartage==='individuel'" style="width:8px; height:8px; border-radius:50%; background:#fff;"></div>
-                                </div>
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="radio" name="partage_groupe" value="0" x-model="modePartage" @checked($initialMode === '0')
+                                       style="width:18px; height:18px; accent-color:var(--accent); flex-shrink:0;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                                 <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Un utilisateur</span>
                             </label>
 
-                        @if(auth()->user()->subscribed('famille') && isset($familyGroup) && $familyGroup && $familyGroup->members->where('role','member')->count() > 0)
-                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;" @click="modePartage='famille'">
-                                    <div :style="modePartage==='famille' ? 'width:18px; height:18px; border-radius:50%; border:2px solid var(--accent); background:var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;' : 'width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,0.2); background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;'">
-                                        <div x-show="modePartage==='famille'" style="width:8px; height:8px; border-radius:50%; background:#fff;"></div>
-                                    </div>
+                        @if($canShareFamily)
+                                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                    <input type="radio" name="partage_groupe" value="1" x-model="modePartage" @checked($initialMode === '1')
+                                           style="width:18px; height:18px; accent-color:var(--accent); flex-shrink:0;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                     <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Groupe famille</span>
                                     <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:1px 6px; font-size:0.65rem; font-weight:700;">{{ $familyGroup->members->where('role','member')->count() }} membres</span>
@@ -94,28 +102,28 @@
                             @endif
                         </div>
 
-                        <div x-show="modePartage==='individuel'" x-transition>
-                            <input type="hidden" name="partage_groupe" value="0">
-                            <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">
+                        @error('partage_groupe') <p class="error-msg" role="alert">{{ $message }}</p> @enderror
+                        <div x-show="modePartage==='0'" x-transition>
+                            <label for="email" style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:6px;">
                                 Email du destinataire <span style="color:var(--danger);">*</span>
                             </label>
                             <div style="position:relative;">
                                 <svg style="position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                                 <input type="email" id="email" name="email"
+                                       :disabled="modePartage !== '0'" :required="modePartage === '0'"
                                        class="input @error('email') input-error @enderror"
-                                       value="{{ old('email') }}"
+                                       value="{{ is_string(old('email')) ? old('email') : '' }}"
                                        placeholder="destinataire@soldier.com"
                                        style="padding-left:38px;">
                             </div>
                             @error('email') <p class="error-msg"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>{{ $message }}</p> @enderror
                         </div>
 
-                        @if(auth()->user()->subscribed('famille') && isset($familyGroup) && $familyGroup)
-                            <div x-show="modePartage==='famille'" x-transition>
-                                <input type="hidden" name="partage_groupe" value="1">
+                        @if($canShareFamily)
+                            <div x-show="modePartage==='1'" x-transition>
                                 <div style="background:rgba(45,159,212,0.05); border:1px solid rgba(45,159,212,0.2); border-radius:10px; padding:14px;">
                                     <div style="font-size:0.78rem; color:#2d9fd4; font-weight:700; margin-bottom:10px;">
-                                        Tous les membres recevront ce partage :
+                                        Membres du groupe (les accès existants sont conservés) :
                                     </div>
                                     <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
                                         @foreach($familyGroup->members->where('role','member') as $membre)
@@ -140,7 +148,7 @@
                                     <div style="background:rgba(34,197,94,0.05); border:1px solid rgba(34,197,94,0.2); border-radius:8px; padding:10px 12px; display:flex; align-items:center; gap:8px;">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                                         <p style="font-size:0.75rem; color:#22c55e; margin:0; font-weight:600;">
-                                            {{ $familyGroup->members->where('role','member')->count() }} membre(s) recevront ce partage simultanément
+                                            Une invitation sera créée pour chaque membre sans accès existant à ce coffre.
                                         </p>
                                     </div>
                                 </div>
@@ -153,19 +161,20 @@
                         <div style="display:flex; gap:16px; margin-top:8px;">
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="radio" name="permission" value="lecture"
-                                       {{ old('permission', 'lecture') === 'lecture' ? 'checked' : '' }}
+                                       @checked($initialPermission === 'lecture')
                                        style="width:18px; height:18px; cursor:pointer; accent-color:var(--accent);">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Lecture</span>
                             </label>
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                                 <input type="radio" name="permission" value="ecriture"
-                                       {{ old('permission', 'lecture') === 'ecriture' ? 'checked' : '' }}
+                                       @checked($initialPermission === 'ecriture')
                                        style="width:18px; height:18px; cursor:pointer; accent-color:var(--accent);">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                 <span style="font-size:0.875rem; font-weight:500; color:var(--text-primary);">Écriture</span>
                             </label>
                         </div>
+                        @error('permission') <p class="error-msg" role="alert">{{ $message }}</p> @enderror
                     </div>
 
                     <div style="background:var(--accent-dim); border:1px solid var(--border-bright); border-radius:9px; padding:10px 14px; margin-bottom:18px; display:flex; gap:8px; align-items:flex-start;">
@@ -277,6 +286,9 @@
     <style>
         .input-error { border-color: #ef4444 !important; }
         select.input option { background: var(--bg-elevated); color: var(--text-primary); }
+        .share-element-choice { display:flex; align-items:center; gap:10px; padding:8px; background:var(--bg-card); border-radius:7px; border:1px solid var(--border); cursor:pointer; }
+        .share-element-choice:has(input:checked) { border-color:var(--accent); }
+        .share-element-choice:focus-within { outline:2px solid var(--accent); outline-offset:2px; }
     </style>
 
 @endsection

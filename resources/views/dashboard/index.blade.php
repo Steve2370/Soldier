@@ -266,7 +266,7 @@
 
     {{-- Behavior is supplied once by the tested TypeScript module. --}}
 
-    @if(!auth()->user()->subscribed('famille'))
+    @if(!auth()->user()->hasFamilyPlan())
         <div style="margin-top: 32px; padding: 20px 24px; background: linear-gradient(135deg, rgba(45,159,212,0.08), rgba(33,126,170,0.05)); border: 1px solid rgba(45,159,212,0.25); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 14px;">
                 <div style="width: 40px; height: 40px; background: rgba(45,159,212,0.1); border: 1px solid rgba(45,159,212,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">

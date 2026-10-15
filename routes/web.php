@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminFamilyGrantController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FamilleController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TrashController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Middleware\EnsureStripeWebhookConfigured;
 use App\Services\Auth\Contracts\VerificationEmailInterface;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -128,10 +130,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/logs', [AdminController::class, 'logs'])->name('logs');
     Route::get('/logs/export', [AdminController::class, 'exportLogs'])->name('logs.export');
     Route::delete('/users/{user}', [AdminController::class, 'supprimerUser'])->name('users.supprimer');
+    Route::put('/users/{user}/family-grant', [AdminFamilyGrantController::class, 'store'])->name('users.family-grant.store');
+    Route::delete('/users/{user}/family-grant', [AdminFamilyGrantController::class, 'destroy'])->name('users.family-grant.destroy');
     Route::post('/mail', [AdminController::class, 'envoyerMail'])->middleware('throttle:10,1')->name('mail.envoyer');
 });
 
-Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
+Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])
+    ->middleware(EnsureStripeWebhookConfigured::class)->name('cashier.webhook');
 
 Route::middleware(['auth', 'famille', 'vault.unlocked'])->prefix('famille')->name('famille.')->group(function () {
     Route::get('/', [FamilleController::class, 'index'])->name('index');

@@ -13,6 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
+use Stripe\ApiRequestor;
 use Tests\TestCase;
 
 abstract class AuditTestCase extends TestCase
@@ -51,6 +52,7 @@ abstract class AuditTestCase extends TestCase
         Mail::fake();
         Notification::fake();
         Http::preventStrayRequests();
+        ApiRequestor::setHttpClient(new FakeStripeHttpClient);
     }
 
     protected function user(array $attributes = []): User

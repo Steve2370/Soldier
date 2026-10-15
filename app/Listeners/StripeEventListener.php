@@ -6,71 +6,50 @@ use App\Models\FamilyGroup;
 use App\Models\User;
 use App\Services\Famille\FamilyAccessRevocationService;
 use App\Services\Logs\ActivityLogService;
+use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Events\WebhookReceived;
 
-class StripeEventListener
+final readonly class StripeEventListener
 {
-    public function __construct(private readonly FamilyAccessRevocationService $revocation) {}
+    public function __construct(private FamilyAccessRevocationService $revocation) {}
 
     public function handle(WebhookReceived $event): void
     {
-        $payload = $event->payload;
-        $type = $payload['type'] ?? null;
-
-        match ($type) {
-            'customer.subscription.deleted' => $this->abonnementAnnule($payload),
-            'customer.subscription.updated' => $this->abonnementMisAJour($payload),
-            default => null,
-        };
-    }
-
-    private function abonnementAnnule(array $payload): void
-    {
-        $stripeCustomerId = $payload['data']['object']['customer'] ?? null;
-        if (! $stripeCustomerId) {
+        $type = $event->payload['type'] ?? null;
+        $subscription = $event->payload['data']['object'] ?? [];
+        $status = $subscription['status'] ?? null;
+        if ($type !== 'customer.subscription.deleted'
+            && ! ($type === 'customer.subscription.updated'
+                && in_array($status, ['canceled', 'unpaid', 'past_due', 'incomplete_expired'], true))) {
+            return;
+        }
+        if (empty($subscription['customer']) || empty($subscription['id'])) {
             return;
         }
 
-        $user = User::where('stripe_id', $stripeCustomerId)->first();
-        if (! $user) {
-            return;
-        }
-
-        $this->retirerMembresGroupe($user, 'annulation');
-    }
-
-    private function abonnementMisAJour(array $payload): void
-    {
-        $stripeCustomerId = $payload['data']['object']['customer'] ?? null;
-        $status = $payload['data']['object']['status'] ?? null;
-        if (! $stripeCustomerId) {
-            return;
-        }
-
-        if (in_array($status, ['canceled', 'unpaid', 'past_due', 'incomplete_expired'])) {
-            $user = User::where('stripe_id', $stripeCustomerId)->first();
-            if (! $user) {
+        DB::transaction(function () use ($subscription, $status): void {
+            $user = User::where('stripe_id', $subscription['customer'])->lockForUpdate()->first();
+            if (! $user || $user->family_granted_at !== null) {
                 return;
             }
-            $this->retirerMembresGroupe($user, $status);
-        }
-    }
 
-    private function retirerMembresGroupe(User $user, string $raison): void
-    {
-        $group = FamilyGroup::where('owner_id', $user->id)->first();
-        if (! $group) {
-            return;
-        }
+            // Received runs before Cashier updates/removes the local subscription.
+            // Use the exact identity; unrelated products must not revoke Famille.
+            if (! $user->subscriptions()->where('stripe_id', $subscription['id'])->where('type', 'famille')->exists()) {
+                return;
+            }
+            if ($user->subscriptions()->where('type', 'famille')->where('stripe_id', '!=', $subscription['id'])
+                ->get()->contains(fn ($other) => $other->valid())) {
+                return;
+            }
 
-        $count = $this->revocation->removeAll($group);
-
-        ActivityLogService::log(
-            'famille_abonnement_expire',
-            "Abonnement famille expiré ({$raison}) — {$count} membre(s) retiré(s)",
-            $user->id
-        );
-
-        \Log::info("Stripe: abonnement famille expiré pour user {$user->id} — raison: {$raison} — {$count} membres retirés");
+            foreach (FamilyGroup::where('owner_id', $user->id)->get() as $group) {
+                $count = $this->revocation->removeAll($group);
+                if ($count > 0) {
+                    ActivityLogService::log('famille_abonnement_expire',
+                        "Abonnement famille expiré ({$status}) — {$count} membre(s) retiré(s)", $user->id);
+                }
+            }
+        });
     }
 }

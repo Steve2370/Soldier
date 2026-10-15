@@ -16,6 +16,7 @@ class SchemaContractTest extends AuditTestCase
         return [
             'soft-deleted users' => ['users', 'deleted_at'],
             'administrator flag' => ['users', 'is_admin'],
+            'complimentary family grant' => ['users', 'family_granted_at'],
             'activity journal' => ['activity_logs', 'action'],
             'share selection' => ['shares_coffre', 'element_ids'],
             'invitation selection' => ['invitations_partage', 'element_ids'],

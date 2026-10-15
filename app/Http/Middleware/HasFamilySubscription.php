@@ -16,7 +16,7 @@ class HasFamilySubscription
             : null;
         $billingUser = $membership?->group?->owner ?? $user;
 
-        if (!$billingUser || !$billingUser->subscribed('famille')) {
+        if (! $billingUser || ! $billingUser->hasFamilyPlan()) {
             return redirect()->route('pricing')->with('toast', [
                 'type' => 'warning',
                 'titre' => 'Abonnement requis',

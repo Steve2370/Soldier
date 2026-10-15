@@ -9,6 +9,8 @@ use App\Services\Auth\Contracts\UserRegistrationNotificationInterface;
 use App\Services\Auth\Contracts\VerificationEmailInterface;
 use App\Services\Auth\UserRegistrationNotificationService;
 use App\Services\Auth\VerificationEmailService;
+use App\Services\Billing\CashierFamilyBillingGateway;
+use App\Services\Billing\Contracts\FamilyBillingGateway;
 use App\Services\Coffre\Contracts\ElementPayloadInterface;
 use App\Services\Coffre\ElementPayload;
 use App\Services\Notifications\Contracts\MailDeliveryInterface;
@@ -28,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(FamilyBillingGateway::class,
+            CashierFamilyBillingGateway::class);
         $this->app->bind(VerificationEmailInterface::class,
             VerificationEmailService::class);
         $this->app->bind(MailDeliveryInterface::class,

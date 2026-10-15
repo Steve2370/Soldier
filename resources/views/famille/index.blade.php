@@ -24,7 +24,7 @@
                     style="background:none; border:none; padding:10px 24px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:'Audiowide',sans-serif; display:flex; align-items:center; gap:6px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 Coffre famille
-                @if(auth()->user()->subscribed('famille'))
+                @if(auth()->user()->hasFamilyPlan())
                     <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:1px 7px; font-size:0.65rem; font-weight:700;">ACTIF</span>
                 @endif
             </button>
@@ -37,9 +37,9 @@
                 <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:16px; padding:48px 32px; text-align:center;">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(45,159,212,0.3)" stroke-width="1.5" style="margin:0 auto 16px; display:block;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     <h2 style="font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:8px;">Vous n'appartenez à aucun groupe</h2>
-                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">Activez le plan Famille pour créer votre groupe, ou demandez à être invité par un membre existant.</p>
+                    <p style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">{{ auth()->user()->hasFamilyPlan() ? 'Votre accès Famille est actif. Créez votre groupe pour inviter vos proches.' : 'Activez le plan Famille pour créer votre groupe, ou demandez à être invité par un membre existant.' }}</p>
                     <button @click="onglet='coffre'" style="margin-top:20px; background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border:none; border-radius:10px; padding:10px 24px; font-size:0.85rem; font-weight:700; cursor:pointer; font-family:'Audiowide',sans-serif;">
-                        Activer le plan Famille →
+                        {{ auth()->user()->hasFamilyPlan() ? 'Créer mon groupe famille →' : 'Activer le plan Famille →' }}
                     </button>
                 </div>
 
@@ -161,7 +161,7 @@
         </div>
 
         <div x-show="onglet==='coffre'" x-transition>
-            @if(auth()->user()->subscribed('famille'))
+            @if(auth()->user()->hasFamilyPlan())
 
                 @if(!$group && !$membership)
                     <div style="background:var(--bg-card); border:1px solid rgba(45,159,212,0.2); border-radius:20px; padding:48px 40px; text-align:center;">

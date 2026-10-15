@@ -1,5 +1,5 @@
 @extends('layouts.public')
-@section('title', 'Abonnement activé — Soldier')
+@section('title', 'État du forfait Famille — Soldier')
 
 @section('content')
     <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px 24px;">
@@ -10,10 +10,14 @@
             </div>
 
             <h1 style="font-size:2rem; font-weight:800; color:var(--text-primary); margin-bottom:12px; letter-spacing:-0.02em;">
-                Bienvenue dans Soldier Famille !
+                {{ $active ? 'Votre accès Famille est actif' : 'Confirmation du paiement en attente' }}
             </h1>
             <p style="font-size:0.9375rem; color:var(--text-secondary); line-height:1.75; margin-bottom:36px;">
-                Votre abonnement est actif. Vous pouvez maintenant inviter jusqu'à 5 membres de votre famille et profiter de toutes les fonctionnalités.
+                @if($active)
+                    Votre accès Famille est actif. Vous pouvez inviter jusqu’à 5 membres de votre famille.
+                @else
+                    Nous n’avons pas encore reçu la confirmation de Stripe. Aucun accès payé n’est activé pour le moment. Actualisez cette page dans quelques instants. Si l’attente persiste, contactez le support sans refaire de paiement.
+                @endif
             </p>
 
             <div style="background:rgba(22,37,52,0.7); border:1px solid rgba(33,126,170,0.2); border-radius:16px; padding:24px; margin-bottom:32px; text-align:left;">

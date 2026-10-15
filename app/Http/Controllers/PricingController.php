@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\Billing\Contracts\FamilyBillingGateway;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PricingController extends Controller
 {
+    public function __construct(private readonly FamilyBillingGateway $billing) {}
+
     public function index(): View
     {
         $user = auth()->user();
-        $abonnement = $user?->subscribed('famille') ?? false;
+        $abonnement = $user?->isFamilySubscriber() ?? false;
 
         return view('pricing.index', compact('abonnement'));
     }
 
-    public function checkout(Request $request)
+    public function checkout(Request $request): RedirectResponse
     {
         $user = auth()->user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('inscription')->with('toast', [
                 'type' => 'info',
                 'titre' => 'Connexion requise',
@@ -28,26 +31,38 @@ class PricingController extends Controller
             ]);
         }
 
-        if ($user->subscribed('famille')) {
+        if ($user->isFamilySubscriber()) {
             return redirect()->route('pricing.portail');
         }
 
-        $priceId = config('services.stripe.price_famille') ?: 'price_1TWMJ6GrnmI16jOZdgmPn0bo';
+        if ($user->family_granted_at) {
+            return redirect()->route('famille.index');
+        }
 
-        return $user->newSubscription('famille', $priceId)
-            ->checkout([
-                'success_url' => route('pricing.succes') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url'  => route('pricing'),
-            ]);
+        // An unpaid/incomplete subscription must be resolved, not duplicated.
+        if ($user->subscriptions()->where('type', 'famille')
+            ->whereNotIn('stripe_status', ['canceled', 'incomplete_expired'])->exists()) {
+            return redirect()->route('pricing.portail');
+        }
+
+        return $this->billing->checkout($user);
     }
 
     public function succes(Request $request): View
     {
-        return view('pricing.succes');
+        // A return URL (or an arbitrary session_id) is not proof of payment.
+        return view('pricing.succes', ['active' => $request->user()->hasFamilyPlan()]);
     }
 
     public function portail(Request $request): RedirectResponse
     {
-        return $request->user()->redirectToBillingPortal(route('pricing'));
+        if (! $request->user()->stripe_id) {
+            return redirect()->route('pricing')->with('toast', [
+                'type' => 'info', 'titre' => 'Aucune facturation Stripe',
+                'message' => 'Ce compte ne possède pas de compte de facturation Stripe.',
+            ]);
+        }
+
+        return $this->billing->portal($request->user());
     }
 }

@@ -1,7 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-<div x-data="adminDashboard()">
+<style>
+    .admin-dashboard { --bg-card: rgba(20,20,20,0.94); --border-primary: var(--border); }
+    .admin-users-table th, .admin-users-table td { padding: 12px 8px !important; }
+    .admin-users-table td { overflow-wrap: anywhere; }
+    .admin-users-table td:last-child { min-width: 210px !important; }
+    .admin-users-table summary { white-space: normal; }
+    @media (max-width: 1100px) {
+        .admin-users-table, .admin-users-table tbody { display: block; }
+        .admin-users-table thead { display: none; }
+        .admin-users-table tr { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); padding: 12px; }
+        .admin-users-table td { display: block; min-width: 0 !important; }
+        .admin-users-table td:first-child, .admin-users-table td:nth-child(2), .admin-users-table td:last-child { grid-column: 1 / -1; }
+        .admin-users-table td:last-child { min-width: 0 !important; }
+        .admin-users-table td::before { content: attr(data-label); display: block; color: var(--text-muted); font-size: 0.65rem; text-transform: uppercase; margin-bottom: 6px; }
+    }
+</style>
+<div x-data="adminDashboard()" class="admin-dashboard">
+    @if($errors->any())
+        <div role="alert" style="margin:20px 28px;padding:16px;border:1px solid #ef4444;border-radius:12px;color:var(--text-primary);">
+            @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
+        </div>
+    @endif
 
     <div style="padding: 24px 28px 0; display:flex; align-items:center; justify-content:space-between;">
         <div>
@@ -14,7 +35,7 @@
     </div>
 
     {{-- Tabs --}}
-    <div style="padding: 24px 28px 0; display:flex; gap:4px; border-bottom:1px solid var(--border-primary); margin-bottom:28px;">
+    <div style="padding: 24px 28px 0; display:flex; flex-wrap:wrap; gap:4px; border-bottom:1px solid var(--border-primary); margin-bottom:28px;">
         <button @click="tab='overview'"
                 :style="tab==='overview' ? 'border-bottom:2px solid var(--accent); color:var(--accent-bright);' : 'color:var(--text-muted);'"
                 style="background:none; border:none; padding:10px 20px; font-size:0.875rem; font-weight:600; cursor:pointer; margin-bottom:-1px; font-family:'Audiowide',sans-serif; display:flex; align-items:center; gap:7px;">
@@ -102,8 +123,9 @@
 
     {{-- ══ ONGLET USERS ══ --}}
     <div x-show="tab==='users'" style="padding: 0 28px 28px;">
-        <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow:hidden;">
-            <table style="width:100%; border-collapse:collapse;">
+        <p style="color:var(--text-secondary);margin-bottom:16px;">L’accès Famille offert est indépendant de Stripe. Son retrait ne résilie aucun abonnement payé. Sans abonnement payé, les membres du groupe perdent leur accès ; les coffres du propriétaire sont conservés.</p>
+        <div style="background:var(--bg-card); border:1px solid var(--border-primary); border-radius:12px; overflow-x:auto;">
+            <table class="admin-users-table" style="width:100%; border-collapse:collapse;">
                 <thead>
                 <tr style="background:rgba(255,255,255,0.03); border-bottom:1px solid var(--border-primary);">
                     <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">UTILISATEUR</th>
@@ -114,12 +136,13 @@
                     <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">MFA</th>
                     <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">SERVICES</th>
                     <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">ADMIN</th>
+                    <th style="text-align:left; padding:12px 16px; font-size:0.75rem; color:var(--text-muted); font-weight:600;">ACTIONS</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($users as $u)
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
-                    <td style="padding:12px 16px;">
+                    <td data-label="Utilisateur" style="padding:12px 16px;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div style="width:32px; height:32px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:700; color:#fff; overflow:hidden; flex-shrink:0;">
                                 @if($u->avatar)
@@ -133,31 +156,68 @@
                             <span style="font-size:0.85rem; color:var(--text-primary); font-weight:600;">{{ $u->name }}</span>
                         </div>
                     </td>
-                    <td style="padding:12px 16px; font-size:0.82rem; color:var(--text-muted);">{{ $u->email }}</td>
-                    <td style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $u->created_at->format('d/m/Y') }}</td>
-                    <td style="padding:12px 16px;">
-                        @if($u->subscribed('famille'))
-                            <span style="background:rgba(45,159,212,0.1); color:#2d9fd4; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Famille</span>
-                        @else
+                    <td data-label="Email" style="padding:12px 16px; font-size:0.82rem; color:var(--text-muted);">{{ $u->email }}</td>
+                    <td data-label="Inscription" style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $u->created_at->format('d/m/Y') }}</td>
+                    <td data-label="Forfait" style="padding:12px 16px;">
+                        @if($u->isFamilySubscriber())
+                            <span style="color:#2d9fd4; font-size:0.78rem;">Famille payé</span>
+                        @endif
+                        @if($u->family_granted_at)
+                            <span style="color:#f59e0b; font-size:0.78rem;">Famille offert</span>
+                        @elseif(!$u->isFamilySubscriber() && $u->familyMembership)
+                            <span style="color:var(--text-muted); font-size:0.78rem;">Membre d’un groupe</span>
+                        @elseif(!$u->isFamilySubscriber())
                             <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Free</span>
                         @endif
                     </td>
-                    <td style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $u->oauth_provider ? ucfirst($u->oauth_provider) : 'Email' }}</td>
-                    <td style="padding:12px 16px;">
+                    <td data-label="Connexion" style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $u->oauth_provider ? ucfirst($u->oauth_provider) : 'Email' }}</td>
+                    <td data-label="MFA" style="padding:12px 16px;">
                         @if($u->mfa_email_enabled || $u->totp_enabled)
                             <span style="color:#22c55e; font-size:0.78rem;">✓ Actif</span>
                         @else
                             <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
                         @endif
                     </td>
-                    <td style="padding:12px 16px; font-size:0.82rem; color:var(--text-primary); font-weight:600;">
-                        {{ $u->coffres->sum(fn($c) => $c->elements->count()) }}
+                    <td data-label="Services" style="padding:12px 16px; font-size:0.82rem; color:var(--text-primary); font-weight:600;">
+                        {{ $u->coffres->sum('elements_count') }}
                     </td>
-                    <td style="padding:12px 16px;">
+                    <td data-label="Rôle" style="padding:12px 16px;">
                         @if($u->is_admin)
                             <span style="color:#f59e0b; font-size:0.78rem; font-weight:600;">Admin</span>
                         @else
                             <span style="color:var(--text-muted); font-size:0.78rem;">—</span>
+                        @endif
+                    </td>
+                    <td data-label="Actions" style="padding:12px 16px; min-width:240px; color:var(--text-primary);">
+                        @if($u->family_granted_at)
+                            <details>
+                                <summary style="cursor:pointer;">Retirer l’accès offert</summary>
+                                <form method="POST" action="{{ route('admin.users.family-grant.destroy', $u) }}" style="margin:12px 0;">
+                                    @csrf @method('DELETE')
+                                    <label><input type="checkbox" name="confirmation" value="1" required> Confirmer le retrait pour {{ $u->email }}. L’abonnement payé, s’il existe, sera conservé.</label>
+                                    <button type="submit" class="btn-secondary" style="margin-top:8px;">Retirer l’accès offert</button>
+                                </form>
+                            </details>
+                        @else
+                            <form method="POST" action="{{ route('admin.users.family-grant.store', $u) }}">
+                                @csrf @method('PUT')
+                                <button type="submit" class="btn-secondary">Offrir le forfait Famille</button>
+                            </form>
+                        @endif
+                        @if($u->id !== auth()->id())
+                            <details style="margin-top:12px;">
+                                <summary style="color:#ef4444;cursor:pointer;">Supprimer le compte</summary>
+                                <form method="POST" action="{{ route('admin.users.supprimer', $u) }}" style="margin-top:12px;">
+                                    @csrf @method('DELETE')
+                                    <p>Suppression définitive de {{ $u->name }}, de ses coffres et de ses partages. Cette action est irréversible et ne résilie aucun paiement.</p>
+                                    <label for="delete-email-{{ $u->id }}">Recopiez {{ $u->email }} pour confirmer :</label>
+                                    <input id="delete-email-{{ $u->id }}" name="confirmation_email" type="email" required autocomplete="off" style="width:100%;padding:8px;margin:8px 0;background:var(--bg-card);color:var(--text-primary);border:1px solid var(--border-primary);">
+                                    <button type="button" class="btn-secondary" @click="$el.closest('details').open = false">Annuler</button>
+                                    <button type="submit" class="btn-secondary" style="color:#ef4444;">Supprimer définitivement</button>
+                                </form>
+                            </details>
+                        @else
+                            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;">Votre compte ne peut pas être supprimé ici.</p>
                         @endif
                     </td>
                 </tr>
@@ -212,7 +272,7 @@
                     </td>
                     <td style="padding:12px 16px; font-size:0.78rem; color:var(--text-muted);">{{ $group->created_at->format('d/m/Y') }}</td>
                     <td style="padding:12px 16px;">
-                        @if($group->owner->subscribed('famille'))
+                        @if($group->owner->hasFamilyPlan())
                             <span style="background:rgba(34,197,94,0.1); color:#22c55e; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Actif</span>
                         @else
                             <span style="background:rgba(239,68,68,0.1); color:#ef4444; border-radius:20px; padding:2px 10px; font-size:0.72rem; font-weight:600;">Inactif</span>
@@ -326,7 +386,7 @@
 
         document.addEventListener('alpine:init', () => {
             Alpine.data('adminDashboard', () => ({
-                tab: 'overview',
+                tab: @js(in_array(request('tab'), ['overview', 'users', 'famille', 'emails'], true) ? request('tab') : 'overview'),
                 init() {
                     this.$nextTick(() => this.initCharts());
                 },

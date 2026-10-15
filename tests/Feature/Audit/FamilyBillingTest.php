@@ -66,7 +66,7 @@ class FamilyBillingTest extends LegacySchemaAuditTestCase
     {
         $f = $this->family();
         app(StripeEventListener::class)->handle(new WebhookReceived([
-            'type' => $type, 'data' => ['object' => ['customer' => 'cus_audit', 'status' => $status]],
+            'type' => $type, 'data' => ['object' => ['id' => 'sub_audit', 'customer' => 'cus_audit', 'status' => $status]],
         ]));
         $this->assertDatabaseMissing('family_members', ['id' => $f['membership']->id]);
         self::assertFalse((new ElementCoffrePolicy)->view($f['member'], $f['element']));

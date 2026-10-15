@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AdminDeleteUserRequest;
 use App\Mail\AdminMailMasse;
 use App\Models\ActivityLog;
 use App\Models\FamilyGroup;
 use App\Models\User;
+use App\Services\Admin\DeleteUserService;
 use App\Services\Logs\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +23,7 @@ class AdminController extends Controller
         $activeUsers30d = ActivityLog::where('created_at', '>=', now()->subDays(30))->distinct('user_id')->count('user_id');
         $totalServices = \DB::table('elements_coffres')->whereNull('deleted_at')->count();
         $totalShares = \DB::table('shares_coffre')->where('statut', 'accepte')->count();
-        $familyGroups = FamilyGroup::with(['owner', 'members'])->get();
+        $familyGroups = FamilyGroup::with(['owner.subscriptions', 'members'])->get();
         $totalFamille = $familyGroups->count();
 
         $inscriptionsParJour = User::selectRaw('DATE(created_at) as date, COUNT(*) as total')
@@ -32,7 +35,7 @@ class AdminController extends Controller
 
         $recentLogs = ActivityLog::with('user')->orderByDesc('created_at')->limit(10)->get();
 
-        $users = User::withCount(['coffres'])->orderByDesc('created_at')->get();
+        $users = User::with(['subscriptions', 'familyMembership', 'coffres' => fn ($q) => $q->withCount('elements')])->orderByDesc('created_at')->get();
 
         return view('admin.index', compact(
             'totalUsers', 'newUsersWeek', 'activeUsers30d',
@@ -47,10 +50,18 @@ class AdminController extends Controller
     {
         $query = ActivityLog::with('user')->orderByDesc('created_at');
 
-        if ($request->user_id) $query->where('user_id', $request->user_id);
-        if ($request->action)  $query->where('action', $request->action);
-        if ($request->date_from) $query->where('created_at', '>=', $request->date_from);
-        if ($request->date_to)   $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
+        if ($request->user_id) {
+            $query->where('user_id', $request->user_id);
+        }
+        if ($request->action) {
+            $query->where('action', $request->action);
+        }
+        if ($request->date_from) {
+            $query->where('created_at', '>=', $request->date_from);
+        }
+        if ($request->date_to) {
+            $query->where('created_at', '<=', $request->date_to.' 23:59:59');
+        }
 
         $logs = $query->paginate(50);
         $users = User::orderBy('name')->get();
@@ -63,57 +74,46 @@ class AdminController extends Controller
     {
         $query = ActivityLog::with('user')->orderByDesc('created_at');
 
-        if ($request->user_id) $query->where('user_id', $request->user_id);
-        if ($request->action) $query->where('action', $request->action);
-        if ($request->date_from) $query->where('created_at', '>=', $request->date_from);
-        if ($request->date_to) $query->where('created_at', '<=', $request->date_to . ' 23:59:59');
+        if ($request->user_id) {
+            $query->where('user_id', $request->user_id);
+        }
+        if ($request->action) {
+            $query->where('action', $request->action);
+        }
+        if ($request->date_from) {
+            $query->where('created_at', '>=', $request->date_from);
+        }
+        if ($request->date_to) {
+            $query->where('created_at', '<=', $request->date_to.' 23:59:59');
+        }
 
         $logs = $query->get();
 
         $csv = "Date,Utilisateur,Email,Action,Description,IP,User Agent\n";
         foreach ($logs as $log) {
             $csv .= implode(',', [
-                    $log->created_at,
-                    '"' . ($log->user->name ?? 'Supprimé') . '"',
-                    '"' . ($log->user->email ?? '') . '"',
-                    $log->action,
-                    '"' . str_replace('"', '""', $log->description ?? '') . '"',
-                    $log->ip_address,
-                    '"' . str_replace('"', '""', $log->user_agent ?? '') . '"',
-                ]) . "\n";
+                $log->created_at,
+                '"'.($log->user->name ?? 'Supprimé').'"',
+                '"'.($log->user->email ?? '').'"',
+                $log->action,
+                '"'.str_replace('"', '""', $log->description ?? '').'"',
+                $log->ip_address,
+                '"'.str_replace('"', '""', $log->user_agent ?? '').'"',
+            ])."\n";
         }
 
         return Response::make($csv, 200, [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="soldier-logs-' . now()->format('Y-m-d') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="soldier-logs-'.now()->format('Y-m-d').'.csv"',
         ]);
     }
 
-    public function supprimerUser(User $user): RedirectResponse
+    public function supprimerUser(AdminDeleteUserRequest $request, User $user, DeleteUserService $deletion): RedirectResponse
     {
-        if ($user->id === auth()->id()) {
-            return redirect()->route('admin.index')->with('toast', [
-                'type' => 'error',
-                'titre' => 'Action impossible',
-                'message' => 'Vous ne pouvez pas supprimer votre propre compte.',
-            ]);
-        }
-
         $nom = $user->name;
+        $deletion->delete($request->user(), $user);
 
-        $user->coffres()->each(function ($coffre) {
-            $coffre->elements()->forceDelete();
-            $coffre->delete();
-        });
-        $user->clesUser()->delete();
-        $user->mfa()->delete();
-        $user->passkeys()->delete();
-        $user->tokens()->delete();
-        $user->forceDelete();
-
-        ActivityLogService::log('user_supprime', "Utilisateur supprimé par admin : {$nom}");
-
-        return redirect()->route('admin.index')->with('toast', [
+        return redirect()->route('admin.index', ['tab' => 'users'])->with('toast', [
             'type' => 'warning',
             'titre' => 'Utilisateur supprimé',
             'message' => "{$nom} a été supprimé définitivement.",
@@ -129,9 +129,9 @@ class AdminController extends Controller
             'user_id' => ['nullable', 'exists:users,id'],
         ]);
 
-        $users = match($request->destinataire) {
+        $users = match ($request->destinataire) {
             'tous' => User::whereNull('deleted_at')->get(),
-            'abonnes' => User::whereHas('subscriptions', fn($q) => $q->where('stripe_status', 'active'))->get(),
+            'abonnes' => User::whereHas('subscriptions', fn ($q) => $q->where('stripe_status', 'active'))->get(),
             'user' => User::where('id', $request->user_id)->get(),
         };
 

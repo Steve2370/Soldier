@@ -61,6 +61,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'deleted_at' => 'datetime',
             'is_admin' => 'boolean',
+            'family_granted_at' => 'datetime',
         ];
     }
 
@@ -156,6 +157,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function isFamilySubscriber(): bool
     {
-        return $this->subscribed('famille');
+        // Historical duplicates must not let an ended subscription hide a valid one.
+        return $this->subscriptions->where('type', 'famille')->contains(fn ($subscription) => $subscription->valid());
+    }
+
+    public function hasFamilyPlan(): bool
+    {
+        // This privilege is intentionally absent from $fillable.
+        return $this->family_granted_at !== null || $this->isFamilySubscriber();
     }
 }

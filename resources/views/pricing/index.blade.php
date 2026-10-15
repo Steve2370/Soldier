@@ -6,6 +6,9 @@
 
     {{-- Hero --}}
     <section style="padding: 100px 24px 60px; text-align:center; max-width:720px; margin:0 auto;">
+        @if($errors->has('billing'))
+            <p role="alert" style="padding:20px;text-align:center;color:#ef4444;">{{ $errors->first('billing') }}</p>
+        @endif
         <span style="display:inline-flex; align-items:center; background:rgba(33,126,170,0.12); border:1px solid rgba(33,126,170,0.3); border-radius:20px; padding:4px 14px; font-size:0.75rem; font-weight:700; color:var(--accent-bright); letter-spacing:0.04em; margin-bottom:20px;">
             TARIFS SIMPLES ET TRANSPARENTS
         </span>
@@ -114,6 +117,8 @@
                         <a href="{{ route('pricing.portail') }}" style="display:block; text-align:center; background:linear-gradient(135deg,#217eaa,#2d9fd4); color:#fff; border:none; border-radius:12px; padding:14px; font-size:0.9rem; font-weight:700; text-decoration:none;">
                             Gérer mon abonnement →
                         </a>
+                    @elseif(auth()->user()->family_granted_at)
+                        <a href="{{ route('famille.index') }}" style="display:block;text-align:center;color:var(--accent-bright);padding:14px;">Votre accès Famille est offert →</a>
                     @else
                         <form method="POST" action="{{ route('pricing.checkout') }}">
                             @csrf
@@ -162,7 +167,7 @@
                 <div style="font-weight:700; font-size:1rem; color:var(--text-primary); margin-bottom:6px;">Soldier est 100% gratuit</div>
                 <div style="font-size:0.82rem; color:var(--text-muted);">Si vous aimez le projet, vous pouvez m'encourager</div>
             </div>
-            <a href="https://paypal.me/BriceSteve" target="_blank"
+            <a href="https://paypal.me/BriceSteve" target="_blank" rel="noopener noreferrer"
                style="display:inline-flex; align-items:center; gap:8px; background:#0070ba; color:#fff; border:none; border-radius:10px; padding:10px 20px; font-size:0.8375rem; font-weight:700; font-family:'Audiowide',sans-serif; text-decoration:none; transition:background 0.15s;"
                onmouseover="this.style.background='#005ea6'"
                onmouseout="this.style.background='#0070ba'">
