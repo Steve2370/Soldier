@@ -7,7 +7,6 @@
         <div class="s-page-head">
             <div>
                 <a href="{{ route('admin.index') }}" style="display: inline-flex; align-items: center; gap: 8px; min-height: 32px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none;">← Retour</a>
-                <span class="s-tag" style="display: block; margin-top: 8px;">// Journal d'audit</span>
                 <h1 style="margin-top: 10px;">Logs d'activité</h1>
                 <p class="s-sub">Journal complet des actions utilisateurs</p>
             </div>
