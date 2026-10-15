@@ -13,7 +13,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Centre de contrôle</span>
                 <h1 style="margin-top: 10px;">Paramètres</h1>
                 <p class="s-sub">Gérez la sécurité et les préférences de votre compte</p>
             </div>

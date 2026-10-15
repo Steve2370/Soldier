@@ -24,7 +24,6 @@
         }
     }">
 
-            {{-- Liaison du compte externe au coffre --}}
             <div style="display: flex; align-items: center; gap: 14px;" aria-hidden="true">
                 <span style="width: 44px; height: 44px; border-radius: 12px; background: #0e1823; border: 1px solid #24394e; display: grid; place-items: center; overflow: hidden; flex-shrink: 0;">
                     @if(auth()->user()->avatar_url)

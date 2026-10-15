@@ -4,7 +4,6 @@
     <div style="max-width: 1000px;">
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Zone de rétention</span>
                 <h1 style="margin-top: 10px;">Corbeille</h1>
                 <p class="s-sub" style="max-width: 620px; line-height: 1.6;">Vos éléments restent restaurables pendant 30 jours. Ils sont ensuite supprimés définitivement par la purge planifiée.</p>
             </div>

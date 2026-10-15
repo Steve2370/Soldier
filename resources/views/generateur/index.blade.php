@@ -6,7 +6,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Arsenal</span>
                 <h1 style="margin-top: 10px;">Générateur</h1>
                 <p class="s-sub">
                     Générez des mots de passe cryptographiquement sûrs via <code class="s-mono" style="background: #0e1a27; padding: 2px 8px; border-radius: 5px; font-size: 0.78rem; color: var(--accent-ultra);">crypto.getRandomValues</code>

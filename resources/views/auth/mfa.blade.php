@@ -34,7 +34,6 @@
                         Code de vérification
                     </label>
 
-                    {{-- A six-digit challenge or a single-use recovery code. --}}
                     <input
                         type="text"
                         name="code"

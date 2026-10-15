@@ -9,7 +9,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Périmètre</span>
                 <h1 style="margin-top: 10px;">Sessions actives</h1>
                 <p class="s-sub">Déconnectez les appareils que vous ne reconnaissez pas.</p>
             </div>

@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="s-auth">
-        <x-soldier.auth-panel :emblem="false" kicker="// Deux clés, deux rôles" title="UNE CLÉ POUR ENTRER" neon="UNE POUR OUVRIR">
+        <x-soldier.auth-panel :emblem="false" kicker="" title="UNE CLÉ POUR ENTRER" neon="UNE POUR OUVRIR">
             <div class="s-unlock" aria-hidden="true">
                 <span class="s-pulse"></span>
                 <svg viewBox="0 0 64 64"><path class="s-shackle" d="M20 30V20a12 12 0 0 1 24 0v10"/><rect x="12" y="30" width="40" height="28" rx="5"/><circle cx="32" cy="42" r="4"/><path d="M32 46v5"/></svg>

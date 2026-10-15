@@ -10,7 +10,6 @@
         @if($errors->has('billing'))
             <p role="alert" class="pricing-alert">{{ $errors->first('billing') }}</p>
         @endif
-        <span class="s-tag">// Tarifs simples et transparents</span>
         <h1>
             Gratuit pour toujours.<br>
             <span class="s-neon-blue">Famille si vous le souhaitez.</span>

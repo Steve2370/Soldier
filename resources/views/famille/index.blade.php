@@ -4,7 +4,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Escouade</span>
                 <h1 style="margin-top: 10px;">Famille</h1>
                 <p class="s-sub">Gérez votre groupe et vos secrets partagés</p>
             </div>

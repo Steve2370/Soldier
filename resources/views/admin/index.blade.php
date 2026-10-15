@@ -46,7 +46,6 @@
 
     <div class="s-page-head">
         <div>
-            <span class="s-tag">// Poste de commandement</span>
             <h1 style="margin-top: 10px;">Panel Admin</h1>
             <p class="s-sub">Vue d'ensemble de Soldier</p>
         </div>
@@ -78,7 +77,6 @@
         </button>
     </div></div>
 
-    {{-- ══ ONGLET OVERVIEW ══ --}}
     <div x-show="tab==='overview'" style="padding: 0 0 28px;">
 
         <div class="admin-stats s-stagger">

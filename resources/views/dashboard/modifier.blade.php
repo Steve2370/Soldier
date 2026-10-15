@@ -11,7 +11,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Modification</span>
                 <h1 style="margin-top: 10px;">Modifier le service</h1>
                 <p class="s-sub">Les modifications seront rechiffrées avec un nouvel IV</p>
             </div>

@@ -14,7 +14,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Transmission chiffrée</span>
                 <h1 style="margin-top: 10px;">Partage</h1>
                 <p class="s-sub">Partage chiffré avec enveloppe RSA-4096</p>
             </div>
@@ -24,7 +23,6 @@
             </button>
         </div>
 
-        {{-- Fonctionnement du partage, purement illustratif --}}
         <div class="card s-hud" aria-label="Fonctionnement du partage" style="padding: 24px 28px; margin-bottom: 22px; background: rgba(7,18,28,0.92);">
             <div class="s-pipeline">
                 <div class="s-pipe-node"><span class="s-node s-node-1"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.2-8.2M17 6l2 2M15 8l2 2"/></svg></span><span class="s-mono">clé du coffre</span></div>

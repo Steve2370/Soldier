@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="s-auth">
-        <x-soldier.auth-panel kicker="// Accès sécurisé" title="VOTRE COFFRE" neon="VOUS ATTEND">
+        <x-soldier.auth-panel kicker=" " title="VOTRE COFFRE" neon="VOUS ATTEND">
             <p class="s-terminal" style="max-width: 360px; width: 100%;"><span class="pr">&gt;</span> canal chiffré TLS 1.3 établi<span class="s-caret"></span></p>
         </x-soldier.auth-panel>
 

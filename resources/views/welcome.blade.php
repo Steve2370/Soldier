@@ -4,7 +4,6 @@
 @section('content')
     <div style="overflow: hidden;">
 
-        {{-- ══ HERO ══ --}}
         <section class="w-hero">
             <x-soldier.backdrop :video="false" :locks="9" />
             <video autoplay muted loop playsinline class="w-hero-video" aria-hidden="true">
@@ -14,7 +13,6 @@
 
             <div class="w-hero-inner s-stagger">
                 <x-soldier.emblem :size="150" />
-                <span class="s-tag">// Gestionnaire de mots de passe chiffré</span>
                 <h1 class="w-hero-title">
                     Soldier blinde vos<br>
                     <span class="s-neon s-neon-flicker" data-scramble data-scramble-loop="10" data-scramble-duration="1200">mots de passe.</span>

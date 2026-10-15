@@ -3,7 +3,7 @@
 
 @section('content')
     <div class="s-auth">
-        <x-soldier.auth-panel kicker="// Enrôlement" title="VOTRE COFFRE BLINDÉ" neon="EN 30 SECONDES">
+        <x-soldier.auth-panel kicker="" title="VOTRE COFFRE BLINDÉ" neon="EN 30 SECONDES">
             <ol style="list-style: none; display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 400px; text-align: left;">
                 <li class="s-enroll-step"><span class="s-step-num">01</span><div><p style="font-size: 0.85rem; color: var(--text-primary);">Créez votre identifiant</p><p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Email et mot de passe de connexion.</p></div></li>
                 <li class="s-enroll-step" style="animation-delay: 2s;"><span class="s-step-num" style="animation-delay: 2s;">02</span><div><p style="font-size: 0.85rem; color: var(--text-primary);">Forgez votre master password</p><p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">La clé de votre coffre. Personne ne pourra la récupérer.</p></div></li>

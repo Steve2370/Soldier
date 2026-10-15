@@ -37,7 +37,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Coffre personnel</span>
                 <h1 style="margin-top: 10px;">Mes services</h1>
                 <p class="s-sub s-mono">
                     <span data-countup style="color: var(--text-primary);">{{ $totalElements }}</span>
@@ -51,7 +50,6 @@
         </div>
 
         @if($totalElements > 0)
-            {{-- Santé du coffre, calculée localement à partir des éléments déjà déchiffrés pour cette page --}}
             <div class="s-stagger" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 28px;">
                 <div class="card s-hud s-scan s-glow" style="padding: 20px; display: flex; align-items: center; gap: 18px;">
                     <span class="s-scan-line"></span>

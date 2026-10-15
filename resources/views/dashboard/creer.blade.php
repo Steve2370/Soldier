@@ -11,7 +11,6 @@
 
         <div class="s-page-head">
             <div>
-                <span class="s-tag">// Nouvel élément</span>
                 <h1 style="margin-top: 10px;">Nouveau service</h1>
                 <p class="s-sub">Chiffré avec AES-256-GCM avant sauvegarde</p>
             </div>
