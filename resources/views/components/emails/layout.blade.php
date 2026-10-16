@@ -1,258 +1,76 @@
+@props(['sujet' => 'Soldier', 'preheader' => null])
+@php
+    $font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+    $mono = "'DM Mono', 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace";
+    $asset = fn (string $file) => rtrim(config('app.url', 'https://soldierkey.com'), '/') . '/assets/email/' . $file;
+@endphp
 <!DOCTYPE html>
 <html lang="fr" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ $sujet ?? 'Soldier' }}</title>
+    <meta name="color-scheme" content="dark">
+    <meta name="supported-color-schemes" content="dark">
+    <title>{{ $sujet }}</title>
+    {{-- Polices chargées seulement par les clients qui l'acceptent (Apple Mail, iOS) ; repli système ailleurs. --}}
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=DM+Mono&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: #0a0a0a;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            color: #e0e0e0;
-            -webkit-font-smoothing: antialiased;
-        }
-        .email-wrapper {
-            background-color: #0a0a0a;
-            padding: 40px 20px;
-        }
-        .email-container {
-            max-width: 580px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            padding-bottom: 32px;
-        }
-        .header img {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-        }
-        .header-brand {
-            margin-top: 14px;
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.02em;
-        }
-        .header-tagline {
-            margin-top: 4px;
-            font-size: 0.7rem;
-            color: #404040;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-        .card {
-            background: #141414;
-            border: 1px solid #2a2a2a;
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 24px;
-        }
-        .card-accent {
-            height: 3px;
-            background: linear-gradient(90deg, #217eaa, #2d9fd4, #217eaa);
-        }
-        .card-body {
-            padding: 32px;
-        }
-        .icon-wrap {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-        .icon-success { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); }
-        .icon-warning { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25); }
-        .icon-danger { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.25); }
-        .icon-info { background: rgba(45,159,212,0.12); border: 1px solid rgba(45,159,212,0.25); }
-        h1 {
-            font-size: 1.375rem;
-            font-weight: 800;
-            color: #ffffff;
-            text-align: center;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-        h2 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-        p {
-            font-size: 0.9rem;
-            color: #a0a0a0;
-            line-height: 1.75;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        p.left { text-align: left; }
-        strong { color: #e0e0e0; }
-        /* Panel */
-        .panel {
-            background: #0d0d0d;
-            border: 1px solid #2a2a2a;
-            border-left: 3px solid #217eaa;
-            border-radius: 10px;
-            padding: 18px 20px;
-            margin: 20px 0;
-            text-align: left;
-        }
-        .panel p { text-align: left; margin: 0; }
-        .panel ul {
-            list-style: none;
-            padding: 0;
-            margin: 8px 0 0;
-        }
-        .panel ul li {
-            font-size: 0.85rem;
-            color: #808080;
-            padding: 3px 0;
-            padding-left: 16px;
-            position: relative;
-        }
-        .panel ul li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: #217eaa;
-        }
-        .panel ul li strong { color: #c0c0c0; }
-        .code-box {
-            background: #0a0a0a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            margin: 24px 0;
-        }
-        .code-digits {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: #2d9fd4;
-            letter-spacing: 0.5em;
-            font-family: 'Courier New', monospace;
-            padding-left: 0.5em;
-        }
-        .code-expire {
-            font-size: 0.78rem;
-            color: #505050;
-            margin-top: 10px;
-        }
-        .btn-wrap {
-            text-align: center;
-            margin: 24px 0;
-        }
-        .btn {
-            display: inline-block;
-            padding: 14px 36px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-decoration: none;
-            letter-spacing: 0.01em;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #217eaa, #2d9fd4);
-            color: #ffffff !important;
-        }
-        .btn-danger {
-            background: rgba(239,68,68,0.12);
-            color: #ef4444 !important;
-            border: 1px solid rgba(239,68,68,0.3);
-        }
-        .warning-box {
-            background: rgba(245,158,11,0.08);
-            border: 1px solid rgba(245,158,11,0.2);
-            border-radius: 10px;
-            padding: 14px 18px;
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-        }
-        .warning-box p {
-            text-align: left;
-            margin: 0;
-            font-size: 0.82rem;
-            color: #808080;
-        }
-        .divider {
-            height: 1px;
-            background: #1e1e1e;
-            margin: 24px 0;
-        }
-        .footer {
-            text-align: center;
-            padding: 0 20px 20px;
-        }
-        .footer p {
-            font-size: 0.75rem;
-            color: #383838;
-            line-height: 1.9;
-            margin: 0;
-        }
-        .footer a {
-            color: #217eaa;
-            text-decoration: none;
-        }
-        .security-badges {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .badge {
-            display: inline-block;
-            background: rgba(33,126,170,0.1);
-            border: 1px solid rgba(45,159,212,0.2);
-            border-radius: 20px;
-            padding: 3px 10px;
-            font-size: 0.68rem;
-            color: #2d9fd4;
-            letter-spacing: 0.05em;
+        body { margin: 0 !important; padding: 0 !important; background: #02050a; }
+        a { color: #4fc3f7; }
+        @media only screen and (max-width: 620px) {
+            .s-container { width: 100% !important; }
+            .s-pad { padding-left: 22px !important; padding-right: 22px !important; }
+            .s-title { font-size: 22px !important; }
+            .s-code { font-size: 32px !important; letter-spacing: 8px !important; }
         }
     </style>
 </head>
-<body>
-<div class="email-wrapper">
-    <div class="email-container">
+<body style="margin:0; padding:0; background-color:#02050a;">
+@if($preheader)
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#02050a;">{{ $preheader }}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+@endif
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" bgcolor="#02050a" style="background-color:#02050a;">
+    <tr>
+        <td align="center" style="padding:32px 12px 40px;">
+            <table role="presentation" class="s-container" width="600" cellspacing="0" cellpadding="0" border="0" style="width:600px; max-width:600px;">
 
-        <div class="header">
-            <img src="https://soldierkey.com/assets/Soldier-Logo.png" alt="Soldier" width="72" height="72">
-            <div class="header-brand">Soldier</div>
-            <div class="header-tagline">Gestionnaire de mots de passe · Chiffrement AES-256-GCM</div>
-        </div>
+                {{-- En-tête --}}
+                <tr>
+                    <td style="border-radius:18px 18px 0 0; overflow:hidden; border:1px solid #1a2b3c; border-bottom:0;">
+                        <a href="https://soldierkey.com" style="text-decoration:none;">
+                            <img src="{{ $asset('header.jpg') }}" width="600" alt="Soldier — Gestionnaire de mots de passe chiffré" style="display:block; width:100%; max-width:600px; height:auto; border:0; border-radius:18px 18px 0 0; color:#eef3f8; font-family:{{ $font }}; font-size:20px;">
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td height="3" bgcolor="#3df5c0" style="height:3px; line-height:3px; font-size:3px; background-color:#3df5c0; background-image:linear-gradient(90deg, #2d9fd4, #3df5c0 50%, #2d9fd4);">&nbsp;</td>
+                </tr>
 
-        <div class="card">
-            <div class="card-accent"></div>
-            <div class="card-body">
-                {{ $slot }}
-            </div>
-        </div>
+                {{-- Carte --}}
+                <tr>
+                    <td class="s-pad" bgcolor="#07121c" style="background-color:#07121c; border:1px solid #1a2b3c; border-top:0; border-radius:0 0 18px 18px; padding:36px 40px 34px; font-family:{{ $font }}; font-size:15px; line-height:1.7; color:#c3cedb;">
+                        {{ $slot }}
+                    </td>
+                </tr>
 
-        <div class="footer">
-            <div class="security-badges">
-                <span class="badge">AES-256-GCM</span>
-                <span class="badge">ARGON2ID</span>
-                <span class="badge">RSA-4096</span>
-                <span class="badge">CHIFFREMENT SÉCURISÉ</span>
-            </div>
-            <p>
-                Cet email a été envoyé par <strong style="color:#505050;">Soldier</strong> — <a href="https://soldierkey.com">soldierkey.com</a><br>
-                Si vous n'êtes pas à l'origine de cette action, <a href="mailto:support@soldierkey.com">contactez notre support</a>.<br>
-                <span style="color:#2a2a2a;">© 2026 Soldier · soldierkey.com</span>
-            </p>
-        </div>
-
-    </div>
-</div>
+                {{-- Pied --}}
+                <tr>
+                    <td align="center" style="padding:26px 20px 0; font-family:{{ $mono }}; font-size:10px; letter-spacing:2px; color:#4fc3f7;">
+                        ARGON2ID &nbsp;◆&nbsp; AES-256-GCM &nbsp;◆&nbsp; RSA-4096
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding:14px 24px 0; font-family:{{ $font }}; font-size:12px; line-height:1.8; color:#6e8aa3;">
+                        Cet e-mail a été envoyé par <strong style="color:#8fa2b8;">Soldier</strong> · <a href="https://soldierkey.com" style="color:#4fc3f7; text-decoration:none;">soldierkey.com</a><br>
+                        Vous n’êtes pas à l’origine de cette action ? <a href="mailto:support@soldierkey.com" style="color:#4fc3f7; text-decoration:none;">Contactez le support</a>.<br>
+                        Soldier ne vous demandera jamais votre Master Password par e-mail.<br>
+                        <span style="color:#3a5168;">© {{ date('Y') }} Soldier</span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

@@ -1,0 +1,1 @@
+<h1 class="s-title" style="margin:0 0 12px; font-family:'Audiowide', 'Trebuchet MS', Arial, sans-serif; font-weight:400; font-size:24px; line-height:1.3; letter-spacing:0.5px; color:#eef3f8; text-align:center;">{{ $slot }}</h1>

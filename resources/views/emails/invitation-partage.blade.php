@@ -1,41 +1,19 @@
-<x-emails.layout sujet="{{ $expediteur->name }} partage un coffre avec vous">
-
+<x-emails.layout :sujet="$expediteur->name.' partage un coffre avec vous'" :preheader="'Invitation à accéder à « '.$nomCoffre.' » sur Soldier.'">
     @if($expediteur->avatar)
-        <div style="text-align:center; margin-bottom: 20px;">
-            <img src="https://soldierkey.com/storage/{{ $expediteur->avatar }}"
-                 alt="{{ $expediteur->name }}"
-                 width="72" height="72"
-                 style="border-radius:50%; border: 2px solid #217eaa; object-fit:cover;">
-        </div>
+        <x-emails.avatar :user="$expediteur" />
     @else
-        <div class="icon-wrap icon-info" style="margin-bottom:20px;">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2d9fd4" stroke-width="2.5">
-                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-            </svg>
-        </div>
+        <x-emails.icon name="share-blue" alt="Partage" />
     @endif
-    <h1>{{ $expediteur->name }}<br>partage un coffre avec vous</h1>
-    <p>Vous avez reçu une invitation à accéder à un coffre sécurisé sur Soldier.</p>
+    <x-emails.title>{{ $expediteur->name }}<br><span style="color:#4fc3f7;">partage un coffre avec vous</span></x-emails.title>
+    <x-emails.text>Vous êtes invité à accéder à un coffre chiffré sur Soldier.</x-emails.text>
 
-    <div class="panel">
-        <h2>Détails du partage :</h2>
-        <ul>
-            <li><strong>Coffre :</strong> {{ $nomCoffre }}</li>
-            <li><strong>Permission :</strong> {{ $permission === 'ecriture' ? 'Lecture et écriture' : 'Lecture seule' }}</li>
-            <li><strong>Partagé par :</strong> {{ $expediteur->name }} ({{ $expediteur->email }})</li>
-        </ul>
-    </div>
+    <x-emails.panel title="Détails du partage">
+        <x-emails.row label="Coffre">{{ $nomCoffre }}</x-emails.row>
+        <x-emails.row label="Permission">{{ $permission === 'ecriture' ? 'Lecture et écriture' : 'Lecture seule' }}</x-emails.row>
+        <x-emails.row label="Partagé par">{{ $expediteur->name }} ({{ $expediteur->email }})</x-emails.row>
+    </x-emails.panel>
 
-    <div class="btn-wrap">
-        <a href="{{ $lienAcceptation }}" class="btn btn-primary">
-            Accepter l'invitation →
-        </a>
-    </div>
-
-    <p style="font-size:0.8rem;color:#484848;">Ce lien expire dans <strong style="color:#606060;">7 jours</strong>. Vous devrez vous connecter ou créer un compte Soldier pour accepter.</p>
-
-    <div class="divider"></div>
-    <p style="font-size:0.82rem;color:#505050;"><strong style="color:#808080;">L'équipe Soldier</strong></p>
-
+    <x-emails.button :href="$lienAcceptation">Accepter l’invitation →</x-emails.button>
+    <x-emails.text muted>Ce lien expire dans <strong style="color:#c3cedb;">7 jours</strong>. Vous devrez vous connecter ou créer un compte Soldier pour l’accepter.</x-emails.text>
+    <x-emails.signature />
 </x-emails.layout>

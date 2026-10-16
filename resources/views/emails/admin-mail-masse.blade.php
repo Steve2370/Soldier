@@ -1,16 +1,20 @@
-<x-emails.layout sujet="{{ $sujet }}">
-    <h1>{{ $sujet }}</h1>
+<x-emails.layout :sujet="$sujet" :preheader="$sujet">
+    <x-emails.icon name="megaphone-blue" />
+    <x-emails.title>{{ $sujet }}</x-emails.title>
 
     @if($destinataireName)
-        <p>Bonjour <strong style="color:#e0e0e0;">{{ $destinataireName }}</strong>,</p>
+        <x-emails.text>Bonjour <strong style="color:#eef3f8;">{{ $destinataireName }}</strong>,</x-emails.text>
     @else
-        <p>Bonjour,</p>
+        <x-emails.text>Bonjour,</x-emails.text>
     @endif
 
-    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:20px 24px; margin:20px 0; line-height:1.8; color:#e0e0e0;">
-        {!! nl2br(e($contenu)) !!}
-    </div>
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:8px 0 6px;">
+        <tr>
+            <td bgcolor="#040c14" style="background-color:#040c14; border:1px solid #1a2b3c; border-radius:12px; padding:20px 22px; font-size:15px; line-height:1.8; color:#eef3f8;">
+                {!! nl2br(e($contenu)) !!}
+            </td>
+        </tr>
+    </table>
 
-    <div class="divider"></div>
-    <p style="font-size:0.82rem;color:#505050;"><strong style="color:#808080;">L'équipe Soldier</strong> · soldierkey.com</p>
+    <x-emails.signature />
 </x-emails.layout>
