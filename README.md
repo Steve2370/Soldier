@@ -107,6 +107,26 @@ bash /var/www/deploy.sh
 
 >  Les fichiers vidéo (démonstrations, assets marketing) sont stockés hors du dépôt Git dans `/var/www/videos/`, avec un lien symbolique vers `public/videos/`, afin d'éviter les problèmes de Git LFS.
 
+### Sessions et connexion Google/GitHub
+
+En production HTTPS, vérifier ces valeurs dans le `.env` du serveur :
+
+```ini
+SESSION_SAME_SITE=lax
+SESSION_SECURE_COOKIE=true
+SESSION_HTTP_ONLY=true
+```
+
+`SameSite=Strict` empêche le navigateur d’envoyer la session au retour du fournisseur OAuth. La vérification du paramètre `state` échoue alors et Soldier revient au formulaire email/mot de passe. `Lax` autorise ce retour par navigation GET, sans désactiver les vérifications OAuth, les protections CSRF ou les attributs Secure/HttpOnly.
+
+**Une mise à jour Git ne modifie pas le `.env` existant.** Remplacer une ancienne valeur `SESSION_SAME_SITE=strict` par `lax` (ou ajouter la ligne si absente), puis recharger la configuration :
+
+```bash
+php artisan config:cache
+```
+
+Recommencer ensuite la connexion depuis le bouton Google, sans réutiliser une ancienne URL de retour. Pour une nouvelle identité Google, seul le choix et la confirmation du master password sont demandés. Pour un compte déjà lié à Google, seul le master password existant est demandé, puis la MFA si elle est activée. L’association automatique d’un compte email/mot de passe préexistant reste volontairement refusée.
+
 ## - Extension Chrome
 
 L'extension permet le remplissage automatique des identifiants directement dans le navigateur. L'implémentation zero-knowledge complète devra être validée après déplacement de tout le déchiffrement côté client.
